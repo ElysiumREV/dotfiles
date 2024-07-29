@@ -8,7 +8,7 @@
     "modules-left": ["hyprland/workspaces", "hyprland/mode", "custom/media", "hyprland/window"],
     "modules-center": [],
     // 2020-10-21: disable "cpu" so it never forces a higher power state
-    "modules-right": ["tray", "pulseaudio", "network", "memory", "temperature#cpu", "temperature#gpu", "backlight", "keyboard-state", "battery", "battery#bat2", "clock"],
+    "modules-right": ["tray", "pulseaudio", "network", "memory", "temperature#cpu", "temperature#gpu", "backlight", "battery", "battery#bat2", "clock"],
     // Modules configuration
     // "hyprland/workspaces": {
     //     "disable-scroll": true,

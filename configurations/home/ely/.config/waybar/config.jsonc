@@ -1,12 +1,12 @@
 {
-    "layer": "top", // Waybar at top layer
-    "position": "top", // Waybar position (top|bottom|left|right)
-    "height": 24, // Waybar height (to be removed for auto height)
+    "layer": "top",
+    "position": "top", // (top|bottom|left|right)
+    // "height": 24, // Waybar height (to be removed for auto height)
     // "width": 1280, // Waybar width
     "spacing": 0, // Gaps between modules (4px)
     // Choose the order of the modules
     "modules-left": ["hyprland/workspaces", "hyprland/mode", "custom/media", "hyprland/window"],
-    "modules-center": [],
+    "modules-center": ["custom/poweroff", "custom/lock"],
     // 2020-10-21: disable "cpu" so it never forces a higher power state
     "modules-right": ["tray", "pulseaudio", "network", "memory", "temperature#cpu", "temperature#gpu", "backlight", "battery", "battery#bat2", "clock"],
     // Modules configuration
@@ -25,15 +25,6 @@
     //         "default": ""
     //     }
     // },
-    "keyboard-state": {
-        "numlock": true,
-        "capslock": true,
-        "format": "{name} {icon}",
-        "format-icons": {
-            "locked": "",
-            "unlocked": ""
-        }
-    },
     "hyprland/mode": {
         "format": "<span style=\"italic\">{}</span>"
     },
@@ -64,33 +55,29 @@
         "tooltip-format-disconnected": "MPD (disconnected)"
     },
     "custom/poweroff": {
-        "format": "",
-        "on-click": "shutdown now",
+        "format": " ",
+        "on-click": "shutdown now"
     },
-    "custom/suspend": {
-        "format": "",
-        "on-click": "sh -c '(sleep 0.5s; systemctl suspend) & disown'",
-    },
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
-        }
+    "custom/lock": {
+        "format": " ",
+        "on-click": "hyprlock"
     },
     "tray": {
         // "icon-size": 21,
         "spacing": 10
     },
     "clock": {
-        // "timezone": "America/New_York",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
         // "format-alt": "{:%I:%M:%S}",
-        "format": "{:%Y-%m-%d %I:%M}",
+        "format": "{:%d-%m-%Y %H:%M}",
         "interval": 60
     },
     "cpu": {
         "format": "{usage}% ",
+        "tooltip": false
+    },
+    "gpu": {
+        "format": "{usage}% ",
         "tooltip": false
     },
     "memory": {
@@ -98,18 +85,18 @@
     },
     "temperature#cpu": {
         // "thermal-zone": 2,
-        "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
-        "critical-threshold": 70,
+        "hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input",
+        "critical-threshold": 80,
         // "format-critical": "{temperatureC}°C {icon}",
         "format": "  {temperatureC}°C {icon}",
         "format-icons": ["", "", ""]
     },
     "temperature#gpu": {
         // "thermal-zone": 2,
-        "hwmon-path": "/sys/class/hwmon/hwmon1/temp1_input",
+        "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
         "critical-threshold": 80,
         // "format-critical": "{temperatureC}°C {icon}",
-        "format": "  {temperatureC}°C {icon}",
+        "format": "   {temperatureC}°C {icon}",
         "format-icons": ["", "", ""]
     },
     "backlight": {
@@ -152,7 +139,7 @@
         "format-source": "{volume}% ",
         "format-source-muted": "",
         "format-icons": {
-            "headphone": "",
+            "headphone": " ",
             "hands-free": "",
             "headset": "",
             "phone": "",
@@ -161,17 +148,5 @@
             "default": ["", "", ""]
         },
         "on-click": "pavucontrol"
-    },
-    "custom/media": {
-        "format": "{icon} {}",
-        "return-type": "json",
-        "max-length": 40,
-        "format-icons": {
-            "spotify": "",
-            "default": "🎜"
-        },
-        "escape": true,
-        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
     }
 }

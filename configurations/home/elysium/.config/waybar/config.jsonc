@@ -1,7 +1,7 @@
 {
     "layer": "top",
     "position": "top", // (top|bottom|left|right)
-    // "height": 24, // Waybar height (to be removed for auto height)
+    "height": 24, // Waybar height (to be removed for auto height)
     // "width": 1280, // Waybar width
     "spacing": 0, // Gaps between modules (4px)
     // Choose the order of the modules
@@ -30,8 +30,8 @@
     },
     "mpd": {
         "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
-        "format-disconnected": "Disconnected ",
-        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+        "format-disconnected": "Disconnected  ",
+        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped  ",
         "unknown-tag": "N/A",
         "interval": 2,
         "consume-icons": {
@@ -45,11 +45,11 @@
             "on": " "
         },
         "single-icons": {
-            "on": "1 "
+            "on": " 1 "
         },
         "state-icons": {
-            "paused": "",
-            "playing": ""
+            "paused": " ",
+            "playing": " "
         },
         "tooltip-format": "MPD (connected)",
         "tooltip-format-disconnected": "MPD (disconnected)"
@@ -73,19 +73,19 @@
         "interval": 60
     },
     "cpu": {
-        "format": "{usage}% ",
+        "format": "{usage}%  ",
         "tooltip": false
     },
     "gpu": {
-        "format": "{usage}% ",
+        "format": "{usage}%  ",
         "tooltip": false
     },
     "memory": {
-        "format": "{}% "
+        "format": "{}%  "
     },
     "temperature#cpu": {
         // "thermal-zone": 2,
-        "hwmon-path": "/sys/class/hwmon/hwmon3/temp1_input",
+        "hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input",
         "critical-threshold": 80,
         // "format-critical": "{temperatureC}°C {icon}",
         "format": "  {temperatureC}°C {icon}",
@@ -93,7 +93,7 @@
     },
     "temperature#gpu": {
         // "thermal-zone": 2,
-        "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+        "hwmon-path": "/sys/class/hwmon/hwmon3/temp1_input",
         "critical-threshold": 80,
         // "format-critical": "{temperatureC}°C {icon}",
         "format": "   {temperatureC}°C {icon}",
@@ -102,7 +102,7 @@
     "backlight": {
         // "device": "acpi_video1",
         "format": "{percent}% {icon}",
-        "format-icons": ["", ""]
+        "format-icons": [" ", " "]
     },
     "battery": {
         "states": {
@@ -112,18 +112,18 @@
         },
         "format": "{capacity}% {icon}",
         "format-charging": "{capacity}% ",
-        "format-plugged": "{capacity}% ",
+        "format-plugged": "{capacity}%  ",
         "format-alt": "{time} {icon}",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
-        "format-icons": ["", "", "", "", ""]
+        "format-icons": [" ", " ", " ", " ", " "]
     },
     "battery#bat2": {
         "bat": "BAT2"
     },
     "network": {
-        // "interface": "wlp2*", // (Optional) To force the use of this interface
-        "format-wifi": "{essid} ({signalStrength}%) ",
+        // "interface": "wlp2*", To force the use of this interface
+        "format-wifi": "{essid} ({signalStrength}%)  ",
         "format-ethernet": "{ipaddr}/{cidr} ",
         "tooltip-format": "{ifname} via {gwaddr} ",
         "format-linked": "{ifname} (No IP) ",
@@ -136,16 +136,16 @@
         "format-bluetooth": "{volume}% {icon} {format_source}",
         "format-bluetooth-muted": " {icon} {format_source}",
         "format-muted": " {format_source}",
-        "format-source": "{volume}% ",
-        "format-source-muted": "",
+        "format-source": "{volume}%  ",
+        "format-source-muted": " ",
         "format-icons": {
             "headphone": " ",
             "hands-free": "",
             "headset": "",
-            "phone": "",
-            "portable": "",
+            "phone": " ",
+            "portable": " ",
             "car": "",
-            "default": ["", "", ""]
+            "default": [" ", " ", "  "]
         },
         "on-click": "pavucontrol"
     }

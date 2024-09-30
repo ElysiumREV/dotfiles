@@ -1,12 +1,13 @@
 {
     "layer": "top",
+    // "reload_style_on_change": "true",  
     "position": "top", // (top|bottom|left|right)
     "height": 24, // Waybar height (to be removed for auto height)
     // "width": 1280, // Waybar width
     "spacing": 0, // Gaps between modules (4px)
     // Choose the order of the modules
     "modules-left": ["hyprland/workspaces", "hyprland/mode", "custom/media", "hyprland/window"],
-    // "modules-center": ["custom/poweroff", "custom/lock"],
+    // "modules-center": ["mpd"],
     // 2020-10-21: disable "cpu" so it never forces a higher power state
     "modules-right": ["tray", "pulseaudio", "network", "memory", "temperature#cpu", "temperature#gpu", "backlight", "battery", "battery#bat2", "clock"],
     // Modules configuration

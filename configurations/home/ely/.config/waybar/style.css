@@ -1,231 +1,164 @@
-
 * {
-    /* `otf-font-awesome` is required to be installed for icons */
-    font-family: iosevka, Roboto, Helvetica, Arial, sans-serif, "Font Awesome 5 Free";
-    font-size: 14px;
+  border: none;
+  border-radius: 8;
+  font-family: "Vlgothic";
+  font-size: 14px;
+  min-height: 20px;
 }
 
 window#waybar {
-/*    background-color: rgba(43, 48, 59, 0.5);
-    border-bottom: 3px solid rgba(100, 114, 125, 0.5);*/
-    color: #a89984;
-    background-color: #282828;
-/*    transition-property: background-color;
-    transition-duration: .5s;*/
+  background: #1d2021;
+  color: #ebdbb2;
 }
 
-window#waybar.hidden {
-    opacity: 0.2;
+tooltip {
+  background: #282828;
+  border-radius: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #1d2021;
 }
-
-/*
-window#waybar.empty {
-    background-color: transparent;
-}
-window#waybar.solo {
-    background-color: #FFFFFF;
-}
-*/
-
-/*window#waybar.termite {
-    background-color: #3F3F3F;
-}
-
-window#waybar.chromium {
-    background-color: #000000;
-    border: none;
-}*/
-
 #workspaces button {
-    padding: 0 5px;
-    background-color: #282828;
-    color: #ebdbb2;
-    /* Use box-shadow instead of border so the text isn't offset */
-    box-shadow: inset 0 -3px transparent;
-    /* Avoid rounded borders under each workspace name */
-    border: none;
-    border-radius: 0;
+  padding: 0 0.2em;
+  color: #504945;
+  border-radius: 6px;
+  margin-right: 2px;
+  margin-left: 2px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
-/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
-#workspaces button:hover {
-    background: rgba(0, 0, 0, 0.2);
-    box-shadow: inset 0 -3px #fbf1c7;
-    background-color: #3c3836;
+#workspaces button.active {
+  color: #ebdbb2;
+  background: #4e635b;
 }
 
 #workspaces button.focused {
-    box-shadow: inset 0 -3px #fbf1c7;
-    background-color: #3c3836;
-    color: #ebdbb2;
+  color: #ebdbb2;
+  background: #4e635b;
 }
 
 #workspaces button.urgent {
-    background-color: #fbf1c7;
-    color: #3c3836;
+  color: #1d2021;
+  background: #fb4934;
 }
 
-#mode {
-    background-color: #64727D;
-    border-bottom: 3px solid #fbf1c7;
+#workspaces button:hover {
+  background: #4e635b;
+  color: #ebdbb2;
 }
 
-#clock,
-#battery,
+#custom-power,
+#date,
+#backlight,
+#pulseaudio,
+#network,
+#workspaces,
 #cpu,
 #memory,
-#disk,
+#power-profiles-daemon,
 #temperature,
-#backlight,
-#network,
-#pulseaudio,
-#custom-media,
+#clock,
 #tray,
-#mode,
-#idle_inhibitor,
-#custom-poweroff,
-#custom-suspend {
-    padding: 0 5px;
-    background-color: #282828;
-    color: #ebdbb2;
-}
-
-#window,
-#workspaces {
-    margin: 0 4px;
-}
-
-/* If workspaces is the leftmost module, omit left margin */
-.modules-left > widget:first-child > #workspaces {
-    margin-left: 0;
-}
-
-/* If workspaces is the rightmost module, omit right margin */
-.modules-right > widget:last-child > #workspaces {
-    margin-right: 0;
-}
-
-#clock {
-    color: #8ec07c;
-}
-
 #battery {
-    color: #d3869b;
+  background: #32302f;
+  padding: 0 0.5em;
+  margin-right: 4px;
+  margin-left: 4px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border-radius: 6px;
 }
 
-#battery.charging, #battery.plugged {
-    color: #d3869b;
-}
-
-@keyframes blink {
-    to {
-        background-color: #fbf1c7;
-        color: #df3f71;
-    }
-}
-
-#battery.critical:not(.charging) {
-    background-color: #282828;
-    color: #d3869b;
-    animation-name: blink;
-    animation-duration: 0.5s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-}
-
-label:focus {
-    background-color: #000000;
-}
-
-#backlight {
-    color: #458588;
-}
-
-#temperature {
-    color: #fabd2f;
-}
-
-#temperature.critical {
-    background-color: #fbf1c7;
-    color: #b57614;
-}
-
-#memory {
-    color: #b8bb26;
+#tray {
+  margin-right: 6px;
 }
 
 #network {
-    color: #fb4934;
+  color: #ebdbb2;
+  margin-right: 6px;
 }
-
-#network.disconnected {
-    background-color: #fbf1c7;
-    color: #9d0006;
-}
-
-/*#disk {
-    background-color: #964B00;
-}*/
 
 #pulseaudio {
-    color: #fe8019;
+  margin-right: 6px;
+  color: #ebdbb2;
 }
 
-#pulseaudio.muted {
-    background-color: #fbf1c7;
-    color: #af3a03;
+#custom-power {
+  color: #fb4934;
+  background: #32302f;
 }
 
-#tray > .needs-attention {
-    background-color: #fbf1c7;
-    color: #3c3836;
+#clock {
+  color: #ebdbb2;
+  margin-right: 6px;
 }
 
-#idle_inhibitor {
-    background-color: #282828;
-    color: #ebdbb2;
+#taskbar {
+  background: #1d2021;
+  padding: 0 0.6em;
+  margin-right: 10px;
+  margin-left: 4px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  color: #ebdbb2;
 }
 
-#idle_inhibitor.activated {
-    background-color: #fbf1c7;
-    color: #3c3836;
+#taskbar button {
+  border-radius: 6px;
+  background: #32302f;
+  color: #a89984;
+  margin-right: 6px;
 }
 
-#custom-media {
-    background-color: #66cc99;
-    color: #2a5c45;
-    min-width: 100px;
+#taskbar button.minimized {
+  border-radius: 6px;
+  background: #32302f;
+  color: #a89984;
 }
 
-#custom-media.custom-spotify {
-    background-color: #66cc99;
+#taskbar button.active {
+  border-radius: 6px;
+  background: #4e635b;
+  color: #ebdbb2;
 }
 
-#custom-media.custom-vlc {
-    background-color: #ffa000;
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 30%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-#language {
-    background: #00b093;
-    color: #740864;
-    padding: 0 5px;
-    margin: 0 5px;
-    min-width: 16px;
+@keyframes gradient_f {
+  0% {
+    background-position: 0% 200%;
+  }
+
+  50% {
+    background-position: 200% 0%;
+  }
+
+  100% {
+    background-position: 400% 200%;
+  }
 }
 
-#keyboard-state {
-    background: #97e1ad;
-    color: #000000;
-    padding: 0 0px;
-    margin: 0 5px;
-    min-width: 16px;
-}
+@keyframes gradient_f_nh {
+  0% {
+    background-position: 0% 200%;
+  }
 
-#keyboard-state > label {
-    padding: 0 5px;
-}
-
-#keyboard-state > label.locked {
-    background: rgba(0, 0, 0, 0.2);
+  100% {
+    background-position: 200% 200%;
+  }
 }

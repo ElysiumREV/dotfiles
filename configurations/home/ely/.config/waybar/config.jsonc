@@ -143,15 +143,14 @@
       "power-saver": " "
     }
   },
-  "network": {
-      // "interface": "wlp2*", // (Optional) To force the use of this interface
-      "format-wifi": "{essid} ({signalStrength}%)  ",
-      "format-ethernet": "{ipaddr}/{cidr}  ",
-      "tooltip-format": "{ifname} via {gwaddr}  ",
-      "format-linked": "{ifname} (No IP)  ",
-      "format-disconnected": "Disconnected ⚠ ",
-      "format-alt": "{ifname}: {ipaddr}/{cidr}"
-  },
+"network": {
+    "format-wifi": "{essid} ({signalStrength}%)  ",
+    "format-ethernet": "Ethernet ",
+    "tooltip-format": "{ifname} via {gwaddr} ",
+    "format-linked": "{ifname} (No IP) ",
+    "format-disconnected": "Disconnected ⚠",
+    "format-alt": "{ifname}: {ipaddr}/{cidr}"
+},
   "pulseaudio": {
       // "scroll-step": 1, // %, can be a float
       "format": "{volume}%{icon}  {format_source}",
@@ -161,13 +160,13 @@
       "format-source": "{volume}%",
       "format-source-muted": "",
       "format-icons": {
-          "headphone": "",
-          "hands-free": "",
-          "headset": "",
-          "phone": "",
-          "portable": "",
-          "car": "",
-          "default": ["", "", ""]
+          "headphone": " ",
+          "hands-free": " ",
+          "headset": " ",
+          "phone": " ",
+          "portable": " ",
+          "car": " ",
+          "default": [" ", " ", " "]
       },
       "on-click": "pavucontrol"
   },
@@ -177,8 +176,8 @@
   "menu": "on-click",
   "menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
   "menu-actions": {
-    "shutdown": "shutdown",
-    "reboot": "reboot",
+    "shutdown": "$HOME/.config/waybar/shutdown_confirmation.sh",
+    "reboot": "$HOME/.config/waybar/reboot_confirmation.sh",
     "suspend": "systemctl suspend",
     "hibernate": "systemctl hibernate"
   }

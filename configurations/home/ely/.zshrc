@@ -6,6 +6,7 @@ export ZSH="$HOME/.oh-my-zsh"
 
 export MESA_LOADER_DRIVER_OVERRIDE=radeonsi
 export TERMINAL=kitty
+export SUDO_EDITOR=/usr/bin/nvim
 
 
 # Set name of the theme to load --- if set to "random", it will

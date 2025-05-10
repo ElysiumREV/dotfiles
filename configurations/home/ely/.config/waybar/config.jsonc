@@ -20,6 +20,7 @@
       "backlight",
       "battery",
       "clock",
+      "custom/dnd",
       "tray",
       "custom/power"
   ],
@@ -171,15 +172,16 @@
       "on-click": "pavucontrol"
   },
   "custom/power": {
-      "format" : "⏻",
+  "format" : "⏻",
   "tooltip": false,
-  "menu": "on-click",
-  "menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
-  "menu-actions": {
-    "shutdown": "$HOME/.config/waybar/shutdown_confirmation.sh",
-    "reboot": "$HOME/.config/waybar/reboot_confirmation.sh",
-    "suspend": "systemctl suspend",
-    "hibernate": "systemctl hibernate"
-  }
-  }
+  "on-click": "~/.config/waybar/power_menu.sh",
+  "return-type": "json"
+  },
+  "custom/dnd": {
+    "format": "",
+    "tooltip": "Toggle Do Not Disturb",
+    "exec": "pgrep -x swaync && swaync-client -g | grep -q 'dnd\":true' && echo '' || echo ''",
+    "on-click": "swaync-client -t",
+    "interval": 5
+}
 }

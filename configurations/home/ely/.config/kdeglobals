@@ -1,0 +1,8 @@
+[KShortcutsDialog Settings]
+Dialog Size=600,480
+
+[General]
+TerminalApplication=alacritty
+
+[Icons]
+Theme=Gruvbox-Plus-Dark

@@ -1,47 +1,51 @@
 * {
-border: none;
-border-radius: 0px;
-font-family: "Vlgothic", sans-serif;
-font-size: 14px;
+    border: none;
+    border-radius: 0px;
+    font-family: "Vlgothic", sans-serif;
+    font-size: 14px;
 }
 
 window#waybar {
-  background: transparent;
-  color: #ebdbb2;
+    background: transparent;
+    color: #ebdbb2;
+}
+
+window#waybar.empty #window {
+    background: transparent;
 }
 
 tooltip {
-  background: #282828;
-  border-radius: 10px;
-  border-width: 2px;
-  border-style: solid;
-  border-color: #1d2021;
+    background: #282828;
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #1d2021;
 }
 
 #workspaces button {
-padding: 0 0.2em;
-color: #504945;
-border-radius: 6px;
-margin-right: 2px;
-margin-left: 2px;
-margin-top: 2px;
-margin-bottom: 2px;
+    padding: 0 0.2em;
+    color: #504945;
+    border-radius: 6px;
+    margin-right: 2px;
+    margin-left: 2px;
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
 
 #workspaces button.active,
 #workspaces button.focused {
-color: #ebdbb2;
-background: #4e635b;
+    color: #ebdbb2;
+    background: #4e635b;
 }
 
 #workspaces button.urgent {
-color: #1d2021;
-background: #fb4934;
+    color: #1d2021;
+    background: #fb4934;
 }
 
 #workspaces button:hover {
-background: #4e635b;
-color: #ebdbb2;
+    background: #4e635b;
+    color: #ebdbb2;
 }
 
 #custom-power,
@@ -59,58 +63,59 @@ color: #ebdbb2;
 #battery,
 #window,
 #custom-dnd {
-background: #32302f;
-padding: 0 0.5em;
-margin-right: 4px;
-margin-left: 4px;
-margin-top: 4px;
-margin-bottom: 4px;
-border-radius: 6px;
+    background: #32302f;
+    padding: 0 0.5em;
+    margin-right: 4px;
+    margin-left: 4px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    border-radius: 6px;
 }
 
 #tray {
-margin-right: 6px;
-padding: 4px;
+    margin-right: 6px;
+    padding: 4px;
 }
 
 #tray > * {
-margin: 0 8px;  /* Ajuste o espaçamento entre os ícones individuais */
+    margin: 0 8px; /* Ajuste o espaçamento entre os ícones individuais */
 }
 
 #network,
 #pulseaudio,
 #clock {
-color: #ebdbb2;
-margin-right: 6px;
+    color: #ebdbb2;
+    margin-right: 6px;
 }
 
-#custom-power, #custom-dnd{
-color: #fb4934;
+#custom-power,
+#custom-dnd {
+    color: #fb4934;
 }
 
 #taskbar {
-padding: 0 0.6em;
-margin-right: 10px;
-margin-left: 4px;
-margin-top: 4px;
-margin-bottom: 4px;
-border-radius: 6px;
-color: #ebdbb2;
+    padding: 0 0.6em;
+    margin-right: 10px;
+    margin-left: 4px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    color: #ebdbb2;
 }
 
 #taskbar button {
-border-radius: 6px;
-background: #32302f;
-color: #a89984;
-margin-right: 6px;
+    border-radius: 6px;
+    background: #32302f;
+    color: #a89984;
+    margin-right: 6px;
 }
 
 #taskbar button.minimized {
-background: #32302f;
-color: #a89984;
+    background: #32302f;
+    color: #a89984;
 }
 
 #taskbar button.active {
-background: #4e635b;
-color: #ebdbb2;
+    background: #4e635b;
+    color: #ebdbb2;
 }

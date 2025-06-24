@@ -1,11 +1,11 @@
 {
-  "spacing": 2, // Gaps between modules (4px)
+  "spacing": 2,
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["hyprland/window"],
   "modules-right": [
+    "tray",
     "cpu",
     "memory",
-    "tray",
     "pulseaudio",
     "backlight",
     "battery",
@@ -37,9 +37,13 @@
     "on-click": "activate",
   },
   "hyprland/window": {
-    "format": "{}",
-    "separate-outputs": true,
+  "format": "{}",
+  "rewrite": {
+    "^(\\s*)$": "elysium"
   },
+  "separate-outputs": true,
+  "max-length": 60
+},
   "hyprland/mode": {
     "format": "<span style=\"italic\">{}</span>",
   },
@@ -48,7 +52,8 @@
     "spacing": 8,
   },
   "clock": {
-    "format": " {:%a, %d %b %I:%M %p}",
+    "interval": 60,
+    "format": " {:%A, %d %B %H:%M}",
     "smooth-scrolling-threshold": 4,
     "tooltip": true,
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
@@ -119,8 +124,7 @@
   "custom/power": {
     "format": "⏻",
     "tooltip": false,
-    "on-click": "~/.config/waybar/power_menu.sh",
-    "return-type": "json",
+    "on-click": "wlogout",
   },
   "custom/dnd": {
     "format": "",

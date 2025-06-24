@@ -7,6 +7,8 @@ export ZSH="$HOME/.oh-my-zsh"
 export MESA_LOADER_DRIVER_OVERRIDE=radeonsi
 export TERMINAL=alacritty
 export SUDO_EDITOR=/usr/bin/nvim
+export PATH=$PATH:~/.cargo/bin
+export RADV_PERFTEST=aco
 
 
 # Set name of the theme to load --- if set to "random", it will

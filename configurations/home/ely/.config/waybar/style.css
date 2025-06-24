@@ -1,21 +1,39 @@
+@import url('../../.cache/wal/colors-waybar.css');
+
 * {
-    border: none;
-    border-radius: 0px;
-    font-family: "Vlgothic", sans-serif;
-    font-size: 14px;
+    font-family: "Mononoki";
+    font-size: 15px;
 }
 
 window#waybar {
-    background: transparent;
-    color: #ebdbb2;
+    all: unset;
 }
 
-window#waybar.empty #window {
-    background: transparent;
+.modules-left {
+    padding: 2px;
+    margin: 5px 0px 5px 10px;
+    border-radius: 10px;
+    background: alpha(@background, .6);
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, .6);
+}
+.modules-center {
+    padding: 2px;
+    margin: 5px 0px 5px 0px;
+    border-radius: 10px;
+    background: alpha(@background, .6);
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, .6);
+}
+.modules-right {
+    padding: 2px;
+    margin: 5px 10px 5px 0px;
+    border-radius: 10px;
+    background: alpha(@background, .6);
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, .6);
 }
 
 tooltip {
-    background: #282828;
+    background:@background;
+    color: @color7;
     border-radius: 10px;
     border-width: 2px;
     border-style: solid;
@@ -23,8 +41,9 @@ tooltip {
 }
 
 #workspaces button {
-    padding: 0 0.2em;
-    color: #504945;
+    padding: 0px 5px;
+    color: alpha(@color7,.4);
+    transition: all .2s ease;
     border-radius: 6px;
     margin-right: 2px;
     margin-left: 2px;
@@ -32,10 +51,10 @@ tooltip {
     margin-bottom: 2px;
 }
 
-#workspaces button.active,
-#workspaces button.focused {
-    color: #ebdbb2;
-    background: #4e635b;
+#workspaces button.active {
+    color: @color9;
+    border: none;
+    text-shadow: 0px 0px 2px rgba(0, 0, 0, .5);
 }
 
 #workspaces button.urgent {
@@ -44,8 +63,31 @@ tooltip {
 }
 
 #workspaces button:hover {
-    background: #4e635b;
-    color: #ebdbb2;
+    color: rgba(0,0,0,0);
+    border: none;
+    text-shadow: 0px 0px 1.5px rgba(0,0,0,.5);
+}
+
+#battery{
+    padding: 0px 5px;
+    transition: all .3s ease;
+    color:@color9;
+}
+#battery.charging {
+    color: #26A65B;
+}
+
+#battery.warning:not(.charging) {
+    color: #ffbe61;
+}
+
+#battery.critical:not(.charging) {
+    color: #f53c3c;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
 }
 
 #custom-power,
@@ -63,59 +105,11 @@ tooltip {
 #battery,
 #window,
 #custom-dnd {
-    background: #32302f;
-    padding: 0 0.5em;
-    margin-right: 4px;
-    margin-left: 4px;
-    margin-top: 4px;
-    margin-bottom: 4px;
-    border-radius: 6px;
+    padding: 0px 5px;
+    transition: all .3s ease; 
+    color:@color9;
 }
 
-#tray {
-    margin-right: 6px;
-    padding: 4px;
-}
-
-#tray > * {
-    margin: 0 8px; /* Ajuste o espaçamento entre os ícones individuais */
-}
-
-#network,
-#pulseaudio,
-#clock {
-    color: #ebdbb2;
-    margin-right: 6px;
-}
-
-#custom-power,
-#custom-dnd {
-    color: #fb4934;
-}
-
-#taskbar {
-    padding: 0 0.6em;
-    margin-right: 10px;
-    margin-left: 4px;
-    margin-top: 4px;
-    margin-bottom: 4px;
-    border-radius: 6px;
-    color: #ebdbb2;
-}
-
-#taskbar button {
-    border-radius: 6px;
-    background: #32302f;
-    color: #a89984;
-    margin-right: 6px;
-}
-
-#taskbar button.minimized {
-    background: #32302f;
-    color: #a89984;
-}
-
-#taskbar button.active {
-    background: #4e635b;
-    color: #ebdbb2;
+#custom-power {
+    color: @color9;
 }

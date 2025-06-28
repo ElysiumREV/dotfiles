@@ -1,11 +1,11 @@
-@import url('/home/eli/.cache/wal/colors-waybar.css');
+@import url('../../.cache/wal/colors-waybar.css');
 @define-color mauve  @color9;
 @define-color red  @color9;
 @define-color lavender  @color7;
 @define-color text  @color7;
 * {
     all:unset;
-    font-family: 'CodeNewRoman Nerd Font Mono', monospace;
+    font-family: 'Mononoki', monospace;
     font-size: 18px;
     outline: none;
     border: none;

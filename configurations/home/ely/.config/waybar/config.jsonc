@@ -11,7 +11,7 @@
     "battery",
     "clock",
     "custom/dnd",
-    "custom/power",
+    "custom/power"
   ],
   "hyprland/workspaces": {
     "format": "{icon}",
@@ -25,16 +25,16 @@
       "7": "七",
       "8": "八",
       "9": "九",
-      "10": "十",
+      "10": "十"
     },
     "persistent_workspaces": {
-      "*": 10,
+      "*": 10
     },
     "on-scroll-up": "hyprctl dispatch workspace e-1",
     "on-scroll-down": "hyprctl dispatch workspace e+1",
     "all-outputs": false,
     "active-only": false,
-    "on-click": "activate",
+    "on-click": "activate"
   },
   "hyprland/window": {
   "format": "{}",
@@ -45,41 +45,41 @@
   "max-length": 60
 },
   "hyprland/mode": {
-    "format": "<span style=\"italic\">{}</span>",
+    "format": "<span style=\"italic\">{}</span>"
   },
   "tray": {
     "icon-size": 16,
-    "spacing": 8,
+    "spacing": 8
   },
   "clock": {
     "interval": 60,
     "format": " {:%A, %d %B %H:%M}",
     "smooth-scrolling-threshold": 4,
     "tooltip": true,
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
   "cpu": {
     "format": "{usage}% ",
     "tooltip": false,
-    "interval": 5,
+    "interval": 5
   },
   "memory": {
     "format": "{}% ",
-    "interval": 5,
+    "interval": 5
   },
   "temperature": {
     "critical-threshold": 80,
     "format": "{temperatureC}°C {icon}",
-    "format-icons": ["", "", ""],
+    "format-icons": ["", "", ""]
   },
   "backlight": {
     "format": "{percent}% {icon}",
-    "format-icons": ["", "", "", "", "", "", "", "", ""],
+    "format-icons": ["", "", "", "", "", "", "", "", ""]
   },
   "battery": {
     "states": {
       "warning": 30,
-      "critical": 15,
+      "critical": 15
     },
     "format": "{capacity}% {icon}",
     "format-full": "{capacity}% {icon}",
@@ -87,10 +87,10 @@
     "format-plugged": "{capacity}%  ",
     "format-alt": "{time} {icon}",
     "format-icons": [" ", " ", " ", " ", " "],
-    "interval": 5,
+    "interval": 5
   },
   "battery#bat2": {
-    "bat": "BAT2",
+    "bat": "BAT2"
   },
   "network": {
     "format-wifi": "{essid} ({signalStrength}%)  ",
@@ -99,7 +99,7 @@
     "format-linked": "{ifname} (No IP) ",
     "format-disconnected": "Disconnected ⚠",
     "format-alt": "{ifname}: {ipaddr}/{cidr}",
-    "interval": 5,
+    "interval": 5
   },
   "pulseaudio": {
     "format": "{volume}% {icon}",
@@ -114,23 +114,23 @@
       "phone": " ",
       "portable": " ",
       "car": " ",
-      "default": [" ", " ", " "],
+      "default": [" ", " ", " "]
     },
     "on-click": "pavucontrol",
     "tooltip": "true",
     "tooltip-format": "{volume}% {icon} {format_source}",
-    "interval": 5,
+    "interval": 5
   },
   "custom/power": {
     "format": "⏻",
     "tooltip": false,
-    "on-click": "wlogout",
+    "on-click": "wlogout"
   },
   "custom/dnd": {
     "format": "",
     "tooltip": "Toggle Do Not Disturb",
     "exec": "pgrep -x swaync && swaync-client -g | grep -q 'dnd\":true' && echo '' || echo ''",
     "on-click": "swaync-client -t",
-    "interval": 5,
-  },
+    "interval": 5
+  }
 }

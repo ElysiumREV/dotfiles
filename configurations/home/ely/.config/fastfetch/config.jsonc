@@ -129,6 +129,16 @@
             "type": "custom",
             "format": "\u001b[90m└─────────────────────────────────────────────────────────┘"
         },
-        "break",
+
+//        {
+//            "type": "colors"
+//        },
+
+        {
+            "type": "colors",
+            "paddingLeft": 2,
+            "symbol": "circle"
+        }
+ 
     ]
 }

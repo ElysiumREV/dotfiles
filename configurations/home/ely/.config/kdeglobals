@@ -1,8 +1,12 @@
-[KShortcutsDialog Settings]
-Dialog Size=600,480
-
 [General]
 TerminalApplication=alacritty
 
 [Icons]
 Theme=Qogir-Dark
+
+[KShortcutsDialog Settings]
+Dialog Size=600,480
+
+[PreviewSettings]
+EnableRemoteFolderThumbnail=false
+MaximumRemoteSize=0

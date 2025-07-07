@@ -1,6 +1,7 @@
 MenuBar=Disabled
 
 [General]
+RememberOpenedTabs=false
 Version=202
 ViewPropsTimestamp=2025,4,17,14,51,18.192
 
@@ -10,6 +11,9 @@ Places Icons Static Size=22
 
 [MainWindow]
 MenuBar=Disabled
+
+[PreviewSettings]
+Plugins=jpegthumbnail,comicbookthumbnail,imagethumbnail,windowsexethumbnail,svgthumbnail,cursorthumbnail,opendocumentthumbnail,exrthumbnail,ebookthumbnail,kraorathumbnail,directorythumbnail,appimagethumbnail,windowsimagethumbnail,audiothumbnail,djvuthumbnail,ffmpegthumbnailer,gdk-pixbuf-thumbnailer
 
 [UiSettings]
 ColorScheme=Theme Name

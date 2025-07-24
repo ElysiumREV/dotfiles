@@ -1,31 +1,27 @@
 {
   "spacing": 2,
-  "modules-left": ["hyprland/workspaces"],
-  "modules-center": ["hyprland/window"],
+  "modules-left": ["custom/notification", "cpu", "temperature", "memory"],
+  "modules-center": ["hyprland/workspaces"],
   "modules-right": [
     "tray",
-    "cpu",
-    "memory",
     "pulseaudio",
     "backlight",
     "battery",
-    "clock",
-    "custom/dnd",
-    "custom/power"
+    "clock"
   ],
   "hyprland/workspaces": {
     "format": "{icon}",
     "format-icons": {
-      "1": "一",
-      "2": "二",
-      "3": "三",
-      "4": "四",
-      "5": "五",
-      "6": "六",
-      "7": "七",
-      "8": "八",
-      "9": "九",
-      "10": "十"
+      "1": "I",
+      "2": "II",
+      "3": "III",
+      "4": "IV",
+      "5": "V",
+      "6": "VI",
+      "7": "VII",
+      "8": "VIII",
+      "9": "IX",
+      "10": "X"
     },
     "persistent_workspaces": {
       "*": 10
@@ -35,17 +31,6 @@
     "all-outputs": false,
     "active-only": false,
     "on-click": "activate"
-  },
-  "hyprland/window": {
-  "format": "{}",
-  "rewrite": {
-    "^(\\s*)$": "elysium"
-  },
-  "separate-outputs": true,
-  "max-length": 60
-},
-  "hyprland/mode": {
-    "format": "<span style=\"italic\">{}</span>"
   },
   "tray": {
     "icon-size": 16,
@@ -59,18 +44,19 @@
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
   "cpu": {
-    "format": "{usage}% ",
+    "format": " {usage}%",
     "tooltip": false,
     "interval": 5
   },
   "memory": {
-    "format": "{}% ",
+    "format": " {}%",
     "interval": 5
   },
   "temperature": {
     "critical-threshold": 80,
-    "format": "{temperatureC}°C {icon}",
-    "format-icons": ["", "", ""]
+    "format": "{icon}{temperatureC}°C",
+    "format-icons": ["", "", ""],
+    "hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input"
   },
   "backlight": {
     "format": "{percent}% {icon}",
@@ -121,16 +107,10 @@
     "tooltip-format": "{volume}% {icon} {format_source}",
     "interval": 5
   },
-  "custom/power": {
-    "format": "⏻",
+  "custom/notification": {
     "tooltip": false,
-    "on-click": "wlogout"
-  },
-  "custom/dnd": {
-    "format": "",
-    "tooltip": "Toggle Do Not Disturb",
-    "exec": "pgrep -x swaync && swaync-client -g | grep -q 'dnd\":true' && echo '' || echo ''",
-    "on-click": "swaync-client -t",
-    "interval": 5
-  }
+    "format": " ",
+    "on-click": "swaync-client -t -sw",
+     "escape": true
+    },
 }

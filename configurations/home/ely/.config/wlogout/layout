@@ -1,21 +1,23 @@
 {
     "label" : "lock",
     "action" : "hyprlock",
-    "keybind" : "l"
-}
-{
-    "label" : "reboot",
-    "action" : "systemctl reboot || loginctl reboot",
-    "keybind" : "r"
+    "text" : "Lock"
 }
 
 {
     "label" : "logout",
-    "action" : "pkill Hyprland || pkill sway || pkill niri || loginctl terminate-user $USER",
-    "keybind" : "e"
+    "action" : "hyprctl dispatch exit",
+    "text" : "Logout"
 }
+
 {
     "label" : "shutdown",
-    "action" : "systemctl poweroff || loginctl poweroff",
-    "keybind" : "s"
+    "action" : "systemctl poweroff",
+    "text" : "Shutdown"
+}
+
+{
+    "label" : "reboot",
+    "action" : "systemctl reboot",
+    "text" : "Reboot"
 }

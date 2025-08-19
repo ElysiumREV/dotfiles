@@ -1,5 +1,5 @@
 [general]
-import = ["~/.cache/wal/colors-alacritty.toml"]
+import = ["~/.config/alacritty/alacritty-colors.toml"]
 
 [window]
 padding = { x = 2, y = 2 }

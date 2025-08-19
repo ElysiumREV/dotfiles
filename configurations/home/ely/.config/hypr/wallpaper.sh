@@ -10,22 +10,26 @@ main() {
   choice=$(menu | wofi -c ~/.config/wofi/wallpaper -s ~/.config/wofi/style-wallpaper.css --show dmenu --prompt "Select Wallpaper:" -n)
   selected_wallpaper=$(echo "$choice" | sed 's/^img://')
 
+  # Set wallpaper
   swww img "$selected_wallpaper" --transition-type any --transition-fps 60 --transition-duration .5
 
-  wal -i "$selected_wallpaper" -n --cols16
+  # Generate colors with matugen (outputs go to paths defined in ~/.config/matugen/templates/)
+  matugen image --mode dark "$selected_wallpaper"
 
+  # Reload swaync with new CSS
   swaync-client --reload-css
 
-  COLOR_JSON="$HOME/.cache/wal/colors.sh"
-  color1=$(jq -r '.colors.color2' "$COLOR_JSON")
-  color2=$(jq -r '.colors.color3' "$COLOR_JSON")
+  # If you added a JSON template, extract colors for cava
+  COLOR_JSON="$HOME/.cache/matugen/colors.json"
+  if [ -f "$COLOR_JSON" ]; then
+    color1=$(jq -r '.primary' "$COLOR_JSON")
+    color2=$(jq -r '.secondary' "$COLOR_JSON")
 
-  cava_config="$HOME/.config/cava/config"
-  sed -i "s/^gradient_color_1 = .*/gradient_color_1 = '$color1'/" $cava_config
-  sed -i "s/^gradient_color_2 = .*/gradient_color_2 = '$color2'/" $cava_config
-  pkill -USR2 cava 2>/dev/null
-
-  source ~/.cache/wal/colors.sh # && cp -r $wallpaper ~/Pictures/Wallpapers/pywallpaper.jpg
+    cava_config="$HOME/.config/cava/config"
+    sed -i "s/^gradient_color_1 = .*/gradient_color_1 = '$color1'/" $cava_config
+    sed -i "s/^gradient_color_2 = .*/gradient_color_2 = '$color2'/" $cava_config
+    pkill -USR2 cava 2>/dev/null
+  fi
 }
 
 main

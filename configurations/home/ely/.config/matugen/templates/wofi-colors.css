@@ -1,0 +1,11 @@
+/*
+* Wofi CSS Colors
+* Generated with Matugen
+*/
+
+@define-color background {{colors.surface.default.hex}};
+@define-color text {{colors.on_surface.default.hex}};
+@define-color mauve {{colors.primary.default.hex}};
+@define-color red {{colors.error.default.hex}};
+@define-color lavender {{colors.secondary.default.hex}};
+

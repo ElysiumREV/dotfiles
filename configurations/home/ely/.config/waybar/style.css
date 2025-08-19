@@ -1,4 +1,4 @@
-@import url('../../.cache/wal/colors-waybar.css');
+@import "colors.css";
 
 /* === Base === */
 * {
@@ -8,10 +8,11 @@
     border-radius: 0;
     min-height: 0;
     font-style: normal;
+    background-color: @primary_container;
 }
 
 window#waybar {
-    background: alpha(@background, 0.5);
+    background: alpha(@surface, 0.5);
 }
 
 /* === Modules container === */
@@ -27,22 +28,22 @@ window#waybar {
 
 /* === Window title === */
 #window {
-    background: @background;
+    background: @surface;
     padding: 0 15px;
     border-radius: 16px;
     margin: 5px 0;
     font-weight: normal;
     font-style: normal;
-    color: @color9;
+    color: @primary;
     transition: all 0.3s ease;
 }
 
 /* === Tooltips === */
 tooltip {
     border-radius: 10px;
-    border: 2px solid #1d2021;
-    background: @background;
-    color: @color7;
+    border: 2px solid @outline_variant;
+    background: @surface_container_high;
+    color: @on_surface_variant;
 }
 
 /* === Workspaces === */
@@ -55,18 +56,18 @@ tooltip {
     padding: 0 5px;
     margin: 2px;
     border-radius: 6px;
-    color: alpha(@color7, 0.4);
+    color: alpha(@on_surface_variant, 0.4);
     transition: all 0.2s ease;
 }
 
 #workspaces button.active {
-    color: @color9;
+    color: @primary;
     text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 #workspaces button.urgent {
-    color: #1d2021;
-    background: #fb4934;
+    color: @on_error;
+    background: @error;
 }
 
 #workspaces button:hover {
@@ -91,7 +92,7 @@ tooltip {
 #custom-notification {
     padding: 0 5px;
     transition: all 0.3s ease;
-    color: @color9;
+    color: @primary;
 }
 
 /* === Battery states === */

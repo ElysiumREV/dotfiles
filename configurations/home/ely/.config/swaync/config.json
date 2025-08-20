@@ -11,8 +11,8 @@
     "control-center-margin-bottom": 8,
     "control-center-margin-right": 0,
     "control-center-margin-left": 8,
-    "notification-2fa-action": true,
-    "notification-inline-replies": true,
+    "notification-2fa-action": false,
+    "notification-inline-replies": false,
     "notification-window-width": 350,
     "notification-icon-size": 60,
     "notification-body-image-height": 180,
@@ -69,7 +69,7 @@
                 },
                 {
                     "label": "",
-                    "command": "alacritty nmtui"
+                    "command": "alacritty -e nmtui"
                 },
                 {
                     "label": "",
@@ -82,31 +82,11 @@
                 },
                 {
                     "label": "󰀟",
-                    "command": "gnome-network-displays"
-                },
-                {
-                    "label": "󰈙",
-                    "command": "alacritty bash -i -c 'Docs'"
-                },
-                {
-                    "label": "",
-                    "command": "alacritty bash -i -c 'Settings'"
-                },
-                {
-                    "label": "",
-                    "command": "alacritty bash -i -c 'tasks'"
+                    "command": "alacritty -e nm-connection-editor"
                 },
                 {
                     "label": "",
                     "command": "hyprlock"
-                },
-                {
-                    "label": "",
-                    "command": "reboot"
-                },
-                {
-                    "label": "",
-                    "command": "shutdown now"
                 }
             ]
         }

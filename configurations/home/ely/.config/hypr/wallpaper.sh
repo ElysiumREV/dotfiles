@@ -10,16 +10,14 @@ main() {
   choice=$(menu | wofi -c ~/.config/wofi/wallpaper -s ~/.config/wofi/style-wallpaper.css --show dmenu --prompt "Select Wallpaper:" -n)
   selected_wallpaper=$(echo "$choice" | sed 's/^img://')
 
-  # Set wallpaper
+  cp -f "$selected_wallpaper" "$HOME/Pictures/.current-wallpaper.jpg"
+
   swww img "$selected_wallpaper" --transition-type any --transition-fps 60 --transition-duration .5
 
-  # Generate colors with matugen (outputs go to paths defined in ~/.config/matugen/templates/)
   matugen image --mode dark "$selected_wallpaper"
 
-  # Reload swaync with new CSS
   swaync-client --reload-css
 
-  # If you added a JSON template, extract colors for cava
   COLOR_JSON="$HOME/.cache/matugen/colors.json"
   if [ -f "$COLOR_JSON" ]; then
     color1=$(jq -r '.primary' "$COLOR_JSON")

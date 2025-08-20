@@ -1,6 +1,5 @@
 @import "colors.css";
 
-/* === Base === */
 * {
     font-family: "Mononoki";
     font-size: 16px;
@@ -8,74 +7,72 @@
     border-radius: 0;
     min-height: 0;
     font-style: normal;
-    background-color: @primary_container;
+    background: transparent;
+    color: @on_surface;
 }
 
 window#waybar {
-    background: alpha(@surface, 0.5);
+    background: alpha(@surface, 0.6);
+    border-radius: 12px;
+    padding: 4px;
 }
 
-/* === Modules container === */
 .modules-center,
 .modules-left,
 .modules-right {
-    padding: 2px;
-    margin: 5px;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+    padding: 4px 8px;
+    margin: 4px;
+    border-radius: 12px;
+    background: alpha(@surface_container, 0.7);
+    border: 1px solid alpha(@outline_variant, 0.5);
 }
 
-/* === Window title === */
 #window {
-    background: @surface;
-    padding: 0 15px;
-    border-radius: 16px;
-    margin: 5px 0;
+    background: alpha(@surface_container_high, 0.7);
+    padding: 0 12px;
+    border-radius: 12px;
+    margin: 4px 0;
     font-weight: normal;
-    font-style: normal;
     color: @primary;
-    transition: all 0.3s ease;
 }
 
-/* === Tooltips === */
 tooltip {
     border-radius: 10px;
-    border: 2px solid @outline_variant;
-    background: @surface_container_high;
+    border: 1px solid @outline_variant;
+    background: alpha(@surface_container_high, 0.9);
     color: @on_surface_variant;
 }
 
 /* === Workspaces === */
 #workspaces {
     padding: 0 5px;
-    transition: all 0.3s ease;
 }
 
 #workspaces button {
-    padding: 0 5px;
+    padding: 2px 8px;
     margin: 2px;
-    border-radius: 6px;
-    color: alpha(@on_surface_variant, 0.4);
+    border-radius: 8px;
+    color: alpha(@on_surface_variant, 0.6);
+    background: alpha(@surface_container, 0.6);
     transition: all 0.2s ease;
 }
 
 #workspaces button.active {
-    color: @primary;
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+    background: alpha(@primary_container, 0.9);
+    color: @on_primary_container;
+    font-weight: bold;
 }
 
 #workspaces button.urgent {
-    color: @on_error;
-    background: @error;
+    background: @error_container;
+    color: @on_error_container;
 }
 
 #workspaces button:hover {
-    color: rgba(0, 0, 0, 0);
-    text-shadow: 0 0 1.5px rgba(0, 0, 0, 0.5);
+    background: alpha(@primary, 0.2);
+    color: @primary;
 }
 
-/* === Shared module styles === */
 #custom-power,
 #date,
 #backlight,
@@ -90,12 +87,10 @@ tooltip {
 #tray,
 #battery,
 #custom-notification {
-    padding: 0 5px;
-    transition: all 0.3s ease;
+    padding: 0 6px;
     color: @primary;
 }
 
-/* === Battery states === */
 #battery.charging {
     color: #26A65B;
 }

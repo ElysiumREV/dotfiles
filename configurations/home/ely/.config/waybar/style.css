@@ -1,7 +1,7 @@
 @import "colors.css";
 
 * {
-    font-family: "Mononoki";
+    font-family: "Mononoki Nerd Font";    
     font-size: 16px;
     border: none;
     border-radius: 0;
@@ -43,7 +43,6 @@ tooltip {
     color: @on_surface_variant;
 }
 
-/* === Workspaces === */
 #workspaces {
     padding: 0 5px;
 }

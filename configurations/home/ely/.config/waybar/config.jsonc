@@ -67,9 +67,9 @@
       "warning": 30,
       "critical": 15
     },
-    "format": "{capacity}% {icon}",
+    "rmat": "{capacity}% {icon}",
     "format-full": "{capacity}% {icon}",
-    "format-charging": "{capacity}%  ",
+    "format-charging": "{capacity}% 󰂄 ",
     "format-plugged": "{capacity}%  ",
     "format-alt": "{time} {icon}",
     "format-icons": [" ", " ", " ", " ", " "],
@@ -90,13 +90,10 @@
   "pulseaudio": {
     "format": "{volume}% {icon}",
     "format-bluetooth": "{volume}%{icon} {format_source}",
-    "format-bluetooth-muted": " {icon} {format_source}",
-    "format-muted": " {format_source}",
+    "format-bluetooth-muted": " {icon} {format_source}",
+    "format-muted": " {format_source}",
     "format-source": " {volume}% ",
     "format-icons": {
-      "headphone": " ",
-      "hands-free": " ",
-      "headset": " ",
       "phone": " ",
       "portable": " ",
       "car": " ",
@@ -111,14 +108,14 @@
     "tooltip": false,
     "format": "{icon}",
     "format-icons": {
-      "notification": "<span foreground='red'><sup></sup></span>",
-      "none": "",
-      "dnd-notification": "<span foreground='red'><sup></sup></span>",
-      "dnd-none": "",
-      "inhibited-notification": "<span foreground='red'><sup></sup></span>",
-      "inhibited-none": "",
-      "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
-      "dnd-inhibited-none": ""
+      "notification": " <span foreground='red'><sup> </sup></span>",
+      "none": " ",
+      "dnd-notification": " <span foreground='red'><sup> </sup></span>",
+      "dnd-none": " ",
+      "inhibited-notification": " <span foreground='red'><sup> </sup></span>",
+      "inhibited-none": " ",
+      "dnd-inhibited-notification": "< span foreground='red'><sup> </sup></span>",
+      "dnd-inhibited-none": " "
     },
     "return-type": "json",
     "exec-if": "which swaync-client",
@@ -126,5 +123,5 @@
     "on-click": "swaync-client -t -sw",
     "on-click-right": "swaync-client -d -sw",
     "escape": true
-  },
+  }
 }

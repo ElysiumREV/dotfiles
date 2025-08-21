@@ -1,6 +1,6 @@
 [config.wallpaper]
 command = "swww"
-arguments = ["img", "--transition-type", "center"]
+arguments = ["img", "--transition-type", "any", "--transition-fps", "60", "--transition-duration", "0.5"]
 set = true
 
 [templates.alacritty]
@@ -21,7 +21,6 @@ post_hook = 'pkill -SIGUSR2 waybar'
 input_path = './templates/hyprlock-colors.css'
 output_path = '~/.config/hypr/hyprlock-colors.conf'
 
-
 [templates.wofi]
 input_path = './templates/wofi-colors.css'
 output_path = '~/.config/wofi/colors.css'
@@ -30,6 +29,10 @@ output_path = '~/.config/wofi/colors.css'
 input_path = './templates/swaync-colors.css'
 output_path = '~/.config/swaync/colors.css'
 
-[templates.rofi]
-input_path = './templates/rofi-colors.rasi'
-output_path = '~/.config/rofi/colors.rasi'
+[templates.gtk3]
+input_path = './templates/gtk-colors.css'
+output_path = '~/.config/gtk-3.0/colors.css'
+
+[templates.gtk4]
+input_path = './templates/gtk-colors.css'
+output_path = '~/.config/gtk-4.0/colors.css'

@@ -12,7 +12,7 @@ main() {
 
   cp -f "$selected_wallpaper" "$HOME/Pictures/.current-wallpaper.jpg"
 
-  swww img "$selected_wallpaper" --transition-type any --transition-fps 60 --transition-duration .5
+  # swww img "$selected_wallpaper" --transition-type any --transition-fps 60 --transition-duration .5
 
   matugen image --mode dark "$selected_wallpaper"
 

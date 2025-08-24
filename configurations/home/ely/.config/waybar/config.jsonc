@@ -23,9 +23,6 @@
       "9": "IX",
       "10": "X"
     },
-    "persistent_workspaces": {
-      "*": 10
-    },
     "on-scroll-up": "hyprctl dispatch workspace e-1",
     "on-scroll-down": "hyprctl dispatch workspace e+1",
     "all-outputs": false,
@@ -34,7 +31,7 @@
   },
   "tray": {
     "icon-size": 16,
-    "spacing": 8
+    "spacing": 6
   },
   "clock": {
     "interval": 60,
@@ -45,7 +42,7 @@
   },
   "cpu": {
     "format": " {usage}%",
-    "tooltip": false,
+    "tooltip": true,
     "interval": 5
   },
   "memory": {
@@ -60,7 +57,7 @@
   },
   "backlight": {
     "format": "{percent}% {icon}",
-    "format-icons": ["", "", "", "", "", "", "", "", ""]
+    "format-icons": [" ", " ", " ", " ", " ", " ", " ", " ", " "]
   },
   "battery": {
     "states": {
@@ -77,15 +74,6 @@
   },
   "battery#bat2": {
     "bat": "BAT2"
-  },
-  "network": {
-    "format-wifi": "{essid} ({signalStrength}%)  ",
-    "format-ethernet": "Ethernet ",
-    "tooltip-format": "{ifname} via {gwaddr} ",
-    "format-linked": "{ifname} (No IP) ",
-    "format-disconnected": "Disconnected ⚠",
-    "format-alt": "{ifname}: {ipaddr}/{cidr}",
-    "interval": 5
   },
   "pulseaudio": {
     "format": "{volume}% {icon}",

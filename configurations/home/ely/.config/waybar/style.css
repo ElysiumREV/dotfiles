@@ -7,7 +7,6 @@
     border-radius: 0;
     min-height: 0;
     font-style: normal;
-    background: transparent;
     color: @on_surface;
 }
 
@@ -76,7 +75,6 @@ tooltip {
 #date,
 #backlight,
 #pulseaudio,
-#network,
 #workspaces,
 #cpu,
 #memory,

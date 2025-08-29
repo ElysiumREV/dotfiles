@@ -1,11 +1,28 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = 'master',
+    branch = "master",
     lazy = false,
     build = ":TSUpdate",
     opts = {
-      ensure_installed = { "bash", "c", "css", "cpp", "go", "html", "java", "javascript", "json", "lua", "markdown", "markdown_inline", "python", "rust", "tsx", "typescript" },
+      ensure_installed = {
+        "bash",
+        "c",
+        "css",
+        "cpp",
+        "go",
+        "html",
+        "java",
+        "javascript",
+        "json",
+        "lua",
+        "markdown",
+        "markdown_inline",
+        "python",
+        "rust",
+        "tsx",
+        "typescript",
+      },
       highlight = {
         enable = true,
         -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
@@ -15,6 +32,7 @@ return {
         additional_vim_regex_highlighting = false,
       },
       indent = { enabled = true },
+      auto_install = true,
       incremental_selection = {
         enable = true,
         keymaps = {
@@ -24,6 +42,6 @@ return {
           node_decremental = "grm",
         },
       },
-    }
-  }
+    },
+  },
 }

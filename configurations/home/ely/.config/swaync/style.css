@@ -12,9 +12,9 @@
 
 /* ============= NOTIFICATIONS ============= */
 .notification {
-  background: alpha(@primary, 0.30);  /* brighter by default */
-  backdrop-filter: blur(30px);
-  border: 1px solid alpha(@primary, 0.45);
+  background: alpha(@primary, 0.70);  /* more solid, easier to read */
+  backdrop-filter: blur(15px);        /* softer blur, not overwhelming */
+  border: 1px solid alpha(@primary, 0.55);
   border-radius: 18px;
   color: @on_surface;
   padding: 12px;
@@ -23,13 +23,13 @@
 }
 
 .notification:hover {
-  background: alpha(@surface, 0.25);  /* darker on hover */
-  border-color: alpha(@primary, 0.25);
-  backdrop-filter: blur(25px);        /* slightly less blur for a "pressed" look */
-  transform: scale(0.99);             /* shrink instead of pop */
+  background: alpha(@surface, 0.55);  /* still visible but a bit darker */
+  border-color: alpha(@primary, 0.35);
+  backdrop-filter: blur(12px);        /* slightly less blur */
+  transform: scale(0.99);
 }
 
-/* Keep text vivid on hover */
+/* Stronger text contrast */
 .notification .summary,
 .notification .body {
   color: @on_surface;
@@ -38,7 +38,7 @@
 
 .notification:hover .summary,
 .notification:hover .body {
-  color: alpha(@on_surface, 0.85); /* a little dimmer when hovered */
+  color: alpha(@on_surface, 0.95); /* nearly full contrast */
 }
 /* ============= CONTROL CENTER ============= */
 .control-center {

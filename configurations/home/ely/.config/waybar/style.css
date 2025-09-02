@@ -4,16 +4,12 @@
     font-family: "Mononoki Nerd Font";    
     font-size: 16px;
     border: none;
-    border-radius: 0;
-    min-height: 0;
     font-style: normal;
     color: @on_surface;
 }
 
 window#waybar {
     background: alpha(@surface, 0.6);
-    border-radius: 12px;
-    padding: 4px;
 }
 
 .modules-center,
@@ -28,9 +24,8 @@ window#waybar {
 
 #window {
     background: alpha(@surface_container_high, 0.7);
-    padding: 0 12px;
     border-radius: 12px;
-    margin: 4px 0;
+    margin: 40px;
     font-weight: normal;
     color: @primary;
 }
@@ -87,6 +82,25 @@ tooltip {
     padding: 0 6px;
     color: @primary;
 }
+
+#tray menu {
+  background: alpha(@surface_container_high, 0.95); /* neutral readable bg */
+  color: @on_surface; /* text uses theme foreground */
+  border-radius: 8px;
+  border: 1px solid alpha(@outline_variant, 0.4);
+}
+
+/* individual items */
+#tray menuitem {
+  padding: 4px 8px;
+  color: @on_surface;
+}
+
+#tray menuitem:hover {
+  background: alpha(@primary, 0.25); /* subtle highlight with accent */
+  color: @primary; /* makes hover text stand out */
+}
+
 
 #battery.charging {
     color: #26A65B;

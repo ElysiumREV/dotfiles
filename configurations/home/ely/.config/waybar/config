@@ -76,19 +76,18 @@
     "bat": "BAT2"
   },
   "pulseaudio": {
-    "format": "{volume}% {icon}",
-    "format-bluetooth": "{volume}%{icon} {format_source}",
-    "format-bluetooth-muted": " {icon} {format_source}",
-    "format-muted": " {format_source}",
-    "format-source": " {volume}% ",
-    "format-icons": {
-      "default": [" ", " ", " "]
-    },
-    "on-click": "pavucontrol",
-    "tooltip": "true",
-    "tooltip-format": "{volume}% {icon} {format_source}",
-    "interval": 5
+  "format": "{volume}% {icon}",
+  "format-bluetooth": "{volume}%{icon}",
+  "format-bluetooth-muted": " {icon}",
+  "format-muted": " ",
+  "format-icons": {
+    "default": [" ", " ", " "]
   },
+  "on-click": "pavucontrol",
+  "tooltip": true,
+  "tooltip-format": "{volume}% {icon} {format_source} ",  
+  "interval": 5
+},
   "custom/notification": {
     "tooltip": false,
     "format": "{icon}",

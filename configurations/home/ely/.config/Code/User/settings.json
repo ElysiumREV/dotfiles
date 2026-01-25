@@ -1,0 +1,54 @@
+{
+  "git.confirmSync": false,
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.startupEditor": "none",
+    "security.workspace.trust.untrustedFiles": "open",
+    "editor.tabSize": 2,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "code-runner.runInTerminal": true,
+    "editor.accessibilitySupport": "off",
+    "tabnine.experimentalAutoImports": true,
+    "editor.detectIndentation": false,
+    "git.ignoreMissingGitWarning": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.blackArgs": [
+        "-l 79"
+    ],
+    "python.formatting.provider": "black",
+    "[csharp]": {
+      "editor.defaultFormatter": "ms-dotnettools.csharp"
+  },
+    "omnisharp.enableMsBuildLoadProjectsOnDemand": true,
+    "omnisharp.enableRoslynAnalyzers": true,
+    "debug.console.fontFamily": "JetBrainsMono",
+    "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
+    "editor.fontLigatures": false,
+    "makefile.configureOnOpen": true,
+    "redhat.telemetry.enabled": false,
+    "database-client.autoSync": true,
+    "cmake.showOptionsMovedNotification": false,
+    "editor.fontFamily": "JetBrainsMono Nerd Font",
+    "dart.debugExternalPackageLibraries": false,
+    "dart.debugSdkLibraries": false,
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "qt-qml.qmlls.useQmlImportPathEnvVar": true,
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "python.analysis.typeCheckingMode": "basic",
+    "workbench.editor.empty.hint": "hidden",
+    "chat.agent.enabled": false,
+    "chat.disableAIFeatures": true,
+    "qt-core.additionalQtPaths": [
+      {
+        "name": "Qt-5.15.18-linux-g++_from_PATH",
+        "path": "/usr/bin/qmake"
+      },
+      {
+        "name": "Qt-5.15.18-linux-g++_from_PATH",
+        "path": "/usr/bin/qtpaths"
+      }
+    ],
+    "svelte.enable-ts-plugin": true
+}

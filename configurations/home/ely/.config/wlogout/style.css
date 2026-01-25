@@ -1,0 +1,51 @@
+* {
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 14px;
+}
+
+window {
+  background-color: rgba(51, 49, 45, 0.7); /* semi-transparent window */
+  border-radius: 8px;
+  border: 2px solid rgba(255, 217, 61, 0.2); /* subtle yellow edge */
+}
+
+button {
+  color: #F8F8F8;
+  background-color: #5DD62C;
+  border-style: solid;
+  border-width: 3px;
+  border-color: #0f0f0f;
+  border-radius: 6px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 15%;
+  margin: 15px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+button:hover,
+button:active {
+  background-color: #337418;
+  color: #F8F8F8;
+}
+
+button:focus {
+  background-color: #337418;
+  color: #F8F8F8;
+}
+
+#lock {
+  background-image: url("./icons/lock.png");
+}
+
+#shutdown {
+  background-image: url("./icons/power.png");
+}
+
+#logout {
+  background-image: url("./icons/logout.png");
+}
+
+#reboot {
+  background-image: url("./icons/restart.png");
+}

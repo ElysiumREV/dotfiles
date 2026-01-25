@@ -1,0 +1,1412 @@
+info_begin
+format: 2
+mpd_version: 0.24.6
+fs_charset: UTF-8
+tag: Artist
+tag: ArtistSort
+tag: Album
+tag: AlbumSort
+tag: AlbumArtist
+tag: AlbumArtistSort
+tag: Title
+tag: TitleSort
+tag: Track
+tag: Name
+tag: Genre
+tag: Mood
+tag: Date
+tag: OriginalDate
+tag: Composer
+tag: ComposerSort
+tag: Performer
+tag: Conductor
+tag: Work
+tag: Movement
+tag: MovementNumber
+tag: ShowMovement
+tag: Ensemble
+tag: Location
+tag: Grouping
+tag: Disc
+tag: Label
+tag: MUSICBRAINZ_ARTISTID
+tag: MUSICBRAINZ_ALBUMID
+tag: MUSICBRAINZ_ALBUMARTISTID
+tag: MUSICBRAINZ_TRACKID
+tag: MUSICBRAINZ_RELEASETRACKID
+tag: MUSICBRAINZ_WORKID
+tag: MUSICBRAINZ_RELEASEGROUPID
+info_end
+directory: Album - Around the Fur
+mtime: 1767301809
+begin: Album - Around the Fur
+song_begin: 01 - My Own Summer (Shove It).mp3
+Time: 214.76
+Artist: Deftones
+Title: My Own Summer (Shove It)
+Album: Around the Fur
+Date: 2015
+Format: 48000:16:2
+mtime: 1757257752
+added: 1767305506
+song_end
+song_begin: 02 - Lhabia.mp3
+Time: 251.173
+Artist: Deftones
+Title: Lhabia
+Album: Around the Fur
+Date: 2014
+Format: 48000:16:2
+mtime: 1757257774
+added: 1767305506
+song_end
+song_begin: 03 - Mascara.mp3
+Time: 225.293
+Artist: Deftones
+Title: Mascara
+Album: Around the Fur
+Date: 2014
+Format: 48000:16:2
+mtime: 1757257786
+added: 1767305506
+song_end
+song_begin: 04 - Around the Fur.mp3
+Time: 211.733
+Artist: Deftones
+Title: Around the Fur
+Album: Around the Fur
+Date: 2014
+Format: 48000:16:2
+mtime: 1757257796
+added: 1767305506
+song_end
+song_begin: 05 - Rickets.mp3
+Time: 162.866
+Artist: Deftones
+Title: Rickets
+Album: Around the Fur
+Date: 2014
+Format: 48000:16:2
+mtime: 1757257809
+added: 1767305506
+song_end
+song_begin: 06 - Be Quiet and Drive (Far Away).mp3
+Time: 299.866
+Artist: Deftones
+Title: Be Quiet and Drive (Far Away)
+Album: Around the Fur
+Date: 2014
+Format: 48000:16:2
+mtime: 1757257820
+added: 1767305506
+song_end
+song_begin: 07 - Lotion.mp3
+Time: 237.733
+Artist: Deftones
+Title: Lotion
+Album: Around the Fur
+Date: 2014
+Format: 48000:16:2
+mtime: 1757257831
+added: 1767305506
+song_end
+song_begin: 08 - Dai the Flu.mp3
+Time: 276.573
+Artist: Deftones
+Title: Dai the Flu
+Album: Around the Fur
+Date: 2014
+Format: 48000:16:2
+mtime: 1757257842
+added: 1767305506
+song_end
+song_begin: 09 - Headup.mp3
+Time: 372.973
+Artist: Deftones
+Title: Headup
+Album: Around the Fur
+Date: 2014
+Format: 48000:16:2
+mtime: 1757257855
+added: 1767305506
+song_end
+song_begin: 10 - MX.mp3
+Time: 2238.733
+Artist: Deftones
+Title: MX
+Album: Around the Fur
+Date: 2014
+Format: 48000:16:2
+mtime: 1757257869
+added: 1767305506
+song_end
+end: Album - Around the Fur
+directory: Album - D＞E＞A＞T＞H＞M＞E＞T＞A＞L
+mtime: 1767301717
+begin: Album - D＞E＞A＞T＞H＞M＞E＞T＞A＞L
+song_begin: 01 - DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL.mp3
+Time: 261.849
+Artist: Panchiko
+Title: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Album: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Date: 2022
+Format: 48000:16:2
+mtime: 1757258139
+added: 1767305506
+song_end
+song_begin: 02 - Stabilisers For Big Boys.mp3
+Time: 252.4
+Artist: Panchiko
+Title: Stabilisers For Big Boys
+Album: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Date: 2022
+Format: 48000:16:2
+mtime: 1757258151
+added: 1767305506
+song_end
+song_begin: 03 - Laputa.mp3
+Time: 163.544
+Artist: Panchiko
+Title: Laputa
+Album: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Date: 2022
+Format: 48000:16:2
+mtime: 1757258163
+added: 1767305506
+song_end
+song_begin: 04 - The Eyes of Ibad.mp3
+Time: 417.572
+Artist: Panchiko
+Title: The Eyes of Ibad
+Album: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Date: 2022
+Format: 48000:16:2
+mtime: 1757258172
+added: 1767305506
+song_end
+song_begin: 05 - CUT.mp3
+Time: 293.038
+Artist: Panchiko
+Title: CUT
+Album: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Date: 2022
+Format: 48000:16:2
+mtime: 1757258185
+added: 1767305506
+song_end
+song_begin: 06 - Sodium Chloride.mp3
+Time: 163.749
+Artist: Panchiko
+Title: Sodium Chloride
+Album: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Date: 2022
+Format: 48000:16:2
+mtime: 1757258197
+added: 1767305506
+song_end
+song_begin: 07 - Kicking Cars.mp3
+Time: 251.27100000000002
+Artist: Panchiko
+Title: Kicking Cars
+Album: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Date: 2022
+Format: 48000:16:2
+mtime: 1757258207
+added: 1767305506
+song_end
+song_begin: 08 - DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL_RᐳOᐳT.mp3
+Time: 260.809
+Artist: Panchiko
+Title: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL_RᐳOᐳT
+Album: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Date: 2022
+Format: 48000:16:2
+mtime: 1757258219
+added: 1767305506
+song_end
+song_begin: 09 - Stabilisers For Big Boys_RᐳOᐳT.mp3
+Time: 251.13
+Artist: Panchiko
+Title: Stabilisers For Big Boys_RᐳOᐳT
+Album: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Date: 2022
+Format: 48000:16:2
+mtime: 1757258231
+added: 1767305506
+song_end
+song_begin: 10 - Laputa_RᐳOᐳT.mp3
+Time: 164.761
+Artist: Panchiko
+Title: Laputa_RᐳOᐳT
+Album: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Date: 2022
+Format: 48000:16:2
+mtime: 1757258243
+added: 1767305506
+song_end
+song_begin: 11 - The Eyes of Ibad_RᐳOᐳT.mp3
+Time: 421.463
+Artist: Panchiko
+Title: The Eyes of Ibad_RᐳOᐳT
+Album: DᐳEᐳAᐳTᐳHᐳMᐳEᐳTᐳAᐳL
+Date: 2022
+Format: 48000:16:2
+mtime: 1757258253
+added: 1767305506
+song_end
+end: Album - D＞E＞A＞T＞H＞M＞E＞T＞A＞L
+directory: Album - In Rainbows
+mtime: 1767301790
+begin: Album - In Rainbows
+song_begin: 01 - 15 Step.mp3
+Time: 237.293
+Artist: Radiohead
+Title: 15 Step
+Album: In Rainbows
+Date: 2019
+Format: 48000:16:2
+mtime: 1757257536
+added: 1767305506
+song_end
+song_begin: 02 - Bodysnatchers.mp3
+Time: 242.293
+Artist: Radiohead
+Title: Bodysnatchers
+Album: In Rainbows
+Date: 2019
+Format: 48000:16:2
+mtime: 1757257547
+added: 1767305506
+song_end
+song_begin: 03 - Nude.mp3
+Time: 255.386
+Artist: Radiohead
+Title: Nude
+Album: In Rainbows
+Date: 2019
+Format: 48000:16:2
+mtime: 1757257558
+added: 1767305506
+song_end
+song_begin: 04 - Weird Fishes ⧸ Arpeggi.mp3
+Time: 318.186
+Artist: Radiohead
+Title: Weird Fishes / Arpeggi
+Album: In Rainbows
+Date: 2019
+Format: 48000:16:2
+mtime: 1757257571
+added: 1767305506
+song_end
+song_begin: 05 - All I Need.mp3
+Time: 228.746
+Artist: Radiohead
+Title: All I Need
+Album: In Rainbows
+Date: 2019
+Format: 48000:16:2
+mtime: 1757257584
+added: 1767305506
+song_end
+song_begin: 06 - Faust Arp.mp3
+Time: 129.68
+Artist: Radiohead
+Title: Faust Arp
+Album: In Rainbows
+Date: 2019
+Format: 48000:16:2
+mtime: 1757257594
+added: 1767305506
+song_end
+song_begin: 07 - Reckoner.mp3
+Time: 290.213
+Artist: Radiohead
+Title: Reckoner
+Album: In Rainbows
+Date: 2019
+Format: 48000:16:2
+mtime: 1757257605
+added: 1767305506
+song_end
+song_begin: 08 - House Of Cards.mp3
+Time: 328.293
+Artist: Radiohead
+Title: House Of Cards
+Album: In Rainbows
+Date: 2019
+Format: 48000:16:2
+mtime: 1757257617
+added: 1767305506
+song_end
+song_begin: 09 - Jigsaw Falling Into Place.mp3
+Time: 248.893
+Artist: Radiohead
+Title: Jigsaw Falling Into Place
+Album: In Rainbows
+Date: 2019
+Format: 48000:16:2
+mtime: 1757257629
+added: 1767305506
+song_end
+song_begin: 10 - Videotape.mp3
+Time: 279.634
+Artist: Radiohead
+Title: Videotape
+Album: In Rainbows
+Date: 2019
+Format: 48000:16:2
+mtime: 1757257641
+added: 1767305506
+song_end
+end: Album - In Rainbows
+directory: Album - Loss Of Life
+mtime: 1767301787
+begin: Album - Loss Of Life
+song_begin: 01 - Loss Of Life (Part 2).mp3
+Time: 118.893
+Artist: MGMT
+Title: Loss Of Life (Part 2)
+Album: Loss Of Life
+Date: 2024
+Format: 48000:16:2
+mtime: 1757272516
+added: 1767305506
+song_end
+song_begin: 02 - Mother Nature.mp3
+Time: 236.42600000000002
+Artist: MGMT
+Title: Mother Nature
+Album: Loss Of Life
+Date: 2024
+Format: 48000:16:2
+mtime: 1757272526
+added: 1767305506
+song_end
+song_begin: 03 - Dancing In Babylon (feat. Christine and the Queens).mp3
+Time: 292.093
+Artist: MGMT, Christine and the Queens
+Title: Dancing In Babylon (feat. Christine and the Queens)
+Album: Loss Of Life
+Date: 2024
+Format: 48000:16:2
+mtime: 1757272537
+added: 1767305506
+song_end
+song_begin: 04 - People In The Streets.mp3
+Time: 336.973
+Artist: MGMT
+Title: People In The Streets
+Album: Loss Of Life
+Date: 2024
+Format: 48000:16:2
+mtime: 1757272549
+added: 1767305506
+song_end
+song_begin: 05 - Bubblegum Dog.mp3
+Time: 261.76
+Artist: MGMT
+Title: Bubblegum Dog
+Album: Loss Of Life
+Date: 2024
+Format: 48000:16:2
+mtime: 1757272563
+added: 1767305506
+song_end
+song_begin: 06 - Nothing To Declare.mp3
+Time: 213.08
+Artist: MGMT
+Title: Nothing To Declare
+Album: Loss Of Life
+Date: 2024
+Format: 48000:16:2
+mtime: 1757272574
+added: 1767305506
+song_end
+song_begin: 07 - Nothing Changes.mp3
+Time: 395.093
+Artist: MGMT
+Title: Nothing Changes
+Album: Loss Of Life
+Date: 2024
+Format: 48000:16:2
+mtime: 1757272585
+added: 1767305506
+song_end
+song_begin: 08 - Phradie's Song.mp3
+Time: 294.12
+Artist: MGMT
+Title: Phradie's Song
+Album: Loss Of Life
+Date: 2024
+Format: 48000:16:2
+mtime: 1757272599
+added: 1767305506
+song_end
+song_begin: 09 - I Wish I Was Joking.mp3
+Time: 226.306
+Artist: MGMT
+Title: I Wish I Was Joking
+Album: Loss Of Life
+Date: 2024
+Format: 48000:16:2
+mtime: 1757272611
+added: 1767305506
+song_end
+song_begin: 10 - Loss Of Life.mp3
+Time: 338.653
+Artist: MGMT
+Title: Loss Of Life
+Album: Loss Of Life
+Date: 2024
+Format: 48000:16:2
+mtime: 1757272622
+added: 1767305506
+song_end
+end: Album - Loss Of Life
+directory: Album - loveless
+mtime: 1767301770
+begin: Album - loveless
+song_begin: 01 - only shallow.mp3
+Time: 257.053
+Artist: my bloody valentine
+Title: only shallow
+Album: loveless
+Date: 2021
+Format: 48000:16:2
+mtime: 1757302154
+added: 1767305506
+song_end
+song_begin: 02 - loomer.mp3
+Time: 158.333
+Artist: my bloody valentine
+Title: loomer
+Album: loveless
+Date: 2021
+Format: 48000:16:2
+mtime: 1757302165
+added: 1767305506
+song_end
+song_begin: 03 - touched.mp3
+Time: 56.64
+Artist: my bloody valentine
+Title: touched
+Album: loveless
+Date: 2021
+Format: 48000:16:2
+mtime: 1757302176
+added: 1767305506
+song_end
+song_begin: 04 - to here knows when.mp3
+Time: 331.306
+Artist: my bloody valentine
+Title: to here knows when
+Album: loveless
+Date: 2021
+Format: 48000:16:2
+mtime: 1757302184
+added: 1767305506
+song_end
+song_begin: 05 - when you sleep.mp3
+Time: 251.88
+Artist: my bloody valentine
+Title: when you sleep
+Album: loveless
+Date: 2021
+Format: 48000:16:2
+mtime: 1757302197
+added: 1767305506
+song_end
+song_begin: 06 - i only said.mp3
+Time: 334.413
+Artist: my bloody valentine
+Title: i only said
+Album: loveless
+Date: 2021
+Format: 48000:16:2
+mtime: 1757302208
+added: 1767305506
+song_end
+song_begin: 07 - come in alone.mp3
+Time: 238.8
+Artist: my bloody valentine
+Title: come in alone
+Album: loveless
+Date: 2021
+Format: 48000:16:2
+mtime: 1757302220
+added: 1767305506
+song_end
+song_begin: 08 - sometimes.mp3
+Time: 319.24
+Artist: my bloody valentine
+Title: sometimes
+Album: loveless
+Date: 2021
+Format: 48000:16:2
+mtime: 1757302232
+added: 1767305506
+song_end
+song_begin: 09 - blown a wish.mp3
+Time: 216.613
+Artist: my bloody valentine
+Title: blown a wish
+Album: loveless
+Date: 2021
+Format: 48000:16:2
+mtime: 1757302243
+added: 1767305506
+song_end
+song_begin: 10 - what you want.mp3
+Time: 333.373
+Artist: my bloody valentine
+Title: what you want
+Album: loveless
+Date: 2021
+Format: 48000:16:2
+mtime: 1757302255
+added: 1767305506
+song_end
+song_begin: 11 - soon.mp3
+Time: 419.45300000000003
+Artist: my bloody valentine
+Title: soon
+Album: loveless
+Date: 2021
+Format: 48000:16:2
+mtime: 1757302268
+added: 1767305506
+song_end
+end: Album - loveless
+directory: Album - OK Computer
+mtime: 1767301757
+begin: Album - OK Computer
+song_begin: 01 - Airbag.mp3
+Time: 287.88
+Artist: Radiohead
+Title: Airbag
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257199
+added: 1767305506
+song_end
+song_begin: 02 - Paranoid Android.mp3
+Time: 387.213
+Artist: Radiohead
+Title: Paranoid Android
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257212
+added: 1767305506
+song_end
+song_begin: 03 - Subterranean Homesick Alien.mp3
+Time: 267.693
+Artist: Radiohead
+Title: Subterranean Homesick Alien
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257225
+added: 1767305506
+song_end
+song_begin: 04 - Exit Music (For A Film).mp3
+Time: 267.186
+Artist: Radiohead
+Title: Exit Music (For A Film)
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257236
+added: 1767305506
+song_end
+song_begin: 05 - Let Down.mp3
+Time: 299.56
+Artist: Radiohead
+Title: Let Down
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257249
+added: 1767305506
+song_end
+song_begin: 06 - Karma Police.mp3
+Time: 264.06600000000003
+Artist: Radiohead
+Title: Karma Police
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257262
+added: 1767305506
+song_end
+song_begin: 07 - Fitter Happier.mp3
+Time: 117.333
+Artist: Radiohead
+Title: Fitter Happier
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257273
+added: 1767305506
+song_end
+song_begin: 08 - Electioneering.mp3
+Time: 230.626
+Artist: Radiohead
+Title: Electioneering
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257282
+added: 1767305506
+song_end
+song_begin: 09 - Climbing Up the Walls.mp3
+Time: 285.2
+Artist: Radiohead
+Title: Climbing Up the Walls
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257294
+added: 1767305506
+song_end
+song_begin: 10 - No Surprises.mp3
+Time: 229.12
+Artist: Radiohead
+Title: No Surprises
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257307
+added: 1767305506
+song_end
+song_begin: 11 - Lucky.mp3
+Time: 258.813
+Artist: Radiohead
+Title: Lucky
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257318
+added: 1767305506
+song_end
+song_begin: 12 - The Tourist.mp3
+Time: 326.533
+Artist: Radiohead
+Title: The Tourist
+Album: OK Computer
+Date: 2016
+Format: 48000:16:2
+mtime: 1757257330
+added: 1767305506
+song_end
+end: Album - OK Computer
+directory: Album - Twin Fantasy
+mtime: 1767301805
+begin: Album - Twin Fantasy
+song_begin: 01 - My Boy (Twin Fantasy).mp3
+Time: 172.92000000000002
+Artist: Car Seat Headrest
+Title: My Boy (Twin Fantasy)
+Album: Twin Fantasy
+Date: 2019
+Format: 48000:16:2
+mtime: 1757510645
+added: 1767305506
+song_end
+song_begin: 02 - Beach Life-In-Death.mp3
+Time: 798.692
+Artist: Car Seat Headrest
+Title: Beach Life-In-Death
+Album: Twin Fantasy
+Date: 2019
+Format: 48000:16:2
+mtime: 1757510656
+added: 1767305506
+song_end
+song_begin: 03 - Stop Smoking (We Love You).mp3
+Time: 89.134
+Artist: Car Seat Headrest
+Title: Stop Smoking (We Love You)
+Album: Twin Fantasy
+Date: 2019
+Format: 48000:16:2
+mtime: 1757510674
+added: 1767305506
+song_end
+song_begin: 04 - Sober to Death.mp3
+Time: 304.427
+Artist: Car Seat Headrest
+Title: Sober to Death
+Album: Twin Fantasy
+Date: 2019
+Format: 48000:16:2
+mtime: 1757510683
+added: 1767305506
+song_end
+song_begin: 05 - Nervous Young Inhumans.mp3
+Time: 325.74
+Artist: Car Seat Headrest
+Title: Nervous Young Inhumans
+Album: Twin Fantasy
+Date: 2019
+Format: 48000:16:2
+mtime: 1757510695
+added: 1767305506
+song_end
+song_begin: 06 - Bodys.mp3
+Time: 406.934
+Artist: Car Seat Headrest
+Title: Bodys
+Album: Twin Fantasy
+Date: 2019
+Format: 48000:16:2
+mtime: 1757510708
+added: 1767305506
+song_end
+song_begin: 07 - Cute Thing.mp3
+Time: 339.321
+Artist: Car Seat Headrest
+Title: Cute Thing
+Album: Twin Fantasy
+Date: 2019
+Format: 48000:16:2
+mtime: 1757510721
+added: 1767305506
+song_end
+song_begin: 08 - High to Death.mp3
+Time: 459.34700000000004
+Artist: Car Seat Headrest
+Title: High to Death
+Album: Twin Fantasy
+Date: 2019
+Format: 48000:16:2
+mtime: 1757510734
+added: 1767305506
+song_end
+song_begin: 09 - Famous Prophets (Stars).mp3
+Time: 970.464
+Artist: Car Seat Headrest
+Title: Famous Prophets (Stars)
+Album: Twin Fantasy
+Date: 2019
+Format: 48000:16:2
+mtime: 1757510749
+added: 1767305506
+song_end
+song_begin: 10 - Twin Fantasy (Those Boys).mp3
+Time: 414.16200000000003
+Artist: Car Seat Headrest
+Title: Twin Fantasy (Those Boys)
+Album: Twin Fantasy
+Date: 2019
+Format: 48000:16:2
+mtime: 1757510769
+added: 1767305506
+song_end
+end: Album - Twin Fantasy
+directory: Album - White Pony
+mtime: 1767301811
+begin: Album - White Pony
+song_begin: 01 - Back to School (Mini Maggit).mp3
+Time: 237.36
+Artist: Deftones
+Title: Back to School (Mini Maggit)
+Album: White Pony
+Date: 2015
+Format: 48000:16:2
+mtime: 1757272709
+added: 1767305506
+song_end
+song_begin: 02 - Feiticeira.mp3
+Time: 189.76
+Artist: Deftones
+Title: Feiticeira
+Album: White Pony
+Date: 2014
+Format: 48000:16:2
+mtime: 1757272721
+added: 1767305506
+song_end
+song_begin: 03 - Digital Bath.mp3
+Time: 255.37300000000002
+Artist: Deftones
+Title: Digital Bath
+Album: White Pony
+Date: 2015
+Format: 48000:16:2
+mtime: 1757272738
+added: 1767305506
+song_end
+song_begin: 04 - Elite.mp3
+Time: 241.8
+Artist: Deftones
+Title: Elite
+Album: White Pony
+Date: 2014
+Format: 48000:16:2
+mtime: 1757272749
+added: 1767305506
+song_end
+song_begin: 05 - Rx Queen.mp3
+Time: 268.026
+Artist: Deftones
+Title: Rx Queen
+Album: White Pony
+Date: 2014
+Format: 48000:16:2
+mtime: 1757272760
+added: 1767305506
+song_end
+song_begin: 06 - Street Carp.mp3
+Time: 161.6
+Artist: Deftones
+Title: Street Carp
+Album: White Pony
+Date: 2015
+Format: 48000:16:2
+mtime: 1757272772
+added: 1767305506
+song_end
+song_begin: 07 - Teenager.mp3
+Time: 200.466
+Artist: Deftones
+Title: Teenager
+Album: White Pony
+Date: 2014
+Format: 48000:16:2
+mtime: 1757272782
+added: 1767305506
+song_end
+song_begin: 08 - Knife Prty.mp3
+Time: 289.2
+Artist: Deftones
+Title: Knife Prty
+Album: White Pony
+Date: 2014
+Format: 48000:16:2
+mtime: 1757272796
+added: 1767305506
+song_end
+song_begin: 09 - Korea.mp3
+Time: 203.6
+Artist: Deftones
+Title: Korea
+Album: White Pony
+Date: 2014
+Format: 48000:16:2
+mtime: 1757272809
+added: 1767305506
+song_end
+song_begin: 10 - Passenger.mp3
+Time: 368.666
+Artist: Deftones
+Title: Passenger
+Album: White Pony
+Date: 2014
+Format: 48000:16:2
+mtime: 1757272820
+added: 1767305506
+song_end
+song_begin: 11 - Change (In the House of Flies).mp3
+Time: 299.533
+Artist: Deftones
+Title: Change (In the House of Flies)
+Album: White Pony
+Date: 2014
+Format: 48000:16:2
+mtime: 1757272835
+added: 1767305506
+song_end
+song_begin: 12 - Pink Maggit.mp3
+Time: 453.226
+Artist: Deftones
+Title: Pink Maggit
+Album: White Pony
+Date: 2014
+Format: 48000:16:2
+mtime: 1757272852
+added: 1767305506
+song_end
+end: Album - White Pony
+directory: Disco Elysium OST
+mtime: 1767301809
+begin: Disco Elysium OST
+song_begin: 01 - Instrument of Surrender - Disco Elysium Soundtrack.mp3
+Time: 325.172
+Artist: The Raging K
+Title: Instrument of Surrender - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799421
+added: 1767305506
+song_end
+song_begin: 02 - Whirling In Rags 8 AM -  Disco Elysium Soundtrack.mp3
+Time: 274.343
+Artist: The Raging K
+Title: Whirling In Rags 8 AM -  Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799442
+added: 1767305506
+song_end
+song_begin: 03 - Whirling In Rags 12 PM - Disco Elysium Soundtrack.mp3
+Time: 224.002
+Artist: The Raging K
+Title: Whirling In Rags 12 PM - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799457
+added: 1767305506
+song_end
+song_begin: 04 - Whirling In Rags 8 PM - Disco Elysium Soundtrack.mp3
+Time: 279.173
+Artist: The Raging K
+Title: Whirling In Rags 8 PM - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799472
+added: 1767305506
+song_end
+song_begin: 05 - Detective Arriving on the Scene - Disco Elysium Soundtrack.mp3
+Time: 312.517
+Artist: The Raging K
+Title: Detective Arriving on the Scene - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799488
+added: 1767305506
+song_end
+song_begin: 06 - Tiger King - Disco Elysium Soundtrack.mp3
+Time: 306.36400000000003
+Artist: The Raging K
+Title: Tiger King - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799508
+added: 1767305506
+song_end
+song_begin: 07 - Your Body Betrays Your Degeneracy - Disco Elysium Soundtrack.mp3
+Time: 145.519
+Artist: The Raging K
+Title: Your Body Betrays Your Degeneracy - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799524
+added: 1767305506
+song_end
+song_begin: 08 - Martinaise Terminal B (Industrial Harbour) - Disco Elysium Soundtrack.mp3
+Time: 250.02
+Artist: The Raging K
+Title: Martinaise Terminal B (Industrial Harbour) - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799540
+added: 1767305506
+song_end
+song_begin: 09 - Precinct 41 Major Crime Unit - Disco Elysium Soundtrack.mp3
+Time: 216.502
+Artist: The Raging K
+Title: Precinct 41 Major Crime Unit - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799559
+added: 1767305506
+song_end
+song_begin: 10 - The Insulindian Miracle - Disco Elysium Soundtrack.mp3
+Time: 141.839
+Artist: The Raging K
+Title: The Insulindian Miracle - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799575
+added: 1767305506
+song_end
+song_begin: 11 - Polyhedrons - Disco Elysium Soundtrack.mp3
+Time: 190.333
+Artist: The Raging K
+Title: Polyhedrons - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799595
+added: 1767305506
+song_end
+song_begin: 12 - Live With Me - Disco Elysium Soundtrack.mp3
+Time: 159.846
+Artist: The Raging K
+Title: Live With Me - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799613
+added: 1767305506
+song_end
+song_begin: 13 - The Field Autopsy - Disco Elysium Soundtrack.mp3
+Time: 149.675
+Artist: The Raging K
+Title: The Field Autopsy - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799628
+added: 1767305506
+song_end
+song_begin: 14 - Miss Oranje Disco Dancer - Disco Elysium Soundtrack.mp3
+Time: 194.67600000000002
+Artist: The Raging K
+Title: Miss Oranje Disco Dancer - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799642
+added: 1767305506
+song_end
+song_begin: 15 - Rue de Saint Ghislaine 32B - Disco Elysium Soundtrack.mp3
+Time: 165.5
+Artist: The Raging K
+Title: Rue de Saint Ghislaine 32B - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799657
+added: 1767305506
+song_end
+song_begin: 16 - The Doomed Commercial Area - Disco Elysium Soundtrack.mp3
+Time: 184.354
+Artist: The Raging K
+Title: The Doomed Commercial Area - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799671
+added: 1767305506
+song_end
+song_begin: 17 - The Cryptozoologists - Disco Elysium Soundtrack.mp3
+Time: 139.517
+Artist: The Raging K
+Title: The Cryptozoologists - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799687
+added: 1767305506
+song_end
+song_begin: 18 - Disco Elysium pt 1 - Disco Elysium Soundtrack.mp3
+Time: 294.011
+Artist: The Raging K
+Title: Disco Elysium pt 1 - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799705
+added: 1767305506
+song_end
+song_begin: 19 - Disco Elysium pt 2 - Disco Elysium Soundtrack.mp3
+Time: 288.194
+Artist: The Raging K
+Title: Disco Elysium pt 2 - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799725
+added: 1767305506
+song_end
+song_begin: 20 - Ecstatic Vibrations Totally Transcendent - Disco Elysium Soundtrack.mp3
+Time: 215.028
+Artist: The Raging K
+Title: Ecstatic Vibrations Totally Transcendent - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799743
+added: 1767305506
+song_end
+song_begin: 21 - Saint Brune 1147 - Disco Elysium Soundtrack.mp3
+Time: 182.683
+Artist: The Raging K
+Title: Saint Brune 1147 - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799757
+added: 1767305506
+song_end
+song_begin: 22 - We Are Not Checkmated - Disco Elysium Soundtrack.mp3
+Time: 221.36700000000002
+Artist: The Raging K
+Title: We Are Not Checkmated - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799775
+added: 1767305506
+song_end
+song_begin: 23 - Hope in Work and Joy in Leisure - Disco Elysium Soundtrack.mp3
+Time: 161.007
+Artist: The Raging K
+Title: Hope in Work and Joy in Leisure - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799790
+added: 1767305506
+song_end
+song_begin: 24 - Burn Baby Burn - Disco Elysium Soundtrack.mp3
+Time: 189.52100000000002
+Artist: The Raging K
+Title: Burn Baby Burn - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799806
+added: 1767305506
+song_end
+song_begin: 25 - La Revacholiere - Disco Elysium Soundtrack.mp3
+Time: 250.531
+Artist: The Raging K
+Title: La Revacholiere - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799826
+added: 1767305506
+song_end
+song_begin: 26 - Krenel Downwell Somatosensor - Disco Elysium Soundtrack.mp3
+Time: 229.506
+Artist: The Raging K
+Title: Krenel Downwell Somatosensor - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799841
+added: 1767305506
+song_end
+song_begin: 27 - Off We Go Into The Wild Pale Yonder - Disco Elysium Soundtrack.mp3
+Time: 241.197
+Artist: The Raging K
+Title: Off We Go Into The Wild Pale Yonder - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799870
+added: 1767305506
+song_end
+song_begin: 28 - ZAUM - Disco Elysium Soundtrack.mp3
+Time: 196.197
+Artist: The Raging K
+Title: ZAUM - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799887
+added: 1767305506
+song_end
+song_begin: 29 - Advesperascit - Disco Elysium Soundtrack.mp3
+Time: 610.023
+Artist: The Raging K
+Title: Advesperascit - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799918
+added: 1767305506
+song_end
+song_begin: 30 - Ignus Nilsen Waltz - Disco Elysium Soundtrack.mp3
+Time: 235.508
+Artist: The Raging K
+Title: Ignus Nilsen Waltz - Disco Elysium Soundtrack
+Date: 2022
+Format: 48000:16:2
+mtime: 1764799942
+added: 1767305506
+song_end
+end: Disco Elysium OST
+directory: Teenage Room
+mtime: 1767301804
+begin: Teenage Room
+song_begin: 07 - Nujabes - Feather (feat. Cise Starr & Akin from CYNE) [Official Audio].mp3
+Time: 175.055
+Artist: Nujabes
+Title: Nujabes - Feather (feat. Cise Starr & Akin from CYNE) [Official Audio]
+Date: 2023
+Format: 48000:16:2
+mtime: 1757878850
+added: 1767305506
+song_end
+song_begin: 08 - Nujabes - Lady Brown (feat. Cise Starr from CYNE) [Official Audio].mp3
+Time: 199.053
+Artist: Nujabes
+Title: Nujabes - Lady Brown (feat. Cise Starr from CYNE) [Official Audio]
+Date: 2022
+Format: 48000:16:2
+mtime: 1757878861
+added: 1767305506
+song_end
+song_begin: 09 - Snoh Aalegra - Nothing Burns Like The Cold (Lyric Video) ft. Vince Staples.mp3
+Time: 217.749
+Artist: Snoh Aalegra
+Title: Snoh Aalegra - Nothing Burns Like The Cold (Lyric Video) ft. Vince Staples
+Date: 2017
+Format: 48000:16:2
+mtime: 1757878871
+added: 1767305506
+song_end
+song_begin: 10 - Crumb - Locket [Official Video].mp3
+Time: 318.293
+Artist: Crumb The Band
+Title: Crumb - Locket [Official Video]
+Date: 2018
+Format: 48000:16:2
+mtime: 1757878883
+added: 1767305506
+song_end
+song_begin: 11 - Kowloon - Wake Up (Official Video).mp3
+Time: 253.921
+Artist: Kowloon
+Title: Kowloon - Wake Up (Official Video)
+Date: 2022
+Format: 48000:16:2
+mtime: 1757878896
+added: 1767305506
+song_end
+song_begin: 12 - ＂I'm God＂ by Clams Casino and Imogen Heap.mp3
+Time: 277.71
+Artist: Clams Casino
+Title: "I'm God" by Clams Casino and Imogen Heap
+Date: 2020
+Format: 48000:16:2
+mtime: 1757878909
+added: 1767305506
+song_end
+song_begin: 19 - Machine Girl - Come On Baby, Scrape My Data (Official Video).mp3
+Time: 193.329
+Artist: Machine Girl
+Title: Machine Girl - Come On Baby, Scrape My Data (Official Video)
+Date: 2025
+Format: 48000:16:2
+mtime: 1757878993
+added: 1767305506
+song_end
+song_begin: 14 - Counting Stars.mp3
+Time: 247.613
+Artist: Nujabes
+Title: Counting Stars
+Album: 2nd Collection
+Date: 2020
+Format: 48000:16:2
+mtime: 1757878932
+added: 1767305506
+song_end
+song_begin: 16 - Imaginary Folklore.mp3
+Time: 318.026
+Artist: clammbon, Nujabes
+Title: Imaginary Folklore
+Album: 2nd Collection
+Date: 2020
+Format: 48000:16:2
+mtime: 1757878957
+added: 1767305506
+song_end
+song_begin: 01 - BIOS.mp3
+Time: 312.857
+Artist: Zorrovian
+Title: BIOS
+Album: BIOS
+Date: 2024
+Format: 48000:16:2
+mtime: 1757878776
+added: 1767305506
+song_end
+song_begin: 20 - Luv (sic).mp3
+Time: 289.026
+Artist: Nujabes
+Title: Luv (sic)
+Album: FIRST COLLECTION
+Date: 2020
+Format: 48000:16:2
+mtime: 1757879003
+added: 1767305506
+song_end
+song_begin: 21 - Who's Theme.mp3
+Time: 297.327
+Artist: MINMI
+Title: Who's Theme
+Album: imagine
+Date: 2018
+Format: 48000:16:2
+mtime: 1757879016
+added: 1767305506
+song_end
+song_begin: 15 - Horizon.mp3
+Time: 440.093
+Artist: Nujabes
+Title: Horizon
+Album: Modal Soul
+Date: 2023
+Format: 48000:16:2
+mtime: 1757878943
+added: 1767305506
+song_end
+song_begin: 18 - World's End Rhapsody.mp3
+Time: 341.2
+Artist: Nujabes
+Title: World's End Rhapsody
+Album: Modal Soul
+Date: 2023
+Format: 48000:16:2
+mtime: 1757878981
+added: 1767305506
+song_end
+song_begin: 06 - Doomsday.mp3
+Time: 298.053
+Artist: MF DOOM, Pebbles The Invisible Girl
+Title: Doomsday
+Album: Operation: Doomsday (Complete)
+Date: 2022
+Format: 48000:16:2
+mtime: 1757878837
+added: 1767305506
+song_end
+song_begin: 03 - transcendence.mp3
+Time: 421.5
+Artist: Nujabes
+Title: transcendence
+Album: samurai champloo music record departure
+Date: 2024
+Format: 48000:16:2
+mtime: 1757878803
+added: 1767305506
+song_end
+song_begin: 02 - world without words.mp3
+Time: 374.766
+Artist: Nujabes
+Title: world without words
+Album: samurai champloo music record impression
+Date: 2024
+Format: 48000:16:2
+mtime: 1757878789
+added: 1767305506
+song_end
+song_begin: 04 - just forget.mp3
+Time: 235.9
+Artist: FORCE OF NATURE
+Title: just forget
+Album: samurai champloo music record impression
+Date: 2024
+Format: 48000:16:2
+mtime: 1757878817
+added: 1767305506
+song_end
+song_begin: 17 - tsurugi no mai.mp3
+Time: 206.833
+Artist: Nujabes
+Title: tsurugi no mai
+Album: samurai champloo music record impression
+Date: 2024
+Format: 48000:16:2
+mtime: 1757878970
+added: 1767305506
+song_end
+song_begin: 05 - Soul Below.mp3
+Time: 194.951
+Artist: LJones
+Title: Soul Below
+Album: Soul Below
+Date: 2025
+Format: 48000:16:2
+mtime: 1757878827
+added: 1767305506
+song_end
+song_begin: 13 - you're so cool.mp3
+Time: 221.83100000000002
+Artist: home alone.
+Title: you're so cool
+Album: What's My Age Again?
+Date: 2024
+Format: 48000:16:2
+mtime: 1757878921
+added: 1767305506
+song_end
+end: Teenage Room

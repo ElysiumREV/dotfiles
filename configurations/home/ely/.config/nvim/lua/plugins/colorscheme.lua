@@ -1,14 +1,12 @@
 return {
-  -- add gruvbox
-  { "ellisonleao/gruvbox.nvim" },
 
-  { "rebelot/kanagawa.nvim" },
+  { "sainnhe/everforest" },
 
   -- Configure LazyVim to load gruvbox
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "kanagawa-dragon",
+      colorscheme = "everforest",
     },
-  }
+  },
 }

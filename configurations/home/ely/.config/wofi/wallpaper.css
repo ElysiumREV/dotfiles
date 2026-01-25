@@ -12,7 +12,7 @@ window {
     all: unset;
     padding: 20px;
     border-radius: 0px;
-    background-color: alpha(#242829, .5);
+    background-color: alpha(#282828, .5);
 }
 
 #inner-box {

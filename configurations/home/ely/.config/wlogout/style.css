@@ -4,34 +4,31 @@
 }
 
 window {
-  background-color: rgba(51, 49, 45, 0.7); /* semi-transparent window */
+  background-color: rgba(43, 51, 57, 0.85);
   border-radius: 8px;
-  border: 2px solid rgba(255, 217, 61, 0.2); /* subtle yellow edge */
+  border: 2px solid rgba(167, 192, 128, 0.35);
 }
 
 button {
-  color: #F8F8F8;
-  background-color: #5DD62C;
+  color: #d3c6aa;
+  background-color: #323d43;
   border-style: solid;
   border-width: 3px;
-  border-color: #0f0f0f;
+  border-color: #a7c080;
   border-radius: 6px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 15%;
   margin: 15px;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 button:hover,
-button:active {
-  background-color: #337418;
-  color: #F8F8F8;
-}
-
+button:active,
 button:focus {
-  background-color: #337418;
-  color: #F8F8F8;
+  background-color: #3a464c;
+  color: #e4e1cd;
+  border-color: #83c092;
 }
 
 #lock {

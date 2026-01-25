@@ -1,25 +1,25 @@
 * {
   font-family: "JetBrainsMono Nerd Font";
-  font-size: 14px;
+  font-size: 13px;
   border: none;
   border-radius: 0;
-  color: #dcd7d7;
+  color: #83C092;
   min-height: 0;
   margin: 1px;
 }
 
 window#waybar {
-  background: rgba(36, 40, 41, 0.8);
+  background: rgba(39, 46, 51, 0.8);
   border-radius: 0px;
   font-weight: normal;
-  color: #dcd7d7;
+  color: #83C092;
 }
 
 tooltip {
   border: 1px solid #4a4b4b;
   border-radius: 10px;
-  background: rgba(36, 40, 41, 0.95);
-  color: #dcd7d7;
+  background: rgba(30, 35, 38, 0.95);
+  color: #83C092;
 }
 
 #workspaces {
@@ -38,12 +38,12 @@ tooltip {
 }
 
 #workspaces button.active {
-  background: #000f08;
+  background: #3C4841;
 }
 
 #workspaces button.urgent {
-  background: #fb3640;
-  color: #dcd7d7;
+  background: #E67E80;
+  color: #83C092;
 }
 
 #workspaces button:hover {
@@ -65,40 +65,40 @@ tooltip {
 #battery,
 #custom-notification {
   padding: 0 6px;
-  color: #dcd7d7;
+  color: #83C092;
 }
 
 #custom-notification:hover {
   background: rgba(26, 134, 185, 0.2);
-  color: #1a86b9;
+  color: #83C092;
 }
 
 #tray menu {
   background: rgba(36, 40, 41, 0.95);
-  color: #dcd7d7;
+  color: #83C092;
   border-radius: 8px;
   border: 1px solid rgba(74, 75, 75, 0.4);
 }
 
 #tray menuitem {
   padding: 4px 8px;
-  color: #dcd7d7;
+  color: #83C092;
 }
 
 #tray menuitem:hover {
-  background: rgba(26, 134, 185, 0.25);
-  color: #1a86b9;
+  background: rgba(229,195,200, 0.25);
+  color: #83C092;
 }
 
 #battery.charging {
-  color: #13868c;
+  color: #98971a;
 }
 
 #battery.warning:not(.charging) {
-  color: #df2683;
+  color: #cc241d;
 }
 
 #battery.critical:not(.charging) {
-  color: #df2683;
+  color: #cc241d;
   animation: blink 0.5s linear infinite alternate;
 }

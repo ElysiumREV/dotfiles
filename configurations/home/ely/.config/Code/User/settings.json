@@ -1,6 +1,5 @@
 {
   "git.confirmSync": false,
-    "workbench.iconTheme": "material-icon-theme",
     "workbench.startupEditor": "none",
     "security.workspace.trust.untrustedFiles": "open",
     "editor.tabSize": 2,
@@ -50,5 +49,10 @@
         "path": "/usr/bin/qtpaths"
       }
     ],
-    "svelte.enable-ts-plugin": true
+    "svelte.enable-ts-plugin": true,
+    "workbench.colorTheme": "Delirium Everforest Dark",
+    "jdk.telemetry.enabled": false,
+    "[java]": {
+      "editor.defaultFormatter": "redhat.java"
+    }
 }

@@ -1,12 +1,9 @@
 return {
-
-  { "sainnhe/everforest" },
-
-  -- Configure LazyVim to load gruvbox
+  { "ellisonleao/gruvbox.nvim" },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "everforest",
+      colorscheme = "gruvbox",
     },
   },
 }

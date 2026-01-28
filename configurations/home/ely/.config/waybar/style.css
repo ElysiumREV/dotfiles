@@ -3,23 +3,23 @@
   font-size: 13px;
   border: none;
   border-radius: 0;
-  color: #83C092;
+  color: #ebdbb2;
   min-height: 0;
   margin: 1px;
 }
 
 window#waybar {
-  background: rgba(39, 46, 51, 0.8);
+  background: rgba(40, 40, 40, 0.9);
   border-radius: 0px;
   font-weight: normal;
-  color: #83C092;
+  color: #ebdbb2;
 }
 
 tooltip {
-  border: 1px solid #4a4b4b;
+  border: 1px solid #665c54;
   border-radius: 10px;
-  background: rgba(30, 35, 38, 0.95);
-  color: #83C092;
+  background: rgba(50, 48, 47, 0.95);
+  color: #ebdbb2;
 }
 
 #workspaces {
@@ -34,20 +34,21 @@ tooltip {
   padding: 2px 8px;
   margin: 2px;
   border-radius: 8px;
-  color: rgba(220, 215, 215, 0.6);
+  color: rgba(235, 219, 178, 0.6);
 }
 
 #workspaces button.active {
-  background: #3C4841;
+  background: #d79921;
+  color: #282828;
 }
 
 #workspaces button.urgent {
-  background: #E67E80;
-  color: #83C092;
+  background: #cc241d;
+  color: #282828;
 }
 
 #workspaces button:hover {
-  background: rgba(0, 15, 8, 0.8);
+  background: rgba(215, 153, 33, 0.25);
 }
 
 #cava,
@@ -65,29 +66,29 @@ tooltip {
 #battery,
 #custom-notification {
   padding: 0 6px;
-  color: #83C092;
+  color: #ebdbb2;
 }
 
 #custom-notification:hover {
-  background: rgba(26, 134, 185, 0.2);
-  color: #83C092;
+  background: rgba(215, 153, 33, 0.2);
+  color: #ebdbb2;
 }
 
 #tray menu {
-  background: rgba(36, 40, 41, 0.95);
-  color: #83C092;
+  background: rgba(50, 48, 47, 0.95);
+  color: #ebdbb2;
   border-radius: 8px;
-  border: 1px solid rgba(74, 75, 75, 0.4);
+  border: 1px solid rgba(102, 92, 84, 0.6);
 }
 
 #tray menuitem {
   padding: 4px 8px;
-  color: #83C092;
+  color: #ebdbb2;
 }
 
 #tray menuitem:hover {
-  background: rgba(229,195,200, 0.25);
-  color: #83C092;
+  background: rgba(215, 153, 33, 0.25);
+  color: #ebdbb2;
 }
 
 #battery.charging {
@@ -95,7 +96,7 @@ tooltip {
 }
 
 #battery.warning:not(.charging) {
-  color: #cc241d;
+  color: #d79921;
 }
 
 #battery.critical:not(.charging) {

@@ -50,7 +50,7 @@
       }
     ],
     "svelte.enable-ts-plugin": true,
-    "workbench.colorTheme": "Delirium Everforest Dark",
+    "workbench.colorTheme": "Gruvbox C++",
     "jdk.telemetry.enabled": false,
     "[java]": {
       "editor.defaultFormatter": "redhat.java"

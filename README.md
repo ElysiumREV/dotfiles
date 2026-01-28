@@ -2,7 +2,7 @@
 
 ### These dotfiles are specifically made for my use and i use github just for backup purpose, if you want to use anything for yourself you'll need to change some things for your case
 
-### 🌲 Everforest themed setup
+### Gruvbox themed setup
 
 ### 🖥️ Features
 <ul>

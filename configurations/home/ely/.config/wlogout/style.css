@@ -4,17 +4,17 @@
 }
 
 window {
-  background-color: rgba(43, 51, 57, 0.85);
+  background-color: rgba(40, 40, 40, 0.9);
   border-radius: 8px;
-  border: 2px solid rgba(167, 192, 128, 0.35);
+  border: 2px solid rgba(152, 151, 26, 0.6);
 }
 
 button {
-  color: #d3c6aa;
-  background-color: #323d43;
+  color: #ebdbb2;
+  background-color: #3c3836;
   border-style: solid;
   border-width: 3px;
-  border-color: #a7c080;
+  border-color: #98971a;
   border-radius: 6px;
   background-repeat: no-repeat;
   background-position: center;
@@ -26,9 +26,9 @@ button {
 button:hover,
 button:active,
 button:focus {
-  background-color: #3a464c;
-  color: #e4e1cd;
-  border-color: #83c092;
+  background-color: #504945;
+  color: #fbf1c7;
+  border-color: #689d6a;
 }
 
 #lock {

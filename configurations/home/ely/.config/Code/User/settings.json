@@ -54,5 +54,6 @@
     "jdk.telemetry.enabled": false,
     "[java]": {
       "editor.defaultFormatter": "redhat.java"
-    }
+    },
+    "docker.extension.enableComposeLanguageServer": false
 }

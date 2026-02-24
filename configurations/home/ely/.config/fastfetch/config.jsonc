@@ -1,13 +1,13 @@
 {
     "logo": {
       "type": "auto",
-      "width": 5,
-      "height": 1,
+      "height": 4,
+      "width": 4,
       "padding": {
-        "top": 0,
+        "top": 2,
         "left": 2,
         "right": 2
-      }
+    }
     },
     "modules": [
         "break",

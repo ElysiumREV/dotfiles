@@ -1,6 +1,6 @@
 {
-  "spacing": 2,
-  "modules-left": ["cpu", "temperature", "memory", "mpd"],
+  "spacing": 1,
+  "modules-left": ["cpu", "memory", "temperature", "mpd"],
   "modules-center": ["hyprland/workspaces"],
   "modules-right": [
     "tray",
@@ -71,14 +71,14 @@
   "cpu": {
     "format": " {usage}%",
     "tooltip": true,
-    "interval": 5
+    "interval": 2
   },
   "memory": {
     "format": " {}%",
-    "interval": 5
+    "interval": 2
   },
   "temperature": {
-    "critical-threshold": 80,
+    "critical-threshold": 95,
     "format": "{icon}{temperatureC}°C",
     "format-icons": ["", "", ""],
     "hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input"
@@ -89,8 +89,8 @@
   },
   "battery": {
     "states": {
-      "warning": 30,
-      "critical": 15
+      "warning": 25,
+      "critical": 10
     },
     "format": "{capacity}% {icon}",
     "format-full": "{capacity}% {icon}",
@@ -98,7 +98,7 @@
     "format-plugged": "{capacity}%  ",
     "format-alt": "{time} {icon}",
     "format-icons": [" ", " ", " ", " ", " "],
-    "interval": 5
+    "interval": 2
   },
   "battery#bat2": {
     "bat": "BAT2"

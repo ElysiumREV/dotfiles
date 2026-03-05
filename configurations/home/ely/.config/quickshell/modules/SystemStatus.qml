@@ -7,22 +7,22 @@ import QtQuick.Layouts
 
 Item {
     id: root
-    property color colBg: "#1a1b26"
-    property color colFg: "#a9b1d6"
-    property color colMuted: "#444b6a"
-    property color colCyan: "#0db9d7"
-    property color colBlue: "#7aa2f7"
-    property color colYellow: "#e0af68"
+    property color colBg: "#1d2021"
+    property color colFg: "#ebdbb2"
+    property color colMuted: "#3c3836"
+    property color colCyan: "#8ec07c"
+    property color colBlue: "#83a598"
+    property color colYellow: "#fabd2f"
     property string fontFamily: "JetBrainsMono Nerd Font"
     property int fontSize: 14
 
-    implicitHeight: 30  // Match the bar height
+    implicitHeight: 30
     implicitWidth: rowLayout.implicitWidth
 
     RowLayout {
         id: rowLayout
-        anchors.fill: parent  // Fill the parent Item
-        anchors.verticalCenter: parent.verticalCenter  // Center vertically
+        anchors.fill: parent
+        anchors.verticalCenter: parent.verticalCenter
         spacing: 4
         Process {
             id: cpuProc
@@ -87,10 +87,7 @@ Item {
             running: true
             repeat: true
             onTriggered: {
-                // Better to restart processes than set running true
-                cpuProc.running = false;
                 cpuProc.running = true;
-                memProc.running = false;
                 memProc.running = true;
             }
         }

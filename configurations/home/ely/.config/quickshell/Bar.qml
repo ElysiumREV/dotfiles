@@ -1,51 +1,113 @@
-// bar.qml
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import "modules"
 
-PanelWindow {
-    id: root
-    // Theme
-    property color colBg: "#1a1b26"
-    property color colFg: "#a9b1d6"
-    property color colMuted: "#444b6a"
-    property color colCyan: "#0db9d7"
-    property color colBlue: "#7aa2f7"
-    property color colYellow: "#e0af68"
-    property string fontFamily: "JetBrainsMono Nerd Font"
-    property int fontSize: 14
+Variants {
+    model: Quickshell.screens
 
-    anchors {
-        top: true
-        left: true
-        right: true
-    }
+    delegate: Component {
+        PanelWindow {
+            id: root
 
-    implicitHeight: 30
-    color: root.colBg
+            required property var modelData
+            screen: modelData
 
-    Item {
-        anchors.fill: parent
-        anchors.leftMargin: 8
-        anchors.rightMargin: 8
+            property color colBg: "#1d2021"
+            property color colFg: "#ebdbb2"
+            property color colMuted: "#3c3836"
+            property color colCyan: "#8ec07c"
+            property color colBlue: "#83a598"
+            property color colYellow: "#fabd2f"
+            property string fontFamily: "JetBrainsMono Nerd Font"
+            property int fontSize: 14
 
-        SystemStatus {
-            id: systemStatus
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-        }
+            property bool isFullscreen: false
 
-        Clock {
-            id: clock
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-        }
+            anchors {
+                top: true
+                left: true
+                right: true
+            }
 
-        Workspaces {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
+            implicitHeight: 30
+            color: colBg
+
+            exclusionMode: ExclusionMode.Normal
+            exclusiveZone: isFullscreen ? 0 : implicitHeight
+            WlrLayershell.layer: isFullscreen ? WlrLayer.Bottom : WlrLayer.Top
+
+            Timer {
+                interval: 200
+                running: Hyprland !== null
+                repeat: true
+
+                onTriggered: {
+                    if (!Hyprland)
+                        return;
+                    const win = Hyprland.activeWindow;
+                    if (!win || !win.mapped) {
+                        isFullscreen = false;
+                        return;
+                    }
+
+                    const screenGeo = screen.geometry;
+
+                    const coversScreen = win.at.x <= screenGeo.x && win.at.y <= screenGeo.y && win.size.width >= screenGeo.width && win.size.height >= screenGeo.height;
+
+                    isFullscreen = win.fullscreen || coversScreen;
+                }
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                color: colBg
+
+                Item {
+                    anchors.fill: parent
+                    anchors.leftMargin: 8
+                    anchors.rightMargin: 8
+
+                    SystemStatus {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 8
+
+                        Tray {
+                            anchors.verticalCenter: parent.verticalCenter
+                            window: root
+                        }
+
+                        Volume {
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Brightness {
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Battery {
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Clock {
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+
+                    Workspaces {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+            }
         }
     }
 }

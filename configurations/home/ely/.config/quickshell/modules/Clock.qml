@@ -1,4 +1,3 @@
-// clock.qml
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
@@ -8,12 +7,11 @@ import QtQuick.Layouts
 Item {
     id: root
     // Theme
-    property color colFg: "#a9b1d6"
+    property color colFg: "#ebdbb2"
     property string fontFamily: "JetBrainsMono Nerd Font"
     property int fontSize: 14
-    property string timeFormat: "dddd dd MMM - HH:mm"
+    property string timeFormat: "dd MMM HH:mm"
 
-    // Expose the formatted time as a property
     property string formattedTime: {
         const date = clock.currentDate;
         return date.toLocaleString(Qt.locale(), timeFormat);

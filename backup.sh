@@ -31,7 +31,7 @@ sed '/^[ \t]*$/d' $backupPaths | while read filePath; do
   originalFile="${filePath//${findThis}/${replaceWith}}"
 
   # copying the files
-  rsync -aR --exclude='.git' "$originalFile" ./configurations
+  cp --parents --recursive $originalFile ./configurations
   sleep 0.05
 done
 

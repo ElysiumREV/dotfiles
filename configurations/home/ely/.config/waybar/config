@@ -1,0 +1,119 @@
+{
+  "spacing": 1,
+  "modules-left": ["cpu", "memory", "temperature", "mpd"],
+  "modules-center": ["hyprland/workspaces"],
+  "modules-right": [
+    "tray",
+    "pulseaudio",
+    "backlight",
+    "battery",
+    "clock"
+  ],
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "on-click": "activate",
+    "on-scroll-up": "hyprctl dispatch workspace e+1",
+    "on-scroll-down": "hyprctl dispatch workspace e-1",
+    "all-outputs": true,
+    "active-only": false,
+    "show-special": false,
+    "persistent-only": false,
+    "format-icons": {
+        "1": "I",
+        "2": "II",
+        "3": "III",
+        "4": "IV",
+        "5": "V",
+        "6": "VI",
+        "7": "VII",
+        "8": "VIII",
+        "9": "IX",
+        "10": "X"
+    },
+    "sort-by-number": true
+  },
+  "mpd": {
+    "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title}",
+    "format-disconnected": "Disconnected",
+    "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped",
+    "interval": 10,
+    "consume-icons": {
+        "on": " "
+    },
+    "random-icons": {
+        "off": "<span color=\"#f53c3c\"></span> ",
+        "on": " "
+    },
+    "repeat-icons": {
+        "on": " "
+    },
+    "single-icons": {
+        "on": "1 "
+    },
+    "state-icons": {
+        "paused": "",
+        "playing": ""
+    },
+    "tooltip-format": "MPD (connected)",
+    "tooltip-format-disconnected": "MPD (disconnected)"
+},
+  "tray": {
+    "icon-size": 16,
+    "spacing": 6
+  },
+  "clock": {
+    "interval": 60,
+    "format": "{:%d %b %H:%M}",
+    "smooth-scrolling-threshold": 4,
+    "tooltip": true,
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+  },
+  "cpu": {
+    "format": " {usage}%",
+    "tooltip": true,
+    "interval": 2
+  },
+  "memory": {
+    "format": " {}%",
+    "interval": 2
+  },
+  "temperature": {
+    "critical-threshold": 95,
+    "format": "{icon}{temperatureC}°C",
+    "format-icons": ["", "", ""],
+    "hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input"
+  },
+  "backlight": {
+    "format": "{percent}% {icon}",
+    "format-icons": [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+  },
+  "battery": {
+    "states": {
+      "warning": 25,
+      "critical": 10
+    },
+    "format": "{capacity}% {icon}",
+    "format-full": "{capacity}% {icon}",
+    "format-charging": "{capacity}% 󰂄 ",
+    "format-plugged": "{capacity}%  ",
+    "format-alt": "{time} {icon}",
+    "format-icons": [" ", " ", " ", " ", " "],
+    "interval": 2
+  },
+  "battery#bat2": {
+    "bat": "BAT2"
+  },
+  "pulseaudio": {
+  "format": "{volume}% {icon}",
+  "format-bluetooth": "{volume}%{icon}",
+  "format-bluetooth-muted": " {icon}",
+  "format-muted": " ",
+  "format-icons": {
+    "default": [" ", " ", " "]
+  },
+  "on-click": "pavucontrol",
+  "tooltip": true,
+  "tooltip-format": "{volume}% {icon} {format_source} ",
+  "interval": 5
+}
+}

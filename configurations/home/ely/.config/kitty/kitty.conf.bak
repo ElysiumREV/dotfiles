@@ -1,0 +1,6 @@
+font_family JetBrainsMonoNerdFont 
+
+# BEGIN_KITTY_THEME
+# Ayu
+include current-theme.conf
+# END_KITTY_THEME

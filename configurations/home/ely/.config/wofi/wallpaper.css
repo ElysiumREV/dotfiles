@@ -1,0 +1,76 @@
+* {
+    all: unset;
+    font-family: 'JetBrains Mono Nerd Font', monospace;
+    font-size: 18px;
+    outline: none;
+    border: none;
+    text-shadow: none;
+    background-color: transparent;
+}
+
+window {
+    all: unset;
+    padding: 20px;
+    border-radius: 0px;
+    background-color: alpha(#1a1b26, .45);
+}
+
+#inner-box {
+    margin: 2px;
+    padding: 5px;
+    border: none;
+}
+
+#outer-box {
+    border: none;
+}
+
+#scroll {
+    margin: 0px;
+    padding: 30px;
+    border: none;
+}
+
+#input {
+    all: unset;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+    padding: 20px;
+    color: #c0caf5;
+    box-shadow: 1px 1px 5px rgba(0,0,0,.5);
+    border-radius: 10px;
+    background-color: alpha(#24283b, .7);
+}
+
+#input image {
+    color: #7aa2f7;
+    padding-right: 10px;
+}
+
+#text {
+    margin: 5px;
+    color: #c0caf5;
+}
+
+#entry {
+    all: unset;
+    padding: 20px 0px 20px 45px;
+}
+
+#entry arrow {
+    color: #7dcfff;
+}
+
+#entry:selected {
+    border-radius: 20px;
+    background-color: alpha(#7aa2f7, .2);
+}
+
+#entry:selected #text {
+    color: #7aa2f7;
+}
+
+#entry:drop(active) {
+    background-color: #f7768e !important;
+}

@@ -17,16 +17,15 @@ Item {
     readonly property bool isLow: batteryLevel <= 25 && !isPluggedIn
     readonly property bool isCritical: batteryLevel <= 15 && !isPluggedIn
 
-    // Colors
     readonly property color normalColor: {
-        if (isCritical)
-            return "#ef4444";
-        if (isLow)
-            return "#f59e0b";
-        return "#ebdbb2";
-    }
+    if (isCritical)
+        return "#f7768e"
+    if (isLow)
+        return "#e0af68"
+    return "#c0caf5"
+}
 
-    readonly property color chargingColor: "#2dd4bf"
+readonly property color chargingColor: "#7dcfff"
 
 
     Row {

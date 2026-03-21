@@ -6,7 +6,6 @@ import QtQuick.Layouts
 
 Item {
     id: root
-    // Theme
     property color colBg: "#1a1b26"
     property color colFg: "#c0caf5"
     property color colMuted: "#414868"

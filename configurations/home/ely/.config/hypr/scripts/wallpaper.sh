@@ -8,6 +8,6 @@ selected=$(find "$wallpaper_dir" -maxdepth 1 -type f \( -name "*.jpg" -o -name "
   | rofi -dmenu -show-icons -i -p "Wallpaper" -theme ~/.config/rofi/wallpaper.rasi)
 
 if [ -n "$selected" ]; then
-  awww img "$selected"
+  awww img --transition-fps 60 --transition-type random "$selected"
   ln -sf "$selected" "$HOME/Pictures/Wallpapers/.current-wallpaper.png"
 fi

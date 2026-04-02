@@ -61,7 +61,6 @@
     "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.qrc": "default",
     "*.qrc": "qt-core.qrcEditor"
   },
-  "workbench.colorCustomizations": null,
   "qt-core.additionalQtPaths": [
     {
       "name": "Qt-6.10.2-linux-g++_from_PATH",

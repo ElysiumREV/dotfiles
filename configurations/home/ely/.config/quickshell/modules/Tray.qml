@@ -8,10 +8,10 @@ Item {
 
     property var window
 
-    readonly property color colFg: "#c0caf5"
-    readonly property color colMuted: "#565f89"
-    readonly property color colAccent: "#7aa2f7"
-    readonly property color colSurface: "#24283b"
+    readonly property color colFg: "#f8f8f2"
+    readonly property color colMuted: "#75715e"
+    readonly property color colAccent: "#66d9ef"
+    readonly property color colSurface: "#2d2d29"
 
     implicitWidth: row.implicitWidth
     implicitHeight: row.implicitHeight
@@ -36,7 +36,7 @@ Item {
                     width: parent.width + 8
                     height: parent.height + 8
                     radius: 6
-                    color: hovered ? Qt.rgba(122/255,162/255,247/255,0.18) : "transparent"
+                    color: hovered ? Qt.rgba(139/255, 164/255, 176/255, 0.18) : "transparent"
                 }
 
                 Loader {

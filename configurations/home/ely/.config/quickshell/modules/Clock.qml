@@ -7,7 +7,7 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    property color colFg: "#c0caf5"
+    property color colFg: "#f8f8f2"
     property string fontFamily: "JetBrainsMono Nerd Font"
     property int fontSize: 14
     property string timeFormat: "dd MMM HH:mm"

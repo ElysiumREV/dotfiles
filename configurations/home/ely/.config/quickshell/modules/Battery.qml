@@ -18,15 +18,12 @@ Item {
     readonly property bool isCritical: batteryLevel <= 15 && !isPluggedIn
 
     readonly property color normalColor: {
-    if (isCritical)
-        return "#f7768e"
-    if (isLow)
-        return "#e0af68"
-    return "#c0caf5"
-}
+        if (isCritical) return "#f92672"   // monokai red
+        if (isLow)      return "#e6db74"   // monokai yellow
+        return "#f8f8f2"                   // monokai fg
+    }
 
-readonly property color chargingColor: "#7dcfff"
-
+    readonly property color chargingColor: "#66d9ef"  // monokai cyan
 
     Row {
         id: row
@@ -40,7 +37,6 @@ readonly property color chargingColor: "#7dcfff"
             font.weight: isLow ? Font.Bold : Font.Normal
             color: isPluggedIn ? chargingColor : normalColor
         }
-
 
         Item {
             width: 22
@@ -65,7 +61,6 @@ readonly property color chargingColor: "#7dcfff"
                     anchors.margins: 2.5
                     width: Math.max(0, (parent.width - 5) * root.percentage)
                     radius: 1.5
-
                     color: isPluggedIn ? chargingColor : normalColor
                 }
             }
@@ -85,7 +80,7 @@ readonly property color chargingColor: "#7dcfff"
                 anchors.centerIn: batteryBody
                 text: "⚡"
                 font.pixelSize: 9
-                color: batteryLevel > 50 ? "#000000" : "#ffffff"
+                color: batteryLevel > 50 ? "#181616" : "#c5c9c5"
             }
         }
     }

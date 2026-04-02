@@ -8,10 +8,10 @@ Item {
 
     property var barWindow
 
-    readonly property color tokyoFg: "#c0caf5"
-    readonly property color tokyoMuted: "#565f89"
-    readonly property color tokyoBlue: "#7aa2f7"
-    readonly property color tokyoYellow: "#e0af68"
+    readonly property color colFg: "#f8f8f2"
+    readonly property color colMuted: "#75715e"
+    readonly property color colBlue: "#66d9ef"
+    readonly property color colYellow: "#e6db74"
 
     readonly property var brightness: QsServices.Brightness
     readonly property bool isHovered: mouseArea.containsMouse
@@ -30,7 +30,7 @@ Item {
             font.family: "JetBrainsMono Nerd Font"
             font.pixelSize: 12
             font.weight: Font.Regular
-            color: tokyoMuted
+            color: colMuted
         }
 
         Text {
@@ -45,9 +45,9 @@ Item {
             font.pixelSize: 14
 
             color: {
-                if (isHovered) return tokyoBlue
-                if (percentage >= 75) return tokyoYellow
-                return tokyoFg
+                if (isHovered) return colBlue
+                if (percentage >= 75) return colYellow
+                return colFg
             }
         }
     }

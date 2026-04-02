@@ -6,12 +6,13 @@ import QtQuick.Layouts
 
 Item {
     id: root
-    property color colBg: "#1a1b26"
-    property color colFg: "#c0caf5"
-    property color colMuted: "#414868"
-    property color colCyan: "#7dcfff"
-    property color colBlue: "#7aa2f7"
-    property color colYellow: "#e0af68"
+    property color colBg: "#272822"
+    property color colFg: "#f8f8f2"
+    property color colMuted: "#75715e"
+    property color colCyan: "#66d9ef"
+    property color colPurple: "#ae81ff"
+    property color colDark: "#49483e"
+    property color colYellow: "#e6db74"
     property string fontFamily: "JetBrainsMono Nerd Font"
     property int fontSize: 14
 
@@ -35,7 +36,7 @@ Item {
                 property var ws: Hyprland.workspaces.values.find(w => w.id === index + 1)
                 property bool isActive: Hyprland.focusedWorkspace?.id === (index + 1)
                 text: toRoman(index + 1)
-                color: isActive ? colCyan : (ws ? colBlue : colMuted)
+                color: isActive ? colPurple : (ws ? colDark : colMuted)
                 font {
                     pixelSize: root.fontSize
                     bold: true

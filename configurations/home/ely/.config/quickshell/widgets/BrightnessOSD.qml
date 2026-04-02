@@ -1,27 +1,20 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Services.Pipewire
-import Quickshell.Widgets
+import "../services" as QsServices
 
 Scope {
     id: root
 
-    PwObjectTracker {
-        objects: [Pipewire.defaultAudioSink]
-    }
+    readonly property var brightness: QsServices.Brightness
+    readonly property int percentage: brightness?.percentage ?? 0
 
-    Connections {
-        target: Pipewire.defaultAudioSink?.audio
-
-        function onVolumeChanged() {
-            if (!root.startupComplete) return;
-            root.shouldShowOsd = true;
-            hideTimer.restart();
-        }
-    }
+    readonly property color monoFg: "#f8f8f2"
+    readonly property color monoMuted: "#75715e"
+    readonly property color monoYellow: "#e6db74"
 
     property bool shouldShowOsd: false
+    property int lastPercentage: percentage
     property bool startupComplete: false
 
     Timer {
@@ -31,20 +24,21 @@ Scope {
         onTriggered: root.startupComplete = true
     }
 
-    readonly property var volume: Pipewire.defaultAudioSink?.audio
-    readonly property int percentage: volume ? Math.round(volume.volume * 100) : 0
-    readonly property bool muted: volume?.mute ?? false
     readonly property string icon: {
-        if (!volume) return "󰕾"
-        if (muted) return "󰝟"
-        if (percentage <= 33) return "󰕿"
-        if (percentage <= 66) return "󰖀"
-        return "󰕾"
+        if (percentage >= 75) return "󰃠"
+        if (percentage >= 50) return "󰃟"
+        if (percentage >= 25) return "󰃞"
+        return "󰃝"
     }
 
-    readonly property color monoFg: "#f8f8f2"
-    readonly property color monoMuted: "#75715e"
-    readonly property color monoYellow: "#e6db74"
+    onPercentageChanged: {
+        if (!startupComplete) return;
+        if (percentage !== lastPercentage) {
+            root.shouldShowOsd = true;
+            hideTimer.restart();
+            lastPercentage = percentage;
+        }
+    }
 
     Timer {
         id: hideTimer
@@ -80,24 +74,22 @@ Scope {
                     spacing: 10
 
                     Text {
-                        id: volumeText
+                        id: brightnessText
                         text: root.percentage + "%"
                         font.family: "JetBrainsMono Nerd Font"
                         font.pixelSize: 14
                         font.weight: Font.Regular
-                        color: root.muted ? root.monoMuted : root.monoFg
-                        visible: !root.muted
+                        color: root.monoFg
                     }
 
                     Text {
-                        id: volumeIcon
+                        id: brightnessIcon
                         text: root.icon
                         font.family: "Material Design Icons"
                         font.pixelSize: 18
 
                         color: {
-                            if (root.muted) return root.monoMuted
-                            if (root.percentage >= 66) return root.monoYellow
+                            if (root.percentage >= 75) return root.monoYellow
                             return root.monoFg
                         }
                     }
@@ -117,8 +109,7 @@ Scope {
                             height: parent.height
                             radius: 20
                             color: {
-                                if (root.muted) return root.monoMuted
-                                if (root.percentage >= 66) return root.monoYellow
+                                if (root.percentage >= 75) return root.monoYellow
                                 return root.monoFg
                             }
 

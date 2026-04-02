@@ -5,4 +5,5 @@ import "widgets"
 Scope {
     Bar {}
     VolumeOSD {}
+    BrightnessOSD {}
 }

@@ -1,13 +1,15 @@
-background-color=#282828
-text-color=#ebdbb2
-border-color=#98971a
-progress-color=#458588
+background-color=#272822dd
+text-color=#f8f8f2
+border-color=#f92672
+progress-color=#66d9ef
 
 border-size=2
 border-radius=8
 padding=12
 margin=10
 
+icons=1
+max-icon-size=48
 default-timeout=6000
 max-visible=5
 anchor=top-right

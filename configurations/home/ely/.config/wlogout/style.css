@@ -4,17 +4,17 @@
 }
 
 window {
-  background-color: rgba(40, 40, 40, 0.9);
+  background-color: rgba(39, 40, 34, 0.95); /* monokai bg */
   border-radius: 8px;
-  border: 2px solid rgba(152, 151, 26, 0.6);
+  border: 2px solid rgba(249, 38, 114, 0.5); /* monokai red */
 }
 
 button {
-  color: #ebdbb2;
-  background-color: #3c3836;
+  color: #f8f8f2; /* monokai fg */
+  background-color: #2d2d29; /* monokai surface */
   border-style: solid;
   border-width: 3px;
-  border-color: #98971a;
+  border-color: #ae81ff; /* monokai purple */
   border-radius: 6px;
   background-repeat: no-repeat;
   background-position: center;
@@ -26,9 +26,9 @@ button {
 button:hover,
 button:active,
 button:focus {
-  background-color: #504945;
-  color: #fbf1c7;
-  border-color: #689d6a;
+  background-color: #49483e; /* monokai gray */
+  color: #f8f8f2; /* monokai fg */
+  border-color: #f92672; /* monokai red */
 }
 
 #lock {

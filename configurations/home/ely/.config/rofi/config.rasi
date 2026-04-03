@@ -1,4 +1,3 @@
-/* ---- Configuration ---- */
 configuration {
     modi:                       "drun,filebrowser,window,run";
     font:                       "JetBrains Mono Nerd Font 10";
@@ -16,15 +15,16 @@ configuration {
 }
 
 * {
-    background:        #282828;
-    surface:           #3c3836;
-    surface-alt:       #504945;
-    primary:           #d79921;
-    secondary:         #b16286;
-    accent:            #689d6a;
-    on-surface:        #ebdbb2;
-    on-surface-muted:  #a89984;
-    error:             #cc241d;
+    background:        #272822;
+    surface:           #2d2d29;
+    surface-alt:       #383830;
+    primary:           #f92672;
+    secondary:         #ae81ff;
+    accent:            #66d9ef;
+    on-surface:        #f8f8f2;
+    on-surface-muted:  #75715e;
+    error:             #fd971f;
+
     border-width:      2px;
     border-radius:     18px;
     current-image:     none;
@@ -32,18 +32,18 @@ configuration {
 
 // Main //
 window {
-    height:                      26em;
-    width:                       44em;
-    transparency:                "real";
-    fullscreen:                  false;
-    enabled:                     true;
-    cursor:                      "default";
-    spacing:                     0em;
-    padding:                     0em;
-    border:                      @border-width;
-    border-color:                @primary;
-    border-radius:               @border-radius;
-    background-color:            @background;
+  height: 24em;
+  width: 44em;
+  transparency: "real";
+  fullscreen: false;
+  enabled: true;
+  cursor: "default";
+  spacing: 0em;
+  padding: 0em;
+  border: @border-width;
+  border-color: @primary;
+  border-radius: @border-radius;
+  background-color: @background;
 }
 
 mainbox {
@@ -79,17 +79,17 @@ mode-switcher {
 }
 
 button {
-    padding:                     15px;
-    border-radius:               2em;
-    border:                      0;
-    cursor:                      pointer;
-    background-color:            @background;
-    text-color:                  @on-surface;
+  padding: 20px;         /* bigger tap targets */
+  border-radius: 2em;
+  border: 0;
+  cursor: pointer;
+  background-color: @background;
+  text-color: @on-surface;
 }
 
 button selected {
-    background-color:            @primary;
-    text-color:                  #282828;
+    background-color: @primary;
+    text-color: #1d2021;
 }
 
 // Inputs //
@@ -102,7 +102,7 @@ inputbar {
 textbox-prompt-colon {
     enabled:                     true;
     expand:                      false;
-    str:                         "  ";
+    str:                         " ";
     padding:                     1em 0.3em 0 0;
     text-color:                  @on-surface;
     background-color:            transparent;
@@ -129,21 +129,20 @@ listbox {
 }
 
 listview {
-    padding:                     1.5em;
-    spacing:                     0.5em;
-    enabled:                     true;
-    columns:                     1;
-    lines:                       1;
-    cycle:                       true;
-    dynamic:                     true;
-    scrollbar:                   false;
-    layout:                      vertical;
-    reverse:                     false;
-    fixed-height:                true;
-    fixed-columns:               true;
-    cursor:                      "default";
-    background-color:            transparent;
-    text-color:                  @on-surface;
+  padding: 1.5em;
+  spacing: 0.5em;
+  enabled: true;
+  columns: 1;
+  lines: 8;              /* explicit number of visible items */
+  cycle: true;
+  dynamic: true;
+  scrollbar: false;
+  layout: vertical;
+  fixed-height: false;
+  fixed-columns: true;
+  cursor: "default";
+  background-color: transparent;
+  text-color: @on-surface;
 }
 
 
@@ -158,9 +157,9 @@ element {
 }
 
 element selected.normal {
-    background-color:            @surface-alt;
-    text-color:                  @on-surface;
-    border-radius:               1.5em;
+    background-color: #2f3549;
+    text-color: @on-surface;
+    border-radius: 1.5em;
 }
 
 element normal.normal {

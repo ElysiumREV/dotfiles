@@ -1,8 +1,6 @@
-font_family JetBrainsMono Nerd Font
-
-
+font_family JetBrainsMonoNerdFont 
 
 # BEGIN_KITTY_THEME
-# Tokyo Night
-include current-theme.conf
+# Tokyo Night Storm
+include tokyo-night-storm.conf
 # END_KITTY_THEME

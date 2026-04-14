@@ -8,10 +8,20 @@ Item {
 
     property var window
 
-    readonly property color colFg: "#f8f8f2"
-    readonly property color colMuted: "#75715e"
-    readonly property color colAccent: "#66d9ef"
-    readonly property color colSurface: "#2d2d29"
+    property color colBg: "#13151A"
+            property color colFg: "#d4c5b0"
+            property color colText: "#F0F1F5"
+            property color colTextSec: "#B8BCCA"
+            property color colMuted: "#7C8291"
+            property color colDisabled: "#505563"
+            property color colHighlight: "#A08EC4"
+            property color colBlue: "#7EA3CC"
+            property color colYellow: "#e6c97a"
+            property color colRed: "#C47A7A"
+            property color colOrange: "#C4956A"
+            property color colGreen: "#7EBD9B"
+            property string fontFamily: "JetBrainsMono Nerd Font"
+            property int fontSize: 14
 
     implicitWidth: row.implicitWidth
     implicitHeight: row.implicitHeight
@@ -62,21 +72,12 @@ Item {
                     Item {
                         anchors.fill: parent
 
-                        Image {
-                            id: image
-                            anchors.fill: parent
-                            fillMode: Image.PreserveAspectFit
-                            sourceSize.width: 16
-                            sourceSize.height: 16
-                            source: modelData.iconPixmap?.[0]?.toString() ?? ""
-                        }
-
                         Text {
                             anchors.centerIn: parent
-                            text: modelData.icon || "•"
+                            text: modelData.id || modelData.name || "•"
+                            font.family: root.fontFamily
                             font.pixelSize: 14
                             color: root.colFg
-                            visible: image.status !== Image.Ready
                         }
                     }
                 }

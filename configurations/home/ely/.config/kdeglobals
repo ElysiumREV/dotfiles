@@ -1,0 +1,11 @@
+[[General]
+TerminalApplication=kitty -1
+
+[Icons]
+Theme=Tela-grey-dark
+
+[UiSettings]
+ColorScheme=qt6ct
+
+[KFileDialog Settings]
+Automatically select filename extension=true

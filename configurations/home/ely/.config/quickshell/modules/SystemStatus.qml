@@ -8,16 +8,20 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    property color colBg: "#272822"
-    property color colFg: "#f8f8f2"
-    property color colMuted: "#75715e"
-    property color colCyan: "#66d9ef"
-    property color colBlue: "#66d9ef"
-    property color colYellow: "#e6db74"
-    property color colRed: "#f92672"
-
-    property string fontFamily: "JetBrainsMono Nerd Font"
-    property int fontSize: 14
+    property color colBg: "#13151A"
+            property color colFg: "#d4c5b0"
+            property color colText: "#F0F1F5"
+            property color colTextSec: "#B8BCCA"
+            property color colMuted: "#7C8291"
+            property color colDisabled: "#505563"
+            property color colHighlight: "#A08EC4"
+            property color colBlue: "#7EA3CC"
+            property color colYellow: "#e6c97a"
+            property color colRed: "#C47A7A"
+            property color colOrange: "#C4956A"
+            property color colGreen: "#7EBD9B"
+            property string fontFamily: "JetBrainsMono Nerd Font"
+            property int fontSize: 14
 
     implicitHeight: 30
     implicitWidth: rowLayout.implicitWidth
@@ -66,7 +70,7 @@ Item {
                 color: {
                     if (cpuProc.cpuUsage > 85) return root.colRed
                     if (cpuProc.cpuUsage > 60) return root.colYellow
-                    return root.colCyan
+                    return root.colHighlight
                 }
             }
 
@@ -110,7 +114,7 @@ Item {
                 text: ""
                 font.family: root.fontFamily
                 font.pixelSize: root.fontSize
-                color: root.colBlue
+                color: root.colHighlight
             }
 
             Text {

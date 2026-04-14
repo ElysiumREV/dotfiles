@@ -16,14 +16,28 @@ Item {
     readonly property bool isPluggedIn: isCharging || isFullyCharged
     readonly property bool isLow: batteryLevel <= 25 && !isPluggedIn
     readonly property bool isCritical: batteryLevel <= 15 && !isPluggedIn
+    property color colBg: "#13151A"
+            property color colFg: "#d4c5b0"
+            property color colText: "#F0F1F5"
+            property color colTextSec: "#B8BCCA"
+            property color colMuted: "#7C8291"
+            property color colDisabled: "#505563"
+            property color colHighlight: "#A08EC4"
+            property color colBlue: "#7EA3CC"
+            property color colYellow: "#e6c97a"
+            property color colRed: "#C47A7A"
+            property color colOrange: "#C4956A"
+            property color colGreen: "#7EBD9B"
+            property string fontFamily: "JetBrainsMono Nerd Font"
+            property int fontSize: 14
 
     readonly property color normalColor: {
-        if (isCritical) return "#f92672"   // monokai red
-        if (isLow)      return "#e6db74"   // monokai yellow
-        return "#f8f8f2"                   // monokai fg
+        if (isCritical) return "#c0392b"
+        if (isLow)      return "#e6c97a"
+        return "#d4c5b0"
     }
 
-    readonly property color chargingColor: "#66d9ef"  // monokai cyan
+    readonly property color chargingColor: "#d4c5b0"
 
     Row {
         id: row
@@ -78,8 +92,9 @@ Item {
             Text {
                 visible: isPluggedIn
                 anchors.centerIn: batteryBody
-                text: "⚡"
-                font.pixelSize: 9
+                text: ""
+                font.family: root.fontFamily
+                font.pixelSize: 10
                 color: batteryLevel > 50 ? "#181616" : "#c5c9c5"
             }
         }

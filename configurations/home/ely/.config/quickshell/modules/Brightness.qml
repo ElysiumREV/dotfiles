@@ -8,10 +8,20 @@ Item {
 
     property var barWindow
 
-    readonly property color colFg: "#f8f8f2"
-    readonly property color colMuted: "#75715e"
-    readonly property color colBlue: "#66d9ef"
-    readonly property color colYellow: "#e6db74"
+    property color colBg: "#13151A"
+            property color colFg: "#d4c5b0"
+            property color colText: "#F0F1F5"
+            property color colTextSec: "#B8BCCA"
+            property color colMuted: "#7C8291"
+            property color colDisabled: "#505563"
+            property color colHighlight: "#A08EC4"
+            property color colBlue: "#7EA3CC"
+            property color colYellow: "#e6c97a"
+            property color colRed: "#C47A7A"
+            property color colOrange: "#C4956A"
+            property color colGreen: "#7EBD9B"
+            property string fontFamily: "JetBrainsMono Nerd Font"
+            property int fontSize: 14
 
     readonly property var brightness: QsServices.Brightness
     readonly property bool isHovered: mouseArea.containsMouse
@@ -29,8 +39,8 @@ Item {
             text: percentage + "%"
             font.family: "JetBrainsMono Nerd Font"
             font.pixelSize: 12
-            font.weight: Font.Regular
-            color: colMuted
+            font.weight: Font.Normal
+            color: colFg
         }
 
         Text {
@@ -41,7 +51,7 @@ Item {
                 return "󰃝"
             }
 
-            font.family: "Material Design Icons"
+            font.family: root.fontFamily
             font.pixelSize: 14
 
             color: {

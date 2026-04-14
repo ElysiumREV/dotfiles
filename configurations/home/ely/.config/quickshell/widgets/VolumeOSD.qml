@@ -6,6 +6,20 @@ import Quickshell.Widgets
 
 Scope {
     id: root
+    property color colBg: "#13151A"
+            property color colFg: "#d4c5b0"
+            property color colText: "#F0F1F5"
+            property color colTextSec: "#B8BCCA"
+            property color colMuted: "#7C8291"
+            property color colDisabled: "#505563"
+            property color colHighlight: "#A08EC4"
+            property color colBlue: "#7EA3CC"
+            property color colYellow: "#e6c97a"
+            property color colRed: "#C47A7A"
+            property color colOrange: "#C4956A"
+            property color colGreen: "#7EBD9B"
+            property string fontFamily: "JetBrainsMono Nerd Font"
+            property int fontSize: 14
 
     PwObjectTracker {
         objects: [Pipewire.defaultAudioSink]
@@ -42,9 +56,9 @@ Scope {
         return "󰕾"
     }
 
-    readonly property color monoFg: "#f8f8f2"
-    readonly property color monoMuted: "#75715e"
-    readonly property color monoYellow: "#e6db74"
+    readonly property color monoFg: "#d4c5b0"
+    readonly property color monoMuted: "#2a1a1a"
+    readonly property color monoYellow: "#e6c97a"
 
     Timer {
         id: hideTimer
@@ -69,7 +83,7 @@ Scope {
             Rectangle {
                 anchors.fill: parent
                 radius: height / 2
-                color: "#80000000"
+                color: "#cc181616"
 
                 RowLayout {
                     anchors {
@@ -92,7 +106,7 @@ Scope {
                     Text {
                         id: volumeIcon
                         text: root.icon
-                        font.family: "Material Design Icons"
+                        font.family: root.fontFamily
                         font.pixelSize: 18
 
                         color: {
@@ -131,7 +145,7 @@ Scope {
                             anchors.fill: parent
                             radius: 20
                             color: "transparent"
-                            border.color: "#50ffffff"
+                            border.color: "#50c5c9c5"
                             border.width: 1
                         }
                     }

@@ -67,5 +67,6 @@
       "path": "/usr/lib/qt6/bin/qtpaths"
     }
   ],
-  "workbench.iconTheme": "material-icon-theme"
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorTheme": "Dark+"
 }

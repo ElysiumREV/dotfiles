@@ -48,7 +48,7 @@ Singleton {
     }
   }
 
-  function setProfile(profile: string) {
+  function setProfile(profile) {
     if (!isAvailable) return
     if (!availableProfiles.includes(profile)) return
 

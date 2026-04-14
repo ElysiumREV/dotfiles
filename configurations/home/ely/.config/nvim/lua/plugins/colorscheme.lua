@@ -1,17 +1,11 @@
 return {
   {
-    "tanvirtin/monokai.nvim",
-    lazy = false,
-    priority = 1000,
-    opts = {
-      palette = "classic",
-    },
+    "nyngwang/nvimgelion",
   },
-
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "monokai",
+      colorscheme = "nvimgelion",
     },
   },
 }

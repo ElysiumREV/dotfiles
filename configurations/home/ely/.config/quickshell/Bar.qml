@@ -1,8 +1,10 @@
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Services.UPower
 import QtQuick
 import QtQuick.Layouts
-import "modules"
+import "modules" as QsModules
+import "services" as QsServices
 
 Variants {
     model: Quickshell.screens
@@ -14,14 +16,23 @@ Variants {
             required property var modelData
             screen: modelData
 
-            property color colBg: "#272822"
-            property color colFg: "#f8f8f2"
-            property color colMuted: "#75715e"
-            property color colCyan: "#66d9ef"
-            property color colBlue: "#66d9ef"
-            property color colYellow: "#e6db74"
+            property color colBg: "#13151A"
+            property color colFg: "#d4c5b0"
+            property color colText: "#F0F1F5"
+            property color colTextSec: "#B8BCCA"
+            property color colMuted: "#7C8291"
+            property color colDisabled: "#505563"
+            property color colHighlight: "#A08EC4"
+            property color colBlue: "#7EA3CC"
+            property color colYellow: "#e6c97a"
+            property color colRed: "#C47A7A"
+            property color colOrange: "#C4956A"
+            property color colGreen: "#7EBD9B"
             property string fontFamily: "JetBrainsMono Nerd Font"
             property int fontSize: 14
+
+            property int barInset: 6
+            property int barHeight: 30
 
             anchors {
                 top: true
@@ -29,25 +40,46 @@ Variants {
                 right: true
             }
 
-            implicitHeight: 30
-            color: colBg
+            margins.top: barInset
+            margins.left: barInset
+            margins.right: barInset
+
+            implicitHeight: barHeight
+            color: "transparent"
 
             exclusionMode: ExclusionMode.Normal
             exclusiveZone: implicitHeight
-            WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.layer: WlrLayer.Bottom
 
             Rectangle {
-                anchors.fill: parent
-                color: colBg
+                id: barSurface
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                }
+                height: barHeight
+                radius: 10
+                color: Qt.rgba(colBg.r, colBg.g, colBg.b, 0.88)
+                clip: true
 
                 Item {
                     anchors.fill: parent
                     anchors.leftMargin: 8
                     anchors.rightMargin: 8
 
-                    SystemStatus {
+                    Row {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
+                        spacing: 8
+
+                        QsModules.SystemStatus {
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        QsModules.Mpd {
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
                     }
 
                     Row {
@@ -55,29 +87,33 @@ Variants {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 8
 
-                        Tray {
+                        QsModules.Tray {
                             anchors.verticalCenter: parent.verticalCenter
                             window: root
                         }
 
-                        Volume {
+                        QsModules.Volume {
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
-                        Brightness {
+                        // Só mostra Brightness em dispositivos com suporte (não desktop)
+                        QsModules.Brightness {
                             anchors.verticalCenter: parent.verticalCenter
+                            visible: QsModules.Brightness.supported
                         }
 
-                        Battery {
+                        // Só mostra Battery quando há bateria disponível
+                        QsModules.Battery {
                             anchors.verticalCenter: parent.verticalCenter
+                            visible: UPower.displayDevice !== null
                         }
 
-                        Clock {
+                        QsModules.Clock {
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
 
-                    Workspaces {
+                    QsModules.Workspaces {
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.verticalCenter: parent.verticalCenter
                     }

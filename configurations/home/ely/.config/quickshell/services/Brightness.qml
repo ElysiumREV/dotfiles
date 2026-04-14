@@ -9,14 +9,44 @@ Singleton {
 
     property real brightness: 0
     property int maxValue: 1
+    property bool supported: false
 
     readonly property int percentage: Math.round(brightness * 100)
 
-    readonly property string backlightPath: "/sys/class/backlight/amdgpu_bl1/brightness"
-    readonly property string maxBrightnessPath: "/sys/class/backlight/amdgpu_bl1/max_brightness"
+    property string backlightPath: ""
+    property string maxBrightnessPath: ""
 
     Component.onCompleted: {
-        maxBrightnessProcess.running = true
+        detectBacklight()
+    }
+
+    function detectBacklight() {
+        var basePath = "/sys/class/backlight"
+        var possiblePaths = [
+            basePath + "/amdgpu_bl1",
+            basePath + "/amdgpu_bl0",
+            basePath + "/intel_backlight",
+            basePath + "/acpi_video0",
+            basePath + "/acpi_video1",
+            basePath + "/radeon_bl0",
+            basePath + "/nvidia_0"
+        ]
+
+        for (var i = 0; i < possiblePaths.length; i++) {
+            var path = possiblePaths[i]
+            var comp = Qt.createComponent(path + "/brightness")
+            if (comp !== null) {
+                backlightPath = path + "/brightness"
+                maxBrightnessPath = path + "/max_brightness"
+                supported = true
+                console.log("[Brightness] Found backlight at:", path)
+                maxBrightnessProcess.running = true
+                return
+            }
+        }
+
+        supported = false
+        console.log("[Brightness] No backlight device found")
     }
 
     function readBrightness() {

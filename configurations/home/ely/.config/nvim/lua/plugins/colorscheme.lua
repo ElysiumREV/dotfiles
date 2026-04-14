@@ -1,11 +1,11 @@
 return {
   {
-    "nyngwang/nvimgelion",
+    "vague-theme/vague.nvim",
   },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "nvimgelion",
+      colorscheme = "vague",
     },
   },
 }

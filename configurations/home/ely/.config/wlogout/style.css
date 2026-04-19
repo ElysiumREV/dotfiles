@@ -4,17 +4,17 @@
 }
 
 window {
-  background-color: rgba(39, 40, 34, 0.95); /* monokai bg */
+  background-color: rgba(19, 21, 26, 0.95);
   border-radius: 8px;
-  border: 2px solid rgba(249, 38, 114, 0.5); /* monokai red */
+  border: 2px solid rgba(160, 142, 196, 0.5);
 }
 
 button {
-  color: #f8f8f2; /* monokai fg */
-  background-color: #2d2d29; /* monokai surface */
+  color: #d4c5b0;
+  background-color: #1A1D24;
   border-style: solid;
   border-width: 3px;
-  border-color: #ae81ff; /* monokai purple */
+  border-color: #A08EC4;
   border-radius: 6px;
   background-repeat: no-repeat;
   background-position: center;
@@ -26,23 +26,20 @@ button {
 button:hover,
 button:active,
 button:focus {
-  background-color: #49483e; /* monokai gray */
-  color: #f8f8f2; /* monokai fg */
-  border-color: #f92672; /* monokai red */
+  background-color: #2A2D35;
+  color: #d4c5b0;
+  border-color: #7EA3CC;
 }
 
 #lock {
   background-image: url("./icons/lock.png");
 }
-
 #shutdown {
   background-image: url("./icons/power.png");
 }
-
 #logout {
   background-image: url("./icons/logout.png");
 }
-
 #reboot {
   background-image: url("./icons/restart.png");
 }

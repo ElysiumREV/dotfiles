@@ -1,26 +1,27 @@
-sw_volume: 50
+sw_volume: 25
 audio_device_state:1:PipeWire Direct
 state: pause
-current: 0
-time: 8.865
+current: 4
+time: 30.598
 random: 0
 repeat: 0
-single: 0
+single: 1
 consume: 0
 crossfade: 0
 mixrampdb: 0
 mixrampdelay: -1
 lastloadedplaylist: 
 playlist_begin
-0:Album - loveless/01 - only shallow.mp3
-1:Album - loveless/02 - loomer.mp3
-2:Album - loveless/03 - touched.mp3
-3:Album - loveless/04 - to here knows when.mp3
-4:Album - loveless/05 - when you sleep.mp3
-5:Album - loveless/06 - i only said.mp3
-6:Album - loveless/07 - come in alone.mp3
-7:Album - loveless/08 - sometimes.mp3
-8:Album - loveless/09 - blown a wish.mp3
-9:Album - loveless/10 - what you want.mp3
-10:Album - loveless/11 - soon.mp3
+0:Album - OK Computer/01 - Airbag.mp3
+1:Album - OK Computer/02 - Paranoid Android.mp3
+2:Album - OK Computer/03 - Subterranean Homesick Alien.mp3
+3:Album - OK Computer/04 - Exit Music (For A Film).mp3
+4:Album - OK Computer/05 - Let Down.mp3
+5:Album - OK Computer/06 - Karma Police.mp3
+6:Album - OK Computer/07 - Fitter Happier.mp3
+7:Album - OK Computer/08 - Electioneering.mp3
+8:Album - OK Computer/09 - Climbing Up the Walls.mp3
+9:Album - OK Computer/10 - No Surprises.mp3
+10:Album - OK Computer/11 - Lucky.mp3
+11:Album - OK Computer/12 - The Tourist.mp3
 playlist_end

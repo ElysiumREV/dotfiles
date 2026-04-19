@@ -1,17 +1,11 @@
 return {
   {
-    "tanvirtin/monokai.nvim",
-    lazy = false,
-    priority = 1000,
-    opts = {
-      palette = "classic",
-    },
+    "vague-theme/vague.nvim",
   },
-
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "monokai",
+      colorscheme = "vague",
     },
   },
 }

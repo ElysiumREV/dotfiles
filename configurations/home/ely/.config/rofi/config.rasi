@@ -15,15 +15,15 @@ configuration {
 }
 
 * {
-    background:        #272822;
-    surface:           #2d2d29;
-    surface-alt:       #383830;
-    primary:           #f92672;
-    secondary:         #ae81ff;
-    accent:            #66d9ef;
-    on-surface:        #f8f8f2;
-    on-surface-muted:  #75715e;
-    error:             #fd971f;
+    background:        #13151A;
+    surface:           #1A1D24;
+    surface-alt:       #2A2D35;
+    primary:           #A08EC4;
+    secondary:         #7EA3CC;
+    accent:            #7EBD9B;
+    on-surface:        #d4c5b0;
+    on-surface-muted:  #7C8291;
+    error:             #C47A7A;
 
     border-width:      2px;
     border-radius:     18px;
@@ -89,7 +89,7 @@ button {
 
 button selected {
     background-color: @primary;
-    text-color: #1d2021;
+    text-color: #13151A;
 }
 
 // Inputs //
@@ -157,7 +157,7 @@ element {
 }
 
 element selected.normal {
-    background-color: #2f3549;
+    background-color: rgba(160, 142, 196, 0.2);
     text-color: @on-surface;
     border-radius: 1.5em;
 }

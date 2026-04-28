@@ -1,9 +1,11 @@
 return {
-  { "ellisonleao/gruvbox.nvim" },
+  {
+    "vague-theme/vague.nvim",
+  },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "gruvbox",
+      colorscheme = "vague",
     },
   },
 }

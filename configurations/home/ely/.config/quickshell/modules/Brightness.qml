@@ -5,30 +5,21 @@ import "../services" as QsServices
 
 Item {
     id: root
-
+    property string fontFamily: "JetBrainsMono Nerd Font"
     property var barWindow
 
     property color colBg: "#13151A"
-            property color colFg: "#d4c5b0"
-            property color colText: "#F0F1F5"
-            property color colTextSec: "#B8BCCA"
-            property color colMuted: "#7C8291"
-            property color colDisabled: "#505563"
-            property color colHighlight: "#A08EC4"
-            property color colBlue: "#7EA3CC"
-            property color colYellow: "#e6c97a"
-            property color colRed: "#C47A7A"
-            property color colOrange: "#C4956A"
-            property color colGreen: "#7EBD9B"
-            property string fontFamily: "JetBrainsMono Nerd Font"
-            property int fontSize: 14
+    property color colFg: "#d4c5b0"
 
     readonly property var brightness: QsServices.Brightness
     readonly property bool isHovered: mouseArea.containsMouse
-    readonly property int percentage: brightness?.percentage ?? 0
 
-    implicitWidth: brightnessRow.implicitWidth
-    implicitHeight: brightnessRow.implicitHeight
+    readonly property int percentage: brightness ? brightness.percentage || 0 : 0
+
+    visible: brightness.supported
+
+    implicitWidth: brightnessRow.implicitWidth || 0
+    implicitHeight: brightnessRow.implicitHeight || 0
 
     RowLayout {
         id: brightnessRow
@@ -39,7 +30,6 @@ Item {
             text: percentage + "%"
             font.family: "JetBrainsMono Nerd Font"
             font.pixelSize: 12
-            font.weight: Font.Normal
             color: colFg
         }
 
@@ -53,12 +43,7 @@ Item {
 
             font.family: root.fontFamily
             font.pixelSize: 14
-
-            color: {
-                if (isHovered) return colBlue
-                if (percentage >= 75) return colYellow
-                return colFg
-            }
+            color: isHovered ? "#7EA3CC" : colFg
         }
     }
 
@@ -66,12 +51,13 @@ Item {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
 
         onWheel: wheel => {
-            if (wheel.angleDelta.y > 0 && percentage < 100)
+            if (!brightness) return
+
+            if (wheel.angleDelta.y > 0)
                 brightness.increaseBrightness()
-            else if (wheel.angleDelta.y < 0 && percentage > 0)
+            else
                 brightness.decreaseBrightness()
         }
     }

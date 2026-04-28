@@ -21,46 +21,50 @@ Singleton {
     }
 
     function detectBacklight() {
-        var basePath = "/sys/class/backlight"
-        var possiblePaths = [
-            basePath + "/amdgpu_bl1",
-            basePath + "/amdgpu_bl0",
-            basePath + "/intel_backlight",
-            basePath + "/acpi_video0",
-            basePath + "/acpi_video1",
-            basePath + "/radeon_bl0",
-            basePath + "/nvidia_0"
-        ]
+    var basePath = "/sys/class/backlight"
 
-        for (var i = 0; i < possiblePaths.length; i++) {
-            var path = possiblePaths[i]
-            var comp = Qt.createComponent(path + "/brightness")
-            if (comp !== null) {
-                backlightPath = path + "/brightness"
-                maxBrightnessPath = path + "/max_brightness"
-                supported = true
-                console.log("[Brightness] Found backlight at:", path)
-                maxBrightnessProcess.running = true
-                return
-            }
-        }
+    var candidates = [
+        "amdgpu_bl1",
+        "amdgpu_bl0",
+        "intel_backlight",
+        "acpi_video0"
+    ]
 
-        supported = false
-        console.log("[Brightness] No backlight device found")
+    for (var i = 0; i < candidates.length; i++) {
+        var path = basePath + "/" + candidates[i]
+
+        // IMPORTANT: only accept real sysfs directories
+        if (!Qt.resolvedUrl(path)) continue
+
+        backlightPath = path + "/brightness"
+        maxBrightnessPath = path + "/max_brightness"
+
+        console.log("[Brightness] Using backlight:", path)
+
+        supported = true
+        maxBrightnessProcess.running = true
+        return
     }
 
+    console.log("[Brightness] No valid backlight found")
+    supported = false
+}
+
     function readBrightness() {
+        if (!supported) return
         brightnessReadProcess.running = true
     }
 
     function setBrightness(value) {
+        if (!supported) return
+
         const clamped = Math.max(0, Math.min(1, value))
         const writeValue = Math.round(clamped * maxValue)
 
         setBrightnessProcess.command = [
-            "/bin/sh",
+            "sh",
             "-c",
-            "echo " + writeValue + " > " + backlightPath
+            "echo " + writeValue + " | tee " + backlightPath + " >/dev/null"
         ]
 
         setBrightnessProcess.running = true
@@ -77,45 +81,49 @@ Singleton {
 
     Process {
         id: maxBrightnessProcess
-        command: ["/bin/cat", maxBrightnessPath]
+        command: ["cat", maxBrightnessPath]
 
         stdout: SplitParser {
             onRead: data => {
                 const value = parseInt(data.trim())
-                if (!isNaN(value) && value > 0)
+                if (!isNaN(value) && value > 0) {
                     maxValue = value
+                }
             }
         }
 
         onExited: {
             brightnessReadProcess.running = true
-            updateTimer.running = true
         }
     }
 
     Process {
         id: brightnessReadProcess
-        command: ["/bin/cat", backlightPath]
+        command: ["cat", backlightPath]
 
         stdout: SplitParser {
             onRead: data => {
                 const value = parseInt(data.trim())
-                if (!isNaN(value) && maxValue > 0)
+                if (!isNaN(value) && maxValue > 0) {
                     brightness = value / maxValue
+                }
             }
         }
     }
 
     Process {
         id: setBrightnessProcess
-        onExited: brightnessReadProcess.running = true
+
+        onExited: {
+            brightnessReadProcess.running = true
+        }
     }
 
     Timer {
-        id: updateTimer
-        interval: 100
+        id: pollTimer
+        interval: 200
         repeat: true
-        running: false
+        running: supported
         onTriggered: brightnessReadProcess.running = true
     }
 }

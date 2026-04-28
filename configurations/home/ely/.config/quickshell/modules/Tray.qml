@@ -2,26 +2,12 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.SystemTray
+import "../Theme.qml" as QsTheme
 
 Item {
     id: root
 
     property var window
-
-    property color colBg: "#13151A"
-            property color colFg: "#d4c5b0"
-            property color colText: "#F0F1F5"
-            property color colTextSec: "#B8BCCA"
-            property color colMuted: "#7C8291"
-            property color colDisabled: "#505563"
-            property color colHighlight: "#A08EC4"
-            property color colBlue: "#7EA3CC"
-            property color colYellow: "#e6c97a"
-            property color colRed: "#C47A7A"
-            property color colOrange: "#C4956A"
-            property color colGreen: "#7EBD9B"
-            property string fontFamily: "JetBrainsMono Nerd Font"
-            property int fontSize: 14
 
     implicitWidth: row.implicitWidth
     implicitHeight: row.implicitHeight
@@ -75,9 +61,9 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: modelData.id || modelData.name || "•"
-                            font.family: root.fontFamily
-                            font.pixelSize: 14
-                            color: root.colFg
+                            font.family: QsTheme.fontFamily
+                            font.pixelSize: QsTheme.fontSize
+                            color: QsTheme.colFg
                         }
                     }
                 }
@@ -89,12 +75,12 @@ Item {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     hoverEnabled: true
 
-                    onClicked: mouse => {
+                    onPressed: mouse => {
                         if (mouse.button === Qt.LeftButton) {
                             modelData.activate()
                         } else if (mouse.button === Qt.RightButton && modelData.hasMenu) {
-                            const global = mapToItem(root.window.contentItem, width / 2, height)
-                            modelData.display(root.window, global.x, global.y)
+                            const pt = mapToItem(root.window.contentItem, Qt.point(width / 2, height))
+                            modelData.display(root.window, pt.x, pt.y)
                         }
                     }
                 }

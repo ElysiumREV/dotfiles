@@ -98,14 +98,13 @@ Variants {
 
                         // Só mostra Brightness em dispositivos com suporte (não desktop)
                         QsModules.Brightness {
-                            anchors.verticalCenter: parent.verticalCenter
-                            visible: QsModules.Brightness.supported
+                          anchors.verticalCenter: parent.verticalCenter
                         }
 
                         // Só mostra Battery quando há bateria disponível
                         QsModules.Battery {
                             anchors.verticalCenter: parent.verticalCenter
-                            visible: UPower.displayDevice !== null
+                            visible: !!UPower.displayDevice && UPower.displayDevice.isPresent
                         }
 
                         QsModules.Clock {

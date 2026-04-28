@@ -26,14 +26,14 @@ Scope {
     }
 
     Connections {
-        target: Pipewire.defaultAudioSink?.audio
+    target: root.volume || null
 
-        function onVolumeChanged() {
-            if (!root.startupComplete) return;
-            root.shouldShowOsd = true;
-            hideTimer.restart();
-        }
+    function onVolumeChanged() {
+        if (!root.startupComplete) return;
+        root.shouldShowOsd = true;
+        hideTimer.restart();
     }
+}
 
     property bool shouldShowOsd: false
     property bool startupComplete: false

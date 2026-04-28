@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 wallpaper_dir="$HOME/Pictures/Wallpapers"
 
 selected=$(find "$wallpaper_dir" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) -not -name ".*" \

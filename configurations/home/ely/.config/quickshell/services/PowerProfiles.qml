@@ -64,7 +64,7 @@ Singleton {
     }
   }
 
-  function getProfileIcon(profile: string): string {
+  function getProfileIcon(profile) {
     switch(profile) {
       case "performance": return "󰓅"
       case "balanced": return "󰾅"
@@ -73,7 +73,7 @@ Singleton {
     }
   }
 
-  function getProfileLabel(profile: string): string {
+  function getProfileLabel(profile) {
     switch(profile) {
       case "performance": return "Performance"
       case "balanced": return "Balanced"

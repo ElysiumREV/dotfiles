@@ -16,7 +16,7 @@ Item {
     readonly property bool isFullyCharged: battery?.state === UPowerDevice.FullyCharged
     readonly property bool isPluggedIn: isCharging || isFullyCharged
     readonly property bool isLow: batteryLevel <= 25 && !isPluggedIn
-    readonly property bool isCritical: batteryLevel <= 15 && !isPluggedIn
+    readonly property bool isCritical: batteryLevel <= 20 && !isPluggedIn
 
     readonly property color normalColor: {
         if (isCritical) return "#c0392b"

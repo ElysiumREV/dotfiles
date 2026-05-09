@@ -43,6 +43,7 @@ Variants {
             margins.top: barInset
             margins.left: barInset
             margins.right: barInset
+            margins.bottom: barInset
 
             implicitHeight: barHeight
             color: "transparent"

@@ -1,11 +1,6 @@
 {
     "logo": {
-      "type": "file",
-      "source": "~/.config/fastfetch/ascii.txt",
-      "color": {
-        "1": "#d4c5b0",
-        "2": "#d4c5b0"
-      }
+      "type": "auto",
     },
     "modules": [
         "break",

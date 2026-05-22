@@ -19,7 +19,7 @@ hl.config({
 -- MONITORS
 --------------------
 
--- Desktop
+-- Desktop/Home
 hl.monitor({ output = "DP-3", mode = "1920x1080@144", position = "0x0", scale = 1 })
 -- Fallback
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
@@ -106,7 +106,7 @@ hl.config({
         allow_session_lock_restore = true,
         session_lock_xray = true,
         initial_workspace_tracking = false,
-        focus_on_activate = true,
+        focus_on_activate = false,
         render_unfocused_fps = 30,
     },
 })

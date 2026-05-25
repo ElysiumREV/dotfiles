@@ -3,6 +3,7 @@
 ----------------------------------
 
 require("modules.autostart")
+require("modules.env")
 require("modules.input")
 require("modules.keybinds")
 require("modules.workspaces")

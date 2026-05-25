@@ -29,7 +29,9 @@ hl.window_rule({
 -- YouTube Music → workspace 5
 hl.window_rule({
     name = "music",
-    match = { class = "^(com%.github%.th_ch%.youtube_music)$" },
+    match = {
+        class = "^com.github.th_ch.youtube_music$"
+    },
     workspace = 5,
 })
 

@@ -98,9 +98,9 @@ Variants {
                         }
 
                         // Só mostra Brightness em dispositivos com suporte (não desktop)
-                        QsModules.Brightness {
-                          anchors.verticalCenter: parent.verticalCenter
-                        }
+                        //QsModules.Brightness {
+                        //  anchors.verticalCenter: parent.verticalCenter
+                        //}
 
                         // Só mostra Battery quando há bateria disponível
                         QsModules.Battery {

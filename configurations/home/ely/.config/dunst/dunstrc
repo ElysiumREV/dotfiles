@@ -1,0 +1,53 @@
+[global]
+    font = JetBrainsMono Nerd Font 11
+
+    width = 350
+    padding = 12
+    horizontal_padding = 12
+
+    origin = top-right
+    offset = 10x10
+
+    corner_radius = 8
+
+    frame_width = 2
+    frame_color = "#A08EC4"
+
+    separator_height = 2
+
+    icon_position = left
+    min_icon_size = 0
+    max_icon_size = 48
+
+    idle_threshold = 120
+
+    notification_limit = 5
+
+    follow = mouse
+
+    markup = full
+
+    format = "<b>%s</b>\n%b"
+
+    progress_bar = true
+    progress_bar_height = 10
+    progress_bar_frame_width = 0
+    progress_bar_corner_radius = 4
+
+[urgency_low]
+    background = "#13151A"
+    foreground = "#d4c5b0"
+    frame_color = "#A08EC4"
+    timeout = 6
+
+[urgency_normal]
+    background = "#13151A"
+    foreground = "#d4c5b0"
+    frame_color = "#A08EC4"
+    timeout = 6
+
+[urgency_critical]
+    background = "#13151A"
+    foreground = "#d4c5b0"
+    frame_color = "#A08EC4"
+    timeout = 0

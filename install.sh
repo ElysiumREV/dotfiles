@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# install.sh — Dotfiles installer for Arch Linux
+# install.sh — Dotfiles installer for multiple Linux distributions
 # =============================================================================
 
 set -e # Abort on error
@@ -24,71 +24,228 @@ die() {
 }
 
 # -----------------------------------------------------------------------------
+# Distribution Detection
+# -----------------------------------------------------------------------------
+detect_distro() {
+  if [[ -f /etc/os-release ]]; then
+    . /etc/os-release
+    DISTRO=$ID
+    DISTRO_VERSION=$VERSION_ID
+  elif command -v lsb_release &>/dev/null; then
+    DISTRO=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
+    DISTRO_VERSION=$(lsb_release -sr)
+  elif [[ -f /etc/lsb-release ]]; then
+    . /etc/lsb-release
+    DISTRO=$(echo "$DISTRIB_ID" | tr '[:upper:]' '[:lower:]')
+    DISTRO_VERSION=$DISTRIB_RELEASE
+  elif [[ -f /etc/debian_version ]]; then
+    DISTRO="debian"
+    DISTRO_VERSION=$(cat /etc/debian_version)
+  else
+    die "Unsupported or unknown Linux distribution. Cannot proceed."
+  fi
+
+  # Normalize distribution names
+  case "$DISTRO" in
+    arch|archlinux)
+      DISTRO="arch"
+      ;;
+    debian|ubuntu|linuxmint)
+      DISTRO="debian"
+      ;;
+    fedora|rhel|centos)
+      DISTRO="fedora"
+      ;;
+    *)
+      die "Unsupported distribution: $DISTRO. Supported: Arch, Debian/Ubuntu, Fedora."
+      ;;
+  esac
+
+  echo "$DISTRO"
+}
+
+# -----------------------------------------------------------------------------
+# Package Manager Functions
+# -----------------------------------------------------------------------------
+install_package() {
+  local pkg=$1
+  case "$DISTRO" in
+    arch)
+      if [[ " ${AUR_PKGS[*]} " =~ " ${pkg} " ]]; then
+        paru -S --noconfirm --needed "$pkg"
+      else
+        sudo pacman -S --noconfirm --needed "$pkg"
+      fi
+      ;;
+    debian)
+      sudo apt-get install -y "$pkg"
+      ;;
+    fedora)
+      sudo dnf install -y "$pkg"
+      ;;
+  esac
+}
+
+install_packages() {
+  local pkgs=("$@")
+  case "$DISTRO" in
+    arch)
+      sudo pacman -S --noconfirm --needed "${pkgs[@]}"
+      ;;
+    debian)
+      sudo apt-get update
+      sudo apt-get install -y "${pkgs[@]}"
+      ;;
+    fedora)
+      sudo dnf install -y "${pkgs[@]}"
+      ;;
+  esac
+}
+
+# -----------------------------------------------------------------------------
 # Sanity checks
 # -----------------------------------------------------------------------------
 [[ $EUID -eq 0 ]] && die "Don't run this script as root."
-command -v pacman &>/dev/null || die "This script requires Arch Linux (pacman not found)."
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Detect distribution
+DISTRO=$(detect_distro)
+info "Detected distribution: $DISTRO"
 
 # Avisos não-fatais acumulados durante a instalação
 WARNINGS=()
 
 # -----------------------------------------------------------------------------
-# Packages
+# Packages by Distribution
 # -----------------------------------------------------------------------------
-PACMAN_PKGS=(
-  hyprland
-  hyprsunset
-  hypridle
-  hyprlock
-  hyprpolkitagent
-  hyprshutdown
-  btop
-  fastfetch
-  brightnessctl
-  power-profiles-daemon
-  mako
-  cliphist
-  wl-clipboard
-  grim
-  slurp
-  easyeffects
-  rnnoise
-  udiskie
-  udisks2
-  nemo
-  nemo-fileroller
-  gnome-keyring
-  gvfs
-  steam
-  kitty
-  networkmanager
-  network-manager-applet
-  blueman
-  ttf-jetbrains-mono-nerd
-  pipewire
-  pipewire-pulse
-  wireplumber
-  xdg-desktop-portal-hyprland
-  qt5ct
-  qt6ct
-  kvantum
-  kvantum-qt5
+case "$DISTRO" in
+  arch)
+    PACMAN_PKGS=(
+      git
+      hyprland
+      hyprsunset
+      hypridle
+      hyprlock
+      hyprpolkitagent
+      btop
+      fastfetch
+      brightnessctl
+      power-profiles-daemon
+      mako
+      cliphist
+      wl-clipboard
+      grim
+      slurp
+      easyeffects
+      rnnoise
+      udiskie
+      udisks2
+      nemo
+      nemo-fileroller
+      gnome-keyring
+      gvfs
+      steam
+      kitty
+      networkmanager
+      network-manager-applet
+      blueman
+      ttf-jetbrains-mono-nerd
+      pipewire
+      pipewire-pulse
+      wireplumber
+      xdg-desktop-portal-hyprland
+      qt5ct
+      qt6ct
+      kvantum
+      kvantum-qt5
+      obsidian
+      zed
+    )
+
+    AUR_PKGS=(
+      quickshell
+      awww
+      vesktop-bin
+      zen-browser-bin
+    )
+    ;;
+  debian)
+    # Debian/Ubuntu packages
+    SYSTEM_PKGS=(
+      git
+      btop
+      fastfetch
+      brightnessctl
+      power-profiles-daemon
+      wl-clipboard
+      grim
+      slurp
+      easyeffects
+      udiskie
+      udisks2
+      nemo
+      nemo-fileroller
+      gnome-keyring
+      gvfs
+      kitty
+      network-manager-gnome
+      blueman
+      fonts-font-awesome
+      pipewire
+      pipewire-pulse
+      wireplumber
+      qt5ct
+      qt6ct
+      kvantum
+      kvantum-qt5
+      obsidian
+    )
+    ;;
+  fedora)
+    # Fedora packages
+    SYSTEM_PKGS=(
+      git
+      btop
+      fastfetch
+      brightnessctl
+      power-profiles-daemon
+      wl-clipboard
+      grim
+      slurp
+      easyeffects
+      udiskie
+      udisks2
+      nemo
+      nemo-fileroller
+      gnome-keyring
+      gvfs
+      kitty
+      NetworkManager-applet
+      blueman
+      google-noto-fonts-common
+      google-noto-emoji-fonts
+      jetbrains-mono-fonts-all
+      pipewire
+      pipewire-pulseaudio
+      wireplumber
+      qt5ct
+      qt6ct
+      kvantum
+      obsidian
+    )
+    ;;
+esac
+
+# Pacotes que compilam do source — instalação opcional
+HEAVY_PKGS=(
+  "deepfilternet-demos-git"
+  "lsp-plugins"
+  "calf"
 )
 
-AUR_PKGS=(
-  quickshell
-  awww
-  vesktop-bin
-  zen-browser-bin
-  deepfilternet-demos-git
-  lsp-plugins
-  calf
-)
-
 # -----------------------------------------------------------------------------
-# 1. Install paru (AUR helper)
+# Distribution-specific Functions
 # -----------------------------------------------------------------------------
 install_paru() {
   if command -v paru &>/dev/null; then
@@ -105,32 +262,99 @@ install_paru() {
   success "paru installed."
 }
 
-# -----------------------------------------------------------------------------
-# 2. Install pacman packages
-# -----------------------------------------------------------------------------
-install_pacman_pkgs() {
-  if [[ ${#PACMAN_PKGS[@]} -eq 0 ]]; then
-    warn "No pacman packages defined, skipping."
-    return
-  fi
-
-  info "Installing pacman packages..."
-  sudo pacman -Syu --noconfirm --needed "${PACMAN_PKGS[@]}"
-  success "pacman packages installed."
+install_flatpak() {
+  case "$DISTRO" in
+    arch)
+      sudo pacman -S --noconfirm flatpak
+      ;;
+    debian)
+      sudo apt-get install -y flatpak
+      ;;
+    fedora)
+      sudo dnf install -y flatpak
+      ;;
+  esac
+  flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+  success "Flatpak installed and Flathub repository added."
 }
 
 # -----------------------------------------------------------------------------
-# 3. Install AUR packages
+# 1. Install required packages
 # -----------------------------------------------------------------------------
-install_aur_pkgs() {
-  if [[ ${#AUR_PKGS[@]} -eq 0 ]]; then
-    warn "No AUR packages defined, skipping."
-    return
-  fi
+install_required_packages() {
+  case "$DISTRO" in
+    arch)
+      install_paru
+      ;;
+    debian|fedora)
+      install_flatpak
+      ;;
+  esac
+}
 
-  info "Installing AUR packages..."
-  paru -S --noconfirm --needed "${AUR_PKGS[@]}"
-  success "AUR packages installed."
+# -----------------------------------------------------------------------------
+# 2. Install system packages
+# -----------------------------------------------------------------------------
+install_system_packages() {
+  case "$DISTRO" in
+    arch)
+      if [[ ${#PACMAN_PKGS[@]} -eq 0 ]]; then
+        warn "No pacman packages defined, skipping."
+        return
+      fi
+
+      info "Installing pacman packages..."
+      sudo pacman -Syu --noconfirm --needed "${PACMAN_PKGS[@]}"
+      success "pacman packages installed."
+      ;;
+    debian)
+      if [[ ${#SYSTEM_PKGS[@]} -eq 0 ]]; then
+        warn "No system packages defined, skipping."
+        return
+      fi
+
+      info "Installing Debian/Ubuntu packages..."
+      sudo apt-get update
+      sudo apt-get install -y "${SYSTEM_PKGS[@]}"
+      success "Debian/Ubuntu packages installed."
+      ;;
+    fedora)
+      if [[ ${#SYSTEM_PKGS[@]} -eq 0 ]]; then
+        warn "No system packages defined, skipping."
+        return
+      fi
+
+      info "Installing Fedora packages..."
+      sudo dnf update -y
+      sudo dnf install -y "${SYSTEM_PKGS[@]}"
+      success "Fedora packages installed."
+      ;;
+  esac
+}
+
+# -----------------------------------------------------------------------------
+# 3. Install AUR/Flatpak packages
+# -----------------------------------------------------------------------------
+install_extra_packages() {
+  case "$DISTRO" in
+    arch)
+      if [[ ${#AUR_PKGS[@]} -eq 0 ]]; then
+        warn "No AUR packages defined, skipping."
+        return
+      fi
+
+      info "Installing AUR packages..."
+      paru -S --noconfirm --needed "${AUR_PKGS[@]}"
+      success "AUR packages installed."
+      ;;
+    debian|fedora)
+      info "Installing packages via Flatpak..."
+      # Install some packages via Flatpak for non-Arch systems
+      flatpak install -y flathub com.discordapp.Discord
+      flatpak install -y flathub com.visualstudio.code
+      success "Flatpak packages installed."
+      ;;
+  esac
 }
 
 # -----------------------------------------------------------------------------
@@ -184,25 +408,145 @@ install_colloid_icons() {
 }
 
 # -----------------------------------------------------------------------------
-# 6. Install Kvantum theme (AUR, non-fatal)
+# 6. Install Kvantum theme (from GitHub, non-fatal)
 # -----------------------------------------------------------------------------
 install_kvantum_theme() {
-  info "Installing Kvantum Colloid theme..."
+  # Check if required Kvantum packages are available
+  case "$DISTRO" in
+    arch)
+      if ! command -v kvantummanager &>/dev/null; then
+        warn "Kvantum not found. Installing kvantum package..."
+        sudo pacman -S --noconfirm kvantum kvantum-qt5
+      fi
+      ;;
+    debian)
+      if ! command -v kvantummanager &>/dev/null; then
+        warn "Kvantum not found. Installing kvantum package..."
+        sudo apt-get install -y kvantum kvantum-qt5
+      fi
+      ;;
+    fedora)
+      if ! command -v kvantummanager &>/dev/null; then
+        warn "Kvantum not found. Installing kvantum package..."
+        sudo dnf install -y kvantum
+      fi
+      ;;
+  esac
 
-  # kvantum já está no PACMAN_PKGS, então só tenta o tema via AUR
-  local kvantum_pkg="colloid-kde-theme-git"
-
-  if paru -Si "$kvantum_pkg" &>/dev/null; then
-    if paru -S --noconfirm --needed "$kvantum_pkg"; then
-      success "Kvantum Colloid theme installed."
-    else
-      WARNINGS+=("Kvantum theme ($kvantum_pkg): falha no AUR. Rode 'paru -S $kvantum_pkg' manualmente depois.")
-      warn "Kvantum theme install failed, skipping."
-    fi
-  else
-    WARNINGS+=("Kvantum theme ($kvantum_pkg): não encontrado no AUR. Instale o tema Kvantum manualmente depois.")
-    warn "$kvantum_pkg not found on AUR — install the Kvantum theme manually later."
+  # Skip Kvantum theme installation if kvantummanager is not available
+  if ! command -v kvantummanager &>/dev/null; then
+    warn "Kvantum manager not available, skipping theme installation."
+    return
   fi
+
+  info "Installing Colloid KDE theme (Kvantum)..."
+
+  local tmp
+  tmp=$(mktemp -d)
+
+  if ! git clone --depth=1 https://github.com/vinceliuice/Colloid-kde.git "$tmp/colloid-kde"; then
+    WARNINGS+=("Colloid KDE theme: falha ao clonar o repositório. Instale manualmente depois.")
+    warn "Could not clone Colloid KDE theme, skipping."
+    rm -rf "$tmp"
+    return
+  fi
+
+  if ! bash "$tmp/colloid-kde/install.sh"; then
+    WARNINGS+=("Colloid KDE theme: install script falhou. Instale manualmente depois.")
+    warn "Colloid KDE theme install script failed, skipping."
+    rm -rf "$tmp"
+    return
+  fi
+
+  rm -rf "$tmp"
+  success "Colloid KDE theme installed (Kvantum + color schemes)."
+}
+
+# -----------------------------------------------------------------------------
+# 7. Install Hackneyed cursor theme (from GitLab)
+# -----------------------------------------------------------------------------
+install_cursor_theme() {
+  info "Installing Hackneyed cursor theme..."
+
+  local tmp
+  tmp=$(mktemp -d)
+
+  if ! git clone --depth=1 https://gitlab.com/Enthymeme/hackneyed-x11-cursors.git "$tmp/hackneyed-cursors"; then
+    WARNINGS+=("Hackneyed cursor theme: falha ao clonar o repositório. Instale manualmente depois.")
+    warn "Could not clone Hackneyed cursor theme, skipping."
+    rm -rf "$tmp"
+    return
+  fi
+
+  # Create cursors directory if it doesn't exist
+  mkdir -p "$HOME/.icons"
+
+  # Copy the dark theme to the icons directory
+  if ! cp -r "$tmp/hackneyed-cursors/hackneyed-dark" "$HOME/.icons/"; then
+    WARNINGS+=("Hackneyed cursor theme: falha ao copiar os arquivos. Instale manualmente depois.")
+    warn "Could not copy Hackneyed cursor theme files, skipping."
+    rm -rf "$tmp"
+    return
+  fi
+
+  # Set the cursor theme using XDG settings
+  if command -v gsettings &>/dev/null; then
+    # For GNOME-based environments
+    gsettings set org.gnome.desktop.interface cursor-theme 'hackneyed-dark'
+  elif command -v xfconf-query &>/dev/null; then
+    # For XFCE environments
+    xfconf-query -c xsettings -p /Gtk/CursorThemeName -s 'hackneyed-dark'
+  fi
+
+  # Create/update ~/.icons/default/index.theme for consistency
+  mkdir -p "$HOME/.icons/default"
+  cat > "$HOME/.icons/default/index.theme" <<EOF
+[Icon Theme]
+Inherits=hackneyed-dark
+EOF
+
+  # Set cursor theme for Hyprland using hyprcursor
+  if command -v hyprctl &>/dev/null; then
+    hyprctl setcursor hackneyed-dark 24
+    success "Cursor theme set for Hyprland."
+  else
+    warn "Hyprland not detected, skipping Hyprcursor configuration."
+  fi
+
+  rm -rf "$tmp"
+  success "Hackneyed cursor theme installed to ~/.icons/hackneyed-dark."
+}
+
+# -----------------------------------------------------------------------------
+# 7. Install heavy packages (optional, compile from source)
+# -----------------------------------------------------------------------------
+install_heavy_pkgs() {
+  if [[ ${#HEAVY_PKGS[@]} -eq 0 ]]; then
+    return
+  fi
+
+  echo -e "\n${YELLOW}${BOLD}Pacotes pesados (compilados do source):${RESET}"
+  for pkg in "${HEAVY_PKGS[@]}"; do
+    echo -e "  ${CYAN}•${RESET} $pkg"
+  done
+
+  echo -e "\n${BOLD}Deseja instalar esses pacotes agora? Pode demorar bastante. [y/N]${RESET} "
+  read -r response
+  if [[ "${response,,}" != "y" ]]; then
+    WARNINGS+=("Pacotes pesados não instalados. Rode manualmente: paru -S ${HEAVY_PKGS[*]}")
+    warn "Pacotes pesados ignorados."
+    return
+  fi
+
+  info "Installing heavy packages (this may take a while)..."
+  for pkg in "${HEAVY_PKGS[@]}"; do
+    if ! paru -S --noconfirm --needed "$pkg"; then
+      WARNINGS+=("Pacote pesado '$pkg': falha na compilação. Instale manualmente depois.")
+      warn "$pkg failed, continuing..."
+    else
+      success "$pkg installed."
+    fi
+  done
 }
 
 # -----------------------------------------------------------------------------
@@ -211,12 +555,14 @@ install_kvantum_theme() {
 main() {
   echo -e "\n${BOLD}Dotfiles Installer${RESET}\n"
 
-  install_paru
-  install_pacman_pkgs
-  install_aur_pkgs
+  install_required_packages
+  install_system_packages
+  install_extra_packages
+  install_heavy_pkgs
   copy_dotfiles
   install_colloid_icons
   install_kvantum_theme
+  install_cursor_theme
 
   echo -e "\n${GREEN}${BOLD}✓ Instalação completa!${RESET}"
 
@@ -231,4 +577,3 @@ main() {
 }
 
 main "$@"
-

@@ -2,7 +2,7 @@
 -- KEYBINDINGS
 --------------------
 
-local terminal = "kitty"
+local terminal = "alacritty"
 local fileManager = "nemo"
 local menu = "rofi -show drun"
 local browser = "zen-browser"

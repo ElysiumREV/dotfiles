@@ -21,34 +21,8 @@ Singleton {
     }
 
     function detectBacklight() {
-    var basePath = "/sys/class/backlight"
-
-    var candidates = [
-        "amdgpu_bl1",
-        "amdgpu_bl0",
-        "intel_backlight",
-        "acpi_video0"
-    ]
-
-    for (var i = 0; i < candidates.length; i++) {
-        var path = basePath + "/" + candidates[i]
-
-        // IMPORTANT: only accept real sysfs directories
-        if (!Qt.resolvedUrl(path)) continue
-
-        backlightPath = path + "/brightness"
-        maxBrightnessPath = path + "/max_brightness"
-
-        console.log("[Brightness] Using backlight:", path)
-
-        supported = true
-        maxBrightnessProcess.running = true
-        return
+        detectBacklightProcess.running = true
     }
-
-    console.log("[Brightness] No valid backlight found")
-    supported = false
-}
 
     function readBrightness() {
         if (!supported) return
@@ -77,6 +51,37 @@ Singleton {
 
     function decreaseBrightness() {
         setBrightness(brightness - 0.05)
+    }
+
+    Process {
+        id: detectBacklightProcess
+        command: [
+            "sh",
+            "-c",
+            "for name in amdgpu_bl1 amdgpu_bl0 intel_backlight acpi_video0; do path=/sys/class/backlight/$name; if [ -d \"$path\" ]; then printf '%s\\n' \"$path\"; exit 0; fi; done; exit 1"
+        ]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const path = text.trim()
+                if (!path) return
+
+                backlightPath = path + "/brightness"
+                maxBrightnessPath = path + "/max_brightness"
+
+                console.log("[Brightness] Using backlight:", path)
+
+                supported = true
+                maxBrightnessProcess.running = true
+            }
+        }
+
+        onExited: code => {
+            if (code !== 0) {
+                console.log("[Brightness] No valid backlight found")
+                supported = false
+            }
+        }
     }
 
     Process {

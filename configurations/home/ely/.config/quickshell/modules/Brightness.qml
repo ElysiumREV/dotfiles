@@ -1,15 +1,12 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import ".." as Config
 import "../services" as QsServices
 
 Item {
     id: root
-    property string fontFamily: "JetBrainsMono Nerd Font"
     property var barWindow
-
-    property color colBg: "#13151A"
-    property color colFg: "#d4c5b0"
 
     readonly property var brightness: QsServices.Brightness
     readonly property bool isHovered: mouseArea.containsMouse
@@ -24,13 +21,13 @@ Item {
     RowLayout {
         id: brightnessRow
         anchors.centerIn: parent
-        spacing: 4
+        spacing: Config.Theme.moduleInnerSpacing
 
         Text {
             text: percentage + "%"
-            font.family: "JetBrainsMono Nerd Font"
-            font.pixelSize: 12
-            color: colFg
+            font.family: Config.Theme.fontFamily
+            font.pixelSize: Config.Theme.fontSizeSmall
+            color: Config.Theme.colFg
         }
 
         Text {
@@ -41,9 +38,9 @@ Item {
                 return "󰃝"
             }
 
-            font.family: root.fontFamily
-            font.pixelSize: 14
-            color: isHovered ? "#7EA3CC" : colFg
+            font.family: Config.Theme.fontFamily
+            font.pixelSize: Config.Theme.fontSize
+            color: isHovered ? Config.Theme.colBlue : Config.Theme.colFg
         }
     }
 

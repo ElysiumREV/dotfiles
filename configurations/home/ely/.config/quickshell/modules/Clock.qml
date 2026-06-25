@@ -3,7 +3,7 @@ import Quickshell.Wayland
 import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
-import "../Theme.qml" as QsTheme
+import ".." as Config
 
 Item {
     id: root
@@ -21,10 +21,10 @@ Item {
     Text {
         id: timeText
         text: root.formattedTime
-        color: "#d4c5b0"
+        color: Config.Theme.colFg
         font {
-            family: "JetBrainsMono Nerd Font"
-            pixelSize: 13
+            family: Config.Theme.fontFamily
+            pixelSize: Config.Theme.fontSizeClock
         }
         verticalAlignment: Text.AlignVCenter
     }

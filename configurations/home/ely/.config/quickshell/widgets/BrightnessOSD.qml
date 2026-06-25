@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import ".." as Config
 import "../services" as QsServices
 
 Scope {
@@ -8,10 +9,6 @@ Scope {
 
     readonly property var brightness: QsServices.Brightness
     readonly property int percentage: brightness?.percentage ?? 0
-
-    property color monoFg: "#d4c5b0"
-    property color monoYellow: "#e6c97a"
-    property string fontFamily: "JetBrainsMono Nerd Font"
 
     property bool shouldShowOsd: false
     property int lastPercentage: percentage
@@ -54,8 +51,8 @@ Scope {
             margins.bottom: screen.height / 5
             exclusiveZone: 0
 
-            implicitHeight: 50
-            implicitWidth: 200
+            implicitHeight: Config.Theme.osdHeight
+            implicitWidth: Config.Theme.osdWidth
             color: "transparent"
 
             mask: Region {}
@@ -63,40 +60,40 @@ Scope {
             Rectangle {
                 anchors.fill: parent
                 radius: height / 2
-                color: "#cc181616"
+                color: Config.Theme.colOsdBg
 
                 RowLayout {
                     anchors {
                         fill: parent
-                        leftMargin: 15
-                        rightMargin: 20
+                        leftMargin: Config.Theme.osdLeftMargin
+                        rightMargin: Config.Theme.osdRightMargin
                     }
-                    spacing: 10
+                    spacing: Config.Theme.osdSpacing
 
                     Text {
                         id: brightnessText
                         text: root.percentage + "%"
-                        font.family: "JetBrainsMono Nerd Font"
-                        font.pixelSize: 14
+                        font.family: Config.Theme.fontFamily
+                        font.pixelSize: Config.Theme.fontSize
                         font.weight: Font.Regular
-                        color: root.monoFg
+                        color: Config.Theme.colFg
                     }
 
                     Text {
                         id: brightnessIcon
                         text: root.icon
-                        font.family: root.fontFamily
-                        font.pixelSize: 18
+                        font.family: Config.Theme.fontFamily
+                        font.pixelSize: Config.Theme.osdIconSize
 
                         color: {
-                            if (root.percentage >= 75) return root.monoYellow
-                            return root.monoFg
+                            if (root.percentage >= 75) return Config.Theme.colYellow
+                            return Config.Theme.colFg
                         }
                     }
 
                     Item {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 10
+                        Layout.preferredHeight: Config.Theme.osdBarHeight
 
                         Rectangle {
                             anchors {
@@ -107,23 +104,23 @@ Scope {
 
                             implicitWidth: parent.width * (root.percentage / 100)
                             height: parent.height
-                            radius: 20
+                            radius: Config.Theme.osdBarRadius
                             color: {
-                                if (root.percentage >= 75) return root.monoYellow
-                                return root.monoFg
+                                if (root.percentage >= 75) return Config.Theme.colYellow
+                                return Config.Theme.colFg
                             }
 
                             Behavior on implicitWidth {
-                                NumberAnimation { duration: 150 }
+                                NumberAnimation { duration: Config.Theme.osdAnimationDuration }
                             }
                         }
 
                         Rectangle {
                             anchors.fill: parent
-                            radius: 20
+                            radius: Config.Theme.osdBarRadius
                             color: "transparent"
-                            border.color: "#50c5c9c5"
-                            border.width: 1
+                            border.color: Config.Theme.colOsdBorder
+                            border.width: Config.Theme.osdBorderWidth
                         }
                     }
                 }

@@ -1,13 +1,13 @@
 import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
-import "../Theme.qml" as QsTheme
+import ".." as Config
 
 Item {
     id: root
 
     implicitWidth: row.width
-    implicitHeight: 30
+    implicitHeight: Config.Theme.moduleHeight
 
     readonly property var battery: UPower.displayDevice
     readonly property real percentage: battery?.percentage ?? 0
@@ -19,61 +19,61 @@ Item {
     readonly property bool isCritical: batteryLevel <= 20 && !isPluggedIn
 
     readonly property color normalColor: {
-        if (isCritical) return "#c0392b"
-        if (isLow)      return "#e6c97a"
-        return "#d4c5b0"
+        if (isCritical) return Config.Theme.colBatteryCritical
+        if (isLow)      return Config.Theme.colYellow
+        return Config.Theme.colFg
     }
 
-    readonly property color chargingColor: "#d4c5b0"
+    readonly property color chargingColor: Config.Theme.colFg
 
     Row {
         id: row
         anchors.centerIn: parent
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 4
+        spacing: Config.Theme.moduleInnerSpacing
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: batteryLevel + "%"
-            font.pixelSize: 11
+            font.pixelSize: Config.Theme.batteryTextSize
             font.weight: isLow ? Font.Bold : Font.Normal
             color: isPluggedIn ? chargingColor : normalColor
         }
 
         Item {
-            width: 22
-            height: 14
+            width: Config.Theme.batteryShellWidth
+            height: Config.Theme.batteryShellHeight
             anchors.verticalCenter: parent.verticalCenter
 
             Rectangle {
                 id: batteryBody
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                width: 16
-                height: 10
-                radius: 2
+                width: Config.Theme.batteryBodyWidth
+                height: Config.Theme.batteryBodyHeight
+                radius: Config.Theme.batteryBodyRadius
                 color: "transparent"
-                border.width: 1.5
+                border.width: Config.Theme.batteryBorderWidth
                 border.color: isPluggedIn ? chargingColor : normalColor
 
                 Rectangle {
                     anchors.left: parent.left
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    anchors.margins: 2.5
-                    width: Math.max(0, (parent.width - 5) * root.percentage)
-                    radius: 1.5
+                    anchors.margins: Config.Theme.batteryFillMargin
+                    width: Math.max(0, (parent.width - Config.Theme.batteryFillMargin * 2) * root.percentage)
+                    radius: Config.Theme.batteryFillRadius
                     color: isPluggedIn ? chargingColor : normalColor
                 }
             }
 
             Rectangle {
                 anchors.left: batteryBody.right
-                anchors.leftMargin: -1
+                anchors.leftMargin: Config.Theme.batteryTipOverlap
                 anchors.verticalCenter: parent.verticalCenter
-                width: 3
-                height: 5
-                radius: 1.5
+                width: Config.Theme.batteryTipWidth
+                height: Config.Theme.batteryTipHeight
+                radius: Config.Theme.batteryTipRadius
                 color: isPluggedIn ? chargingColor : normalColor
             }
 
@@ -81,9 +81,9 @@ Item {
                 visible: isPluggedIn
                 anchors.centerIn: batteryBody
                 text: ""
-                font.family: QsTheme.fontFamily
-                font.pixelSize: 10
-                color: batteryLevel > 50 ? "#181616" : "#c5c9c5"
+                font.family: Config.Theme.fontFamily
+                font.pixelSize: Config.Theme.batteryIconSize
+                color: batteryLevel > 50 ? Config.Theme.colBatteryIconDark : Config.Theme.colBatteryIconLight
             }
         }
     }

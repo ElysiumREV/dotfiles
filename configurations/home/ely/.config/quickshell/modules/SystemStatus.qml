@@ -4,32 +4,18 @@ import Quickshell.Io
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
+import ".." as Config
 
 Item {
     id: root
 
-    property color colBg: "#13151A"
-            property color colFg: "#d4c5b0"
-            property color colText: "#F0F1F5"
-            property color colTextSec: "#B8BCCA"
-            property color colMuted: "#7C8291"
-            property color colDisabled: "#505563"
-            property color colHighlight: "#A08EC4"
-            property color colBlue: "#7EA3CC"
-            property color colYellow: "#e6c97a"
-            property color colRed: "#C47A7A"
-            property color colOrange: "#C4956A"
-            property color colGreen: "#7EBD9B"
-            property string fontFamily: "JetBrainsMono Nerd Font"
-            property int fontSize: 14
-
-    implicitHeight: 30
+    implicitHeight: Config.Theme.moduleHeight
     implicitWidth: rowLayout.implicitWidth
 
     RowLayout {
         id: rowLayout
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 8
+        spacing: Config.Theme.moduleSpacing
 
         Process {
             id: cpuProc
@@ -60,33 +46,33 @@ Item {
         }
 
         RowLayout {
-            spacing: 3
+            spacing: Config.Theme.moduleTightSpacing
 
             Text {
                 text: ""
-                font.family: root.fontFamily
-                font.pixelSize: root.fontSize
+                font.family: Config.Theme.fontFamily
+                font.pixelSize: Config.Theme.fontSize
 
                 color: {
-                    if (cpuProc.cpuUsage > 85) return root.colRed
-                    if (cpuProc.cpuUsage > 60) return root.colYellow
-                    return root.colHighlight
+                    if (cpuProc.cpuUsage > 85) return Config.Theme.colRed
+                    if (cpuProc.cpuUsage > 60) return Config.Theme.colYellow
+                    return Config.Theme.colHighlight
                 }
             }
 
             Text {
                 text: cpuProc.cpuUsage + "%"
-                font.family: root.fontFamily
-                font.pixelSize: root.fontSize
-                color: root.colFg
+                font.family: Config.Theme.fontFamily
+                font.pixelSize: Config.Theme.fontSize
+                color: Config.Theme.colFg
             }
         }
 
         Rectangle {
-            width: 1
-            height: 16
-            color: root.colMuted
-            radius: 1
+            width: Config.Theme.separatorWidth
+            height: Config.Theme.separatorHeight
+            color: Config.Theme.colMuted
+            radius: Config.Theme.separatorRadius
         }
 
         Process {
@@ -108,20 +94,20 @@ Item {
         }
 
         RowLayout {
-            spacing: 3
+            spacing: Config.Theme.moduleTightSpacing
 
             Text {
                 text: ""
-                font.family: root.fontFamily
-                font.pixelSize: root.fontSize
-                color: root.colHighlight
+                font.family: Config.Theme.fontFamily
+                font.pixelSize: Config.Theme.fontSize
+                color: Config.Theme.colHighlight
             }
 
             Text {
                 text: memProc.memUsage + "%"
-                font.family: root.fontFamily
-                font.pixelSize: root.fontSize
-                color: root.colFg
+                font.family: Config.Theme.fontFamily
+                font.pixelSize: Config.Theme.fontSize
+                color: Config.Theme.colFg
             }
         }
 

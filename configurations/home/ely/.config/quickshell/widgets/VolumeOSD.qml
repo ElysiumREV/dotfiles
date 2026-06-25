@@ -3,23 +3,10 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Pipewire
 import Quickshell.Widgets
+import ".." as Config
 
 Scope {
     id: root
-    property color colBg: "#13151A"
-            property color colFg: "#d4c5b0"
-            property color colText: "#F0F1F5"
-            property color colTextSec: "#B8BCCA"
-            property color colMuted: "#7C8291"
-            property color colDisabled: "#505563"
-            property color colHighlight: "#A08EC4"
-            property color colBlue: "#7EA3CC"
-            property color colYellow: "#e6c97a"
-            property color colRed: "#C47A7A"
-            property color colOrange: "#C4956A"
-            property color colGreen: "#7EBD9B"
-            property string fontFamily: "JetBrainsMono Nerd Font"
-            property int fontSize: 14
 
     PwObjectTracker {
         objects: [Pipewire.defaultAudioSink]
@@ -56,10 +43,6 @@ Scope {
         return "󰕾"
     }
 
-    readonly property color monoFg: "#d4c5b0"
-    readonly property color monoMuted: "#2a1a1a"
-    readonly property color monoYellow: "#e6c97a"
-
     Timer {
         id: hideTimer
         interval: 1000
@@ -74,8 +57,8 @@ Scope {
             margins.bottom: screen.height / 5
             exclusiveZone: 0
 
-            implicitHeight: 50
-            implicitWidth: 200
+            implicitHeight: Config.Theme.osdHeight
+            implicitWidth: Config.Theme.osdWidth
             color: "transparent"
 
             mask: Region {}
@@ -83,42 +66,42 @@ Scope {
             Rectangle {
                 anchors.fill: parent
                 radius: height / 2
-                color: "#cc181616"
+                color: Config.Theme.colOsdBg
 
                 RowLayout {
                     anchors {
                         fill: parent
-                        leftMargin: 15
-                        rightMargin: 20
+                        leftMargin: Config.Theme.osdLeftMargin
+                        rightMargin: Config.Theme.osdRightMargin
                     }
-                    spacing: 10
+                    spacing: Config.Theme.osdSpacing
 
                     Text {
                         id: volumeText
                         text: root.percentage + "%"
-                        font.family: "JetBrainsMono Nerd Font"
-                        font.pixelSize: 14
+                        font.family: Config.Theme.fontFamily
+                        font.pixelSize: Config.Theme.fontSize
                         font.weight: Font.Regular
-                        color: root.muted ? root.monoMuted : root.monoFg
+                        color: root.muted ? Config.Theme.colOsdMuted : Config.Theme.colFg
                         visible: !root.muted
                     }
 
                     Text {
                         id: volumeIcon
                         text: root.icon
-                        font.family: root.fontFamily
-                        font.pixelSize: 18
+                        font.family: Config.Theme.fontFamily
+                        font.pixelSize: Config.Theme.osdIconSize
 
                         color: {
-                            if (root.muted) return root.monoMuted
-                            if (root.percentage >= 66) return root.monoYellow
-                            return root.monoFg
+                            if (root.muted) return Config.Theme.colOsdMuted
+                            if (root.percentage >= 66) return Config.Theme.colYellow
+                            return Config.Theme.colFg
                         }
                     }
 
                     Item {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 10
+                        Layout.preferredHeight: Config.Theme.osdBarHeight
 
                         Rectangle {
                             anchors {
@@ -129,24 +112,24 @@ Scope {
 
                             implicitWidth: parent.width * (root.percentage / 100)
                             height: parent.height
-                            radius: 20
+                            radius: Config.Theme.osdBarRadius
                             color: {
-                                if (root.muted) return root.monoMuted
-                                if (root.percentage >= 66) return root.monoYellow
-                                return root.monoFg
+                                if (root.muted) return Config.Theme.colOsdMuted
+                                if (root.percentage >= 66) return Config.Theme.colYellow
+                                return Config.Theme.colFg
                             }
 
                             Behavior on implicitWidth {
-                                NumberAnimation { duration: 150 }
+                                NumberAnimation { duration: Config.Theme.osdAnimationDuration }
                             }
                         }
 
                         Rectangle {
                             anchors.fill: parent
-                            radius: 20
+                            radius: Config.Theme.osdBarRadius
                             color: "transparent"
-                            border.color: "#50c5c9c5"
-                            border.width: 1
+                            border.color: Config.Theme.colOsdBorder
+                            border.width: Config.Theme.osdBorderWidth
                         }
                     }
                 }

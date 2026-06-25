@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.SystemTray
-import "../Theme.qml" as QsTheme
+import ".." as Config
 
 Item {
     id: root
@@ -14,7 +14,7 @@ Item {
 
     RowLayout {
         id: row
-        spacing: 8
+        spacing: Config.Theme.moduleSpacing
 
         Repeater {
             model: SystemTray.items
@@ -22,16 +22,16 @@ Item {
             delegate: Item {
                 required property var modelData
 
-                width: 18
-                height: 18
+                width: Config.Theme.trayItemSize
+                height: Config.Theme.trayItemSize
 
                 property bool hovered: mouseArea.containsMouse
 
                 Rectangle {
                     anchors.centerIn: parent
-                    width: parent.width + 8
-                    height: parent.height + 8
-                    radius: 6
+                    width: parent.width + Config.Theme.trayHoverPadding
+                    height: parent.height + Config.Theme.trayHoverPadding
+                    radius: Config.Theme.trayHoverRadius
                     color: hovered ? Qt.rgba(139/255, 164/255, 176/255, 0.18) : "transparent"
                 }
 
@@ -42,8 +42,8 @@ Item {
                     sourceComponent: Image {
                         source: modelData.icon
                         fillMode: Image.PreserveAspectFit
-                        sourceSize.width: 32
-                        sourceSize.height: 32
+                        sourceSize.width: Config.Theme.trayIconSourceSize
+                        sourceSize.height: Config.Theme.trayIconSourceSize
 
                         onStatusChanged: {
                             if (status === Image.Error)
@@ -61,9 +61,9 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: modelData.id || modelData.name || "•"
-                            font.family: QsTheme.fontFamily
-                            font.pixelSize: QsTheme.fontSize
-                            color: QsTheme.colFg
+                            font.family: Config.Theme.fontFamily
+                            font.pixelSize: Config.Theme.fontSize
+                            color: Config.Theme.colFg
                         }
                     }
                 }

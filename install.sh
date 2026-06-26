@@ -363,20 +363,23 @@ install_extra_packages() {
 copy_dotfiles() {
   info "Copying dotfiles..."
 
+  # Source directory for dotfiles (from configurations/home/ely)
+  DOTFILES_SOURCE="$DOTFILES_DIR/configurations/home/ely"
+
   # .config
-  if [[ -d "$DOTFILES_DIR/.config" ]]; then
-    cp -r "$DOTFILES_DIR/.config/." "$HOME/.config/"
+  if [[ -d "$DOTFILES_SOURCE/.config" ]]; then
+    cp -r "$DOTFILES_SOURCE/.config/." "$HOME/.config/"
     success ".config copied to $HOME."
   else
-    warn ".config directory not found in $DOTFILES_DIR, skipping."
+    warn ".config directory not found in $DOTFILES_SOURCE, skipping."
   fi
 
   # Pictures
-  if [[ -d "$DOTFILES_DIR/Pictures" ]]; then
-    cp -r "$DOTFILES_DIR/Pictures/." "$HOME/Pictures/"
+  if [[ -d "$DOTFILES_SOURCE/Pictures" ]]; then
+    cp -r "$DOTFILES_SOURCE/Pictures/." "$HOME/Pictures/"
     success "Pictures copied to $HOME."
   else
-    warn "Pictures directory not found in $DOTFILES_DIR, skipping."
+    warn "Pictures directory not found in $DOTFILES_SOURCE, skipping."
   fi
 }
 

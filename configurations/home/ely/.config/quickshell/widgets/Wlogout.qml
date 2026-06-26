@@ -3,10 +3,13 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
-import ".." as Config
 
 ShellRoot {
     id: root
+
+    property color backgroundColor: "#e60c0c0c"
+    property color buttonColor: "#1e1e1e"
+    property color buttonHoverColor: "#3700b3"
 
     readonly property list<QtObject> buttons: [
         QtObject {
@@ -69,7 +72,7 @@ ShellRoot {
             anchors { top: true; left: true; bottom: true; right: true }
 
             Rectangle {
-                color: Config.Theme.colWlogoutBg
+                color: root.backgroundColor
                 anchors.fill: parent
 
                 MouseArea {
@@ -78,8 +81,8 @@ ShellRoot {
 
                     GridLayout {
                         anchors.centerIn: parent
-                        width: parent.width * Config.Theme.wlogoutGridScale
-                        height: parent.height * Config.Theme.wlogoutGridScale
+                        width: parent.width * 0.75
+                        height: parent.height * 0.75
                         columns: 2
                         columnSpacing: 0
                         rowSpacing: 0
@@ -92,9 +95,9 @@ ShellRoot {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
 
-                                color: ma.containsMouse ? Config.Theme.colWlogoutButtonHover : Config.Theme.colWlogoutButton
-                                border.color: Config.Theme.colBorder
-                                border.width: ma.containsMouse ? 0 : Config.Theme.wlogoutBorderWidth
+                                color: ma.containsMouse ? root.buttonHoverColor : root.buttonColor
+                                border.color: "black"
+                                border.width: ma.containsMouse ? 0 : 1
 
                                 MouseArea {
                                     id: ma
@@ -112,19 +115,19 @@ ShellRoot {
                                     id: icon
                                     anchors.centerIn: parent
                                     source: Qt.resolvedUrl(`icons/${modelData.icon}.png`)
-                                    width: parent.width * Config.Theme.wlogoutIconScale
-                                    height: parent.width * Config.Theme.wlogoutIconScale
+                                    width: parent.width * 0.25
+                                    height: parent.width * 0.25
                                 }
 
                                 Text {
                                     anchors {
                                         top: icon.bottom
-                                        topMargin: Config.Theme.wlogoutTextTopMargin
+                                        topMargin: 20
                                         horizontalCenter: parent.horizontalCenter
                                     }
                                     text: modelData.text
-                                    font.pointSize: Config.Theme.wlogoutTextSize
-                                    color: Config.Theme.colWlogoutText
+                                    font.pointSize: 20
+                                    color: "white"
                                 }
                             }
                         }

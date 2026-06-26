@@ -47,18 +47,18 @@ detect_distro() {
 
   # Normalize distribution names
   case "$DISTRO" in
-    arch|archlinux)
-      DISTRO="arch"
-      ;;
-    debian|ubuntu|linuxmint)
-      DISTRO="debian"
-      ;;
-    fedora|rhel|centos)
-      DISTRO="fedora"
-      ;;
-    *)
-      die "Unsupported distribution: $DISTRO. Supported: Arch, Debian/Ubuntu, Fedora."
-      ;;
+  arch | archlinux)
+    DISTRO="arch"
+    ;;
+  debian | ubuntu | linuxmint)
+    DISTRO="debian"
+    ;;
+  fedora | rhel | centos)
+    DISTRO="fedora"
+    ;;
+  *)
+    die "Unsupported distribution: $DISTRO. Supported: Arch, Debian/Ubuntu, Fedora."
+    ;;
   esac
 
   echo "$DISTRO"
@@ -70,35 +70,35 @@ detect_distro() {
 install_package() {
   local pkg=$1
   case "$DISTRO" in
-    arch)
-      if [[ " ${AUR_PKGS[*]} " =~ " ${pkg} " ]]; then
-        paru -S --noconfirm --needed "$pkg"
-      else
-        sudo pacman -S --noconfirm --needed "$pkg"
-      fi
-      ;;
-    debian)
-      sudo apt-get install -y "$pkg"
-      ;;
-    fedora)
-      sudo dnf install -y "$pkg"
-      ;;
+  arch)
+    if [[ " ${AUR_PKGS[*]} " =~ " ${pkg} " ]]; then
+      paru -S --noconfirm --needed "$pkg"
+    else
+      sudo pacman -S --noconfirm --needed "$pkg"
+    fi
+    ;;
+  debian)
+    sudo apt-get install -y "$pkg"
+    ;;
+  fedora)
+    sudo dnf install -y "$pkg"
+    ;;
   esac
 }
 
 install_packages() {
   local pkgs=("$@")
   case "$DISTRO" in
-    arch)
-      sudo pacman -S --noconfirm --needed "${pkgs[@]}"
-      ;;
-    debian)
-      sudo apt-get update
-      sudo apt-get install -y "${pkgs[@]}"
-      ;;
-    fedora)
-      sudo dnf install -y "${pkgs[@]}"
-      ;;
+  arch)
+    sudo pacman -S --noconfirm --needed "${pkgs[@]}"
+    ;;
+  debian)
+    sudo apt-get update
+    sudo apt-get install -y "${pkgs[@]}"
+    ;;
+  fedora)
+    sudo dnf install -y "${pkgs[@]}"
+    ;;
   esac
 }
 
@@ -120,121 +120,121 @@ WARNINGS=()
 # Packages by Distribution
 # -----------------------------------------------------------------------------
 case "$DISTRO" in
-  arch)
-    PACMAN_PKGS=(
-      git
-      hyprland
-      hyprsunset
-      hypridle
-      hyprlock
-      hyprpolkitagent
-      btop
-      fastfetch
-      brightnessctl
-      power-profiles-daemon
-      mako
-      cliphist
-      wl-clipboard
-      grim
-      slurp
-      easyeffects
-      rnnoise
-      udiskie
-      udisks2
-      nemo
-      nemo-fileroller
-      gnome-keyring
-      gvfs
-      steam
-      kitty
-      networkmanager
-      network-manager-applet
-      blueman
-      ttf-jetbrains-mono-nerd
-      pipewire
-      pipewire-pulse
-      wireplumber
-      xdg-desktop-portal-hyprland
-      qt5ct
-      qt6ct
-      kvantum
-      kvantum-qt5
-      obsidian
-      zed
-    )
+arch)
+  PACMAN_PKGS=(
+    git
+    hyprland
+    hyprsunset
+    hypridle
+    hyprlock
+    hyprpolkitagent
+    btop
+    fastfetch
+    brightnessctl
+    power-profiles-daemon
+    mako
+    cliphist
+    wl-clipboard
+    grim
+    slurp
+    easyeffects
+    rnnoise
+    udiskie
+    udisks2
+    nemo
+    nemo-fileroller
+    gnome-keyring
+    gvfs
+    steam
+    kitty
+    networkmanager
+    network-manager-applet
+    blueman
+    ttf-jetbrains-mono-nerd
+    pipewire
+    pipewire-pulse
+    wireplumber
+    xdg-desktop-portal-hyprland
+    qt5ct
+    qt6ct
+    kvantum
+    kvantum-qt5
+    obsidian
+    zed
+  )
 
-    AUR_PKGS=(
-      quickshell
-      awww
-      vesktop-bin
-      zen-browser-bin
-    )
-    ;;
-  debian)
-    # Debian/Ubuntu packages
-    SYSTEM_PKGS=(
-      git
-      btop
-      fastfetch
-      brightnessctl
-      power-profiles-daemon
-      wl-clipboard
-      grim
-      slurp
-      easyeffects
-      udiskie
-      udisks2
-      nemo
-      nemo-fileroller
-      gnome-keyring
-      gvfs
-      kitty
-      network-manager-gnome
-      blueman
-      fonts-font-awesome
-      pipewire
-      pipewire-pulse
-      wireplumber
-      qt5ct
-      qt6ct
-      kvantum
-      kvantum-qt5
-      obsidian
-    )
-    ;;
-  fedora)
-    # Fedora packages
-    SYSTEM_PKGS=(
-      git
-      btop
-      fastfetch
-      brightnessctl
-      power-profiles-daemon
-      wl-clipboard
-      grim
-      slurp
-      easyeffects
-      udiskie
-      udisks2
-      nemo
-      nemo-fileroller
-      gnome-keyring
-      gvfs
-      kitty
-      NetworkManager-applet
-      blueman
-      google-noto-fonts-common
-      google-noto-emoji-fonts
-      jetbrains-mono-fonts-all
-      pipewire
-      pipewire-pulseaudio
-      wireplumber
-      qt5ct
-      qt6ct
-      kvantum
-      obsidian
-    )
-    ;;
+  AUR_PKGS=(
+    quickshell
+    awww
+    vesktop-bin
+    zen-browser-bin
+  )
+  ;;
+debian)
+  # Debian/Ubuntu packages
+  SYSTEM_PKGS=(
+    git
+    btop
+    fastfetch
+    brightnessctl
+    power-profiles-daemon
+    wl-clipboard
+    grim
+    slurp
+    easyeffects
+    udiskie
+    udisks2
+    nemo
+    nemo-fileroller
+    gnome-keyring
+    gvfs
+    kitty
+    network-manager-gnome
+    blueman
+    fonts-font-awesome
+    pipewire
+    pipewire-pulse
+    wireplumber
+    qt5ct
+    qt6ct
+    kvantum
+    kvantum-qt5
+    obsidian
+  )
+  ;;
+fedora)
+  # Fedora packages
+  SYSTEM_PKGS=(
+    git
+    btop
+    fastfetch
+    brightnessctl
+    power-profiles-daemon
+    wl-clipboard
+    grim
+    slurp
+    easyeffects
+    udiskie
+    udisks2
+    nemo
+    nemo-fileroller
+    gnome-keyring
+    gvfs
+    kitty
+    NetworkManager-applet
+    blueman
+    google-noto-fonts-common
+    google-noto-emoji-fonts
+    jetbrains-mono-fonts-all
+    pipewire
+    pipewire-pulseaudio
+    wireplumber
+    qt5ct
+    qt6ct
+    kvantum
+    obsidian
+  )
+  ;;
 esac
 
 # Pacotes que compilam do source — instalação opcional
@@ -264,15 +264,15 @@ install_paru() {
 
 install_flatpak() {
   case "$DISTRO" in
-    arch)
-      sudo pacman -S --noconfirm flatpak
-      ;;
-    debian)
-      sudo apt-get install -y flatpak
-      ;;
-    fedora)
-      sudo dnf install -y flatpak
-      ;;
+  arch)
+    sudo pacman -S --noconfirm flatpak
+    ;;
+  debian)
+    sudo apt-get install -y flatpak
+    ;;
+  fedora)
+    sudo dnf install -y flatpak
+    ;;
   esac
   flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
   success "Flatpak installed and Flathub repository added."
@@ -283,12 +283,12 @@ install_flatpak() {
 # -----------------------------------------------------------------------------
 install_required_packages() {
   case "$DISTRO" in
-    arch)
-      install_paru
-      ;;
-    debian|fedora)
-      install_flatpak
-      ;;
+  arch)
+    install_paru
+    ;;
+  debian | fedora)
+    install_flatpak
+    ;;
   esac
 }
 
@@ -297,38 +297,38 @@ install_required_packages() {
 # -----------------------------------------------------------------------------
 install_system_packages() {
   case "$DISTRO" in
-    arch)
-      if [[ ${#PACMAN_PKGS[@]} -eq 0 ]]; then
-        warn "No pacman packages defined, skipping."
-        return
-      fi
+  arch)
+    if [[ ${#PACMAN_PKGS[@]} -eq 0 ]]; then
+      warn "No pacman packages defined, skipping."
+      return
+    fi
 
-      info "Installing pacman packages..."
-      sudo pacman -Syu --noconfirm --needed "${PACMAN_PKGS[@]}"
-      success "pacman packages installed."
-      ;;
-    debian)
-      if [[ ${#SYSTEM_PKGS[@]} -eq 0 ]]; then
-        warn "No system packages defined, skipping."
-        return
-      fi
+    info "Installing pacman packages..."
+    sudo pacman -Syu --noconfirm --needed "${PACMAN_PKGS[@]}"
+    success "pacman packages installed."
+    ;;
+  debian)
+    if [[ ${#SYSTEM_PKGS[@]} -eq 0 ]]; then
+      warn "No system packages defined, skipping."
+      return
+    fi
 
-      info "Installing Debian/Ubuntu packages..."
-      sudo apt-get update
-      sudo apt-get install -y "${SYSTEM_PKGS[@]}"
-      success "Debian/Ubuntu packages installed."
-      ;;
-    fedora)
-      if [[ ${#SYSTEM_PKGS[@]} -eq 0 ]]; then
-        warn "No system packages defined, skipping."
-        return
-      fi
+    info "Installing Debian/Ubuntu packages..."
+    sudo apt-get update
+    sudo apt-get install -y "${SYSTEM_PKGS[@]}"
+    success "Debian/Ubuntu packages installed."
+    ;;
+  fedora)
+    if [[ ${#SYSTEM_PKGS[@]} -eq 0 ]]; then
+      warn "No system packages defined, skipping."
+      return
+    fi
 
-      info "Installing Fedora packages..."
-      sudo dnf update -y
-      sudo dnf install -y "${SYSTEM_PKGS[@]}"
-      success "Fedora packages installed."
-      ;;
+    info "Installing Fedora packages..."
+    sudo dnf update -y
+    sudo dnf install -y "${SYSTEM_PKGS[@]}"
+    success "Fedora packages installed."
+    ;;
   esac
 }
 
@@ -337,23 +337,23 @@ install_system_packages() {
 # -----------------------------------------------------------------------------
 install_extra_packages() {
   case "$DISTRO" in
-    arch)
-      if [[ ${#AUR_PKGS[@]} -eq 0 ]]; then
-        warn "No AUR packages defined, skipping."
-        return
-      fi
+  arch)
+    if [[ ${#AUR_PKGS[@]} -eq 0 ]]; then
+      warn "No AUR packages defined, skipping."
+      return
+    fi
 
-      info "Installing AUR packages..."
-      paru -S --noconfirm --needed "${AUR_PKGS[@]}"
-      success "AUR packages installed."
-      ;;
-    debian|fedora)
-      info "Installing packages via Flatpak..."
-      # Install some packages via Flatpak for non-Arch systems
-      flatpak install -y flathub com.discordapp.Discord
-      flatpak install -y flathub com.visualstudio.code
-      success "Flatpak packages installed."
-      ;;
+    info "Installing AUR packages..."
+    paru -S --noconfirm --needed "${AUR_PKGS[@]}"
+    success "AUR packages installed."
+    ;;
+  debian | fedora)
+    info "Installing packages via Flatpak..."
+    # Install some packages via Flatpak for non-Arch systems
+    flatpak install -y flathub com.discordapp.Discord
+    flatpak install -y flathub com.visualstudio.code
+    success "Flatpak packages installed."
+    ;;
   esac
 }
 
@@ -413,24 +413,24 @@ install_colloid_icons() {
 install_kvantum_theme() {
   # Check if required Kvantum packages are available
   case "$DISTRO" in
-    arch)
-      if ! command -v kvantummanager &>/dev/null; then
-        warn "Kvantum not found. Installing kvantum package..."
-        sudo pacman -S --noconfirm kvantum kvantum-qt5
-      fi
-      ;;
-    debian)
-      if ! command -v kvantummanager &>/dev/null; then
-        warn "Kvantum not found. Installing kvantum package..."
-        sudo apt-get install -y kvantum kvantum-qt5
-      fi
-      ;;
-    fedora)
-      if ! command -v kvantummanager &>/dev/null; then
-        warn "Kvantum not found. Installing kvantum package..."
-        sudo dnf install -y kvantum
-      fi
-      ;;
+  arch)
+    if ! command -v kvantummanager &>/dev/null; then
+      warn "Kvantum not found. Installing kvantum package..."
+      sudo pacman -S --noconfirm kvantum kvantum-qt5
+    fi
+    ;;
+  debian)
+    if ! command -v kvantummanager &>/dev/null; then
+      warn "Kvantum not found. Installing kvantum package..."
+      sudo apt-get install -y kvantum kvantum-qt5
+    fi
+    ;;
+  fedora)
+    if ! command -v kvantummanager &>/dev/null; then
+      warn "Kvantum not found. Installing kvantum package..."
+      sudo dnf install -y kvantum
+    fi
+    ;;
   esac
 
   # Skip Kvantum theme installation if kvantummanager is not available
@@ -500,7 +500,7 @@ install_cursor_theme() {
 
   # Create/update ~/.icons/default/index.theme for consistency
   mkdir -p "$HOME/.icons/default"
-  cat > "$HOME/.icons/default/index.theme" <<EOF
+  cat >"$HOME/.icons/default/index.theme" <<EOF
 [Icon Theme]
 Inherits=hackneyed-dark
 EOF

@@ -5,15 +5,13 @@
 local terminal = "alacritty"
 local fileManager = "nemo"
 local menu = "rofi -show drun"
-local browser = "zen-browser"
+local browser = "~/.config/scripts/browser-picker.sh"
 local mainMod = "SUPER"
 
 -- Apps
 hl.bind(mainMod .. " + return", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.window.close())
 hl.bind(mainMod .. " + SHIFT + ESCAPE", hl.dsp.exit())
--- Antigo comando
--- hl.bind(mainMod .. " + M",            hl.dsp.exec_cmd(powermenu))
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("quickshell -p ~/.config/quickshell/widgets/Wlogout.qml"))
 hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(terminal .. " -e yazi"))
@@ -23,7 +21,6 @@ hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized" }))
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
-hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd(browser .. " -p"))
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal .. " -e btop"))
 hl.bind(
 	mainMod .. " + SHIFT + V",

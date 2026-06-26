@@ -146,7 +146,8 @@ arch)
     gnome-keyring
     gvfs
     steam
-    kitty
+    firefox
+    alacritty
     networkmanager
     network-manager-applet
     blueman
@@ -167,7 +168,7 @@ arch)
     quickshell
     awww
     vesktop-bin
-    zen-browser-bin
+    brave-origin-bin
   )
   ;;
 debian)

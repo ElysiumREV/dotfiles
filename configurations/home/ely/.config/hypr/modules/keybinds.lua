@@ -5,7 +5,7 @@
 local terminal = "alacritty"
 local fileManager = "nemo"
 local menu = "rofi -show drun"
-local browser = "~/.config/scripts/browser-picker.sh"
+local browser = "firefox"
 local mainMod = "SUPER"
 
 -- Apps
@@ -21,6 +21,7 @@ hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized" }))
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
+hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd(browser .. " -p"))
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal .. " -e btop"))
 hl.bind(
 	mainMod .. " + SHIFT + V",
@@ -77,4 +78,4 @@ hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd('grim -g "$(slurp -d)" - | wl
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
 
 -- Wallpaper
-hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.config/hypr/scripts/wallpaper.sh"))
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.config/scripts/wallpaper.sh"))

@@ -168,7 +168,6 @@ arch)
     quickshell
     awww
     vesktop-bin
-    brave-origin-bin
   )
   ;;
 debian)

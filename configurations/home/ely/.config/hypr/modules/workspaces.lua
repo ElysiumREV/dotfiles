@@ -16,6 +16,16 @@ hl.window_rule({
 	no_focus = true,
 })
 
+hl.layer_rule({
+	match = { namespace = "^dunst$" },
+	no_screen_share = true,
+})
+
+hl.layer_rule({
+	match = { namespace = "^notifications$" },
+	no_screen_share = true,
+})
+
 -- Workspace 4 usa master layout
 hl.workspace_rule({ workspace = "4", layout = "master" })
 

@@ -38,9 +38,6 @@ detect_distro() {
     . /etc/lsb-release
     DISTRO=$(echo "$DISTRIB_ID" | tr '[:upper:]' '[:lower:]')
     DISTRO_VERSION=$DISTRIB_RELEASE
-  elif [[ -f /etc/debian_version ]]; then
-    DISTRO="debian"
-    DISTRO_VERSION=$(cat /etc/debian_version)
   else
     die "Unsupported or unknown Linux distribution. Cannot proceed."
   fi
@@ -50,14 +47,11 @@ detect_distro() {
   arch | archlinux)
     DISTRO="arch"
     ;;
-  debian | ubuntu | linuxmint)
-    DISTRO="debian"
-    ;;
   fedora | rhel | centos)
     DISTRO="fedora"
     ;;
   *)
-    die "Unsupported distribution: $DISTRO. Supported: Arch, Debian/Ubuntu, Fedora."
+    die "Unsupported distribution: $DISTRO. Supported: Arch, Fedora."
     ;;
   esac
 
@@ -77,9 +71,6 @@ install_package() {
       sudo pacman -S --noconfirm --needed "$pkg"
     fi
     ;;
-  debian)
-    sudo apt-get install -y "$pkg"
-    ;;
   fedora)
     sudo dnf install -y "$pkg"
     ;;
@@ -91,10 +82,6 @@ install_packages() {
   case "$DISTRO" in
   arch)
     sudo pacman -S --noconfirm --needed "${pkgs[@]}"
-    ;;
-  debian)
-    sudo apt-get update
-    sudo apt-get install -y "${pkgs[@]}"
     ;;
   fedora)
     sudo dnf install -y "${pkgs[@]}"
@@ -160,8 +147,13 @@ arch)
     qt6ct
     kvantum
     kvantum-qt5
+    kate
     obsidian
     zed
+    noto-fonts
+    noto-fonts-cjk
+    noto-fonts-emoji
+    noto-fonts-extra
   )
 
   AUR_PKGS=(
@@ -170,41 +162,7 @@ arch)
     vesktop-bin
   )
   ;;
-debian)
-  # Debian/Ubuntu packages
-  SYSTEM_PKGS=(
-    git
-    btop
-    fastfetch
-    brightnessctl
-    power-profiles-daemon
-    wl-clipboard
-    grim
-    slurp
-    qbittorrent
-    easyeffects
-    udiskie
-    udisks2
-    nemo
-    nemo-fileroller
-    gnome-keyring
-    gvfs
-    kitty
-    network-manager-gnome
-    blueman
-    fonts-font-awesome
-    pipewire
-    pipewire-pulse
-    wireplumber
-    qt5ct
-    qt6ct
-    kvantum
-    kvantum-qt5
-    obsidian
-  )
-  ;;
 fedora)
-  # Fedora packages
   SYSTEM_PKGS=(
     git
     btop
@@ -221,19 +179,22 @@ fedora)
     nemo-fileroller
     gnome-keyring
     gvfs
+    steam
+    firefox
     kitty
+    networkmanager
     NetworkManager-applet
     blueman
-    google-noto-fonts-common
-    google-noto-emoji-fonts
-    jetbrains-mono-fonts-all
+    jetbrains-mono-fonts
     pipewire
     pipewire-pulseaudio
     wireplumber
     qt5ct
     qt6ct
     kvantum
+    kvantum-qt5
     obsidian
+    zed
   )
   ;;
 esac
@@ -263,21 +224,6 @@ install_paru() {
   success "paru installed."
 }
 
-install_flatpak() {
-  case "$DISTRO" in
-  arch)
-    sudo pacman -S --noconfirm flatpak
-    ;;
-  debian)
-    sudo apt-get install -y flatpak
-    ;;
-  fedora)
-    sudo dnf install -y flatpak
-    ;;
-  esac
-  flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-  success "Flatpak installed and Flathub repository added."
-}
 
 # -----------------------------------------------------------------------------
 # 1. Install required packages
@@ -287,8 +233,8 @@ install_required_packages() {
   arch)
     install_paru
     ;;
-  debian | fedora)
-    install_flatpak
+  fedora)
+    # Flatpak is pre-installed on Fedora, nothing to do
     ;;
   esac
 }
@@ -307,17 +253,6 @@ install_system_packages() {
     info "Installing pacman packages..."
     sudo pacman -Syu --noconfirm --needed "${PACMAN_PKGS[@]}"
     success "pacman packages installed."
-    ;;
-  debian)
-    if [[ ${#SYSTEM_PKGS[@]} -eq 0 ]]; then
-      warn "No system packages defined, skipping."
-      return
-    fi
-
-    info "Installing Debian/Ubuntu packages..."
-    sudo apt-get update
-    sudo apt-get install -y "${SYSTEM_PKGS[@]}"
-    success "Debian/Ubuntu packages installed."
     ;;
   fedora)
     if [[ ${#SYSTEM_PKGS[@]} -eq 0 ]]; then
@@ -348,12 +283,8 @@ install_extra_packages() {
     paru -S --noconfirm --needed "${AUR_PKGS[@]}"
     success "AUR packages installed."
     ;;
-  debian | fedora)
-    info "Installing packages via Flatpak..."
-    # Install some packages via Flatpak for non-Arch systems
-    flatpak install -y flathub com.discordapp.Discord
-    flatpak install -y flathub com.visualstudio.code
-    success "Flatpak packages installed."
+  fedora)
+    # Flatpak is pre-installed on Fedora, packages can be installed manually if needed
     ;;
   esac
 }
@@ -421,12 +352,6 @@ install_kvantum_theme() {
     if ! command -v kvantummanager &>/dev/null; then
       warn "Kvantum not found. Installing kvantum package..."
       sudo pacman -S --noconfirm kvantum kvantum-qt5
-    fi
-    ;;
-  debian)
-    if ! command -v kvantummanager &>/dev/null; then
-      warn "Kvantum not found. Installing kvantum package..."
-      sudo apt-get install -y kvantum kvantum-qt5
     fi
     ;;
   fedora)

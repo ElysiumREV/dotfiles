@@ -181,6 +181,7 @@ debian)
     wl-clipboard
     grim
     slurp
+    qbittorrent
     easyeffects
     udiskie
     udisks2

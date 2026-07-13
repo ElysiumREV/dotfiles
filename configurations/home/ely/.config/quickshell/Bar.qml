@@ -37,6 +37,7 @@ Variants {
 
             Rectangle {
                 id: barSurface
+
                 anchors {
                     left: parent.left
                     right: parent.right

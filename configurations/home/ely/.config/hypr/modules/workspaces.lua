@@ -101,3 +101,8 @@ hl.window_rule({
 	match = { class = "jetbrains-idea" },
 	no_initial_focus = true,
 })
+
+hl.window_rule({
+	name = "monster-hunter-fix",
+	match = { class = "HunterPie" },
+})

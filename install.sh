@@ -39,21 +39,21 @@ detect_distro() {
     DISTRO=$(echo "$DISTRIB_ID" | tr '[:upper:]' '[:lower:]')
     DISTRO_VERSION=$DISTRIB_RELEASE
   else
-    die "Unsupported or unknown Linux distribution. Cannot proceed."
+    die "Distribuição Linux não suportada ou desconhecida. Não há como continuar."
   fi
 
   # Normalize distribution names
-  case "$DISTRO" in
+case "$DISTRO" in
   arch | archlinux)
     DISTRO="arch"
     ;;
-  fedora | rhel | centos)
-    DISTRO="fedora"
+  debian)
+    DISTRO="debian"
     ;;
   *)
-    die "Unsupported distribution: $DISTRO. Supported: Arch, Fedora."
+    die "Unsupported distribution: $DISTRO. Supported: Arch, Debian."
     ;;
-  esac
+esac
 
   echo "$DISTRO"
 }
@@ -72,7 +72,7 @@ install_package() {
     fi
     ;;
   fedora)
-    sudo dnf install -y "$pkg"
+    sudo apt install -y "$pkg"
     ;;
   esac
 }
@@ -84,7 +84,7 @@ install_packages() {
     sudo pacman -S --noconfirm --needed "${pkgs[@]}"
     ;;
   fedora)
-    sudo dnf install -y "${pkgs[@]}"
+    sudo apt install -y "${pkgs[@]}"
     ;;
   esac
 }
@@ -92,20 +92,17 @@ install_packages() {
 # -----------------------------------------------------------------------------
 # Sanity checks
 # -----------------------------------------------------------------------------
-[[ $EUID -eq 0 ]] && die "Don't run this script as root."
+[[ $EUID -eq 0 ]] && die "Não rode o script com sudo ou como root.\nO script cuida dessa parte pedindo sudo quando necessário."
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Detect distribution
 DISTRO=$(detect_distro)
-info "Detected distribution: $DISTRO"
+info "Distribuição Detectada: $DISTRO"
 
 # Avisos não-fatais acumulados durante a instalação
 WARNINGS=()
 
-# -----------------------------------------------------------------------------
-# Packages by Distribution
-# -----------------------------------------------------------------------------
 case "$DISTRO" in
 arch)
   PACMAN_PKGS=(
@@ -142,6 +139,7 @@ arch)
     pipewire
     pipewire-pulse
     wireplumber
+    spotify-launcher
     xdg-desktop-portal-hyprland
     qt5ct
     qt6ct
@@ -158,45 +156,45 @@ arch)
 
   AUR_PKGS=(
     quickshell
-    awww
+    awww # (swww has been renamed)
     vesktop-bin
+    opencode
   )
   ;;
-fedora)
-  SYSTEM_PKGS=(
-    git
-    btop
-    fastfetch
-    brightnessctl
-    power-profiles-daemon
-    wl-clipboard
-    grim
-    slurp
-    easyeffects
-    udiskie
-    udisks2
-    nemo
-    nemo-fileroller
-    gnome-keyring
-    gvfs
-    steam
-    firefox
-    kitty
-    networkmanager
-    NetworkManager-applet
-    blueman
-    jetbrains-mono-fonts
-    pipewire
-    pipewire-pulseaudio
-    wireplumber
-    qt5ct
-    qt6ct
-    kvantum
-    kvantum-qt5
-    obsidian
-    zed
-  )
-  ;;
+  debian)
+    DEBIAN_PKGS=(
+      git
+      btop
+      fastfetch
+      brightnessctl
+      power-profiles-daemon
+      wl-clipboard
+      grim
+      slurp
+      easyeffects
+      udiskie
+      udisks2
+      nemo
+      nemo-fileroller
+      gnome-keyring
+      gvfs
+      steam
+      firefox
+      kitty
+      network-manager-applet
+      blueman
+      fonts-jetbrains-mono
+      pipewire
+      pipewire-pulse
+      wireplumber
+      qt5ct
+      qt6ct
+      kvantum
+      kvantum-qt5
+      obsidian
+      zed
+    )
+    ;;
 esac
 
 # Pacotes que compilam do source — instalação opcional
@@ -230,12 +228,17 @@ install_paru() {
 # -----------------------------------------------------------------------------
 install_required_packages() {
   case "$DISTRO" in
-  arch)
-    install_paru
-    ;;
-  fedora)
-    # Flatpak is pre-installed on Fedora, nothing to do
-    ;;
+    arch)
+      install_paru
+      ;;
+    debian)
+      if ! command -v flatpak &>/dev/null; then
+        sudo apt-get install -y flatpak
+        success "Flatpak installed."
+      else
+        success "Flatpak already installed."
+      fi
+      ;;
   esac
 }
 
@@ -243,7 +246,7 @@ install_required_packages() {
 # 2. Install system packages
 # -----------------------------------------------------------------------------
 install_system_packages() {
-  case "$DISTRO" in
+case "$DISTRO" in
   arch)
     if [[ ${#PACMAN_PKGS[@]} -eq 0 ]]; then
       warn "No pacman packages defined, skipping."
@@ -254,25 +257,25 @@ install_system_packages() {
     sudo pacman -Syu --noconfirm --needed "${PACMAN_PKGS[@]}"
     success "pacman packages installed."
     ;;
-  fedora)
-    if [[ ${#SYSTEM_PKGS[@]} -eq 0 ]]; then
-      warn "No system packages defined, skipping."
+  debian)
+    if [[ ${#DEBIAN_PKGS[@]} -eq 0 ]]; then
+      warn "No Debian packages defined, skipping."
       return
     fi
 
-    info "Installing Fedora packages..."
-    sudo dnf update -y
-    sudo dnf install -y "${SYSTEM_PKGS[@]}"
-    success "Fedora packages installed."
+    info "Installing Debian packages..."
+    sudo apt-get update -y
+    sudo apt-get install -y "${DEBIAN_PKGS[@]}"
+    success "Debian packages installed."
     ;;
-  esac
+esac
 }
 
 # -----------------------------------------------------------------------------
 # 3. Install AUR/Flatpak packages
 # -----------------------------------------------------------------------------
 install_extra_packages() {
-  case "$DISTRO" in
+case "$DISTRO" in
   arch)
     if [[ ${#AUR_PKGS[@]} -eq 0 ]]; then
       warn "No AUR packages defined, skipping."
@@ -283,10 +286,25 @@ install_extra_packages() {
     paru -S --noconfirm --needed "${AUR_PKGS[@]}"
     success "AUR packages installed."
     ;;
-  fedora)
-    # Flatpak is pre-installed on Fedora, packages can be installed manually if needed
-    ;;
-  esac
+esac
+}
+
+# -----------------------------------------------------------------------------
+# 0. Install SDDM and remove previous DM
+# -----------------------------------------------------------------------------
+install_sddm_if_needed() {
+  # Detect current DM from systemd unit
+  current_dm_service=$(systemctl status display-manager.service 2>/dev/null | grep 'Loaded' | awk '{print $2}' | sed 's/.service$//')
+  if [[ -n "$current_dm_service" && "$current_dm_service" != "sddm" ]]; then
+    info "Removing previous display manager: $current_dm_service"
+    sudo systemctl disable --now "${current_dm_service}.service"
+    sudo apt-get purge -y "$current_dm_service"
+  fi
+  # Install and enable SDDM
+  info "Installing SDDM..."
+  sudo apt-get install -y sddm
+  sudo systemctl enable --now sddm
+  success "SDDM installed and enabled."
 }
 
 # -----------------------------------------------------------------------------
@@ -450,33 +468,37 @@ EOF
 # 7. Install heavy packages (optional, compile from source)
 # -----------------------------------------------------------------------------
 install_heavy_pkgs() {
-  if [[ ${#HEAVY_PKGS[@]} -eq 0 ]]; then
-    return
-  fi
+   if [[ "$DISTRO" != "arch" ]]; then
+     return
+   fi
+   if [[ ${#HEAVY_PKGS[@]} -eq 0 ]]; then
+     return
+   fi
+   
+   echo -e "\n${YELLOW}${BOLD}Pacotes pesados (compilados do source):${RESET}"
+   for pkg in "${HEAVY_PKGS[@]}"; do
+     echo -e "  ${CYAN}•${RESET} $pkg"
+   done
+   
+   echo -e "\n${BOLD}Deseja instalar esses pacotes agora? Pode demorar bastante. [y/N]${RESET} "
+   read -r response
+   if [[ "${response,,}" != "y" ]]; then
+     WARNINGS+=("Pacotes pesados não instalados. Rode manualmente: paru -S ${HEAVY_PKGS[*]}")
+     warn "Pacotes pesados ignorados."
+     return
+   fi
+   
+   info "Instalando pacotes pesados (Pode demorar um pouco)..."
+   for pkg in "${HEAVY_PKGS[@]}"; do
+     if ! paru -S --noconfirm --needed "$pkg"; then
+       WARNINGS+=("Pacote pesado '$pkg': falha na compilação. Instale manualmente depois.")
+       warn "$pkg failed, continuing..."
+     else
+       success "$pkg installed."
+     fi
+   done
+ }
 
-  echo -e "\n${YELLOW}${BOLD}Pacotes pesados (compilados do source):${RESET}"
-  for pkg in "${HEAVY_PKGS[@]}"; do
-    echo -e "  ${CYAN}•${RESET} $pkg"
-  done
-
-  echo -e "\n${BOLD}Deseja instalar esses pacotes agora? Pode demorar bastante. [y/N]${RESET} "
-  read -r response
-  if [[ "${response,,}" != "y" ]]; then
-    WARNINGS+=("Pacotes pesados não instalados. Rode manualmente: paru -S ${HEAVY_PKGS[*]}")
-    warn "Pacotes pesados ignorados."
-    return
-  fi
-
-  info "Installing heavy packages (this may take a while)..."
-  for pkg in "${HEAVY_PKGS[@]}"; do
-    if ! paru -S --noconfirm --needed "$pkg"; then
-      WARNINGS+=("Pacote pesado '$pkg': falha na compilação. Instale manualmente depois.")
-      warn "$pkg failed, continuing..."
-    else
-      success "$pkg installed."
-    fi
-  done
-}
 
 # -----------------------------------------------------------------------------
 # Main
@@ -486,6 +508,7 @@ main() {
 
   install_required_packages
   install_system_packages
+  install_sddm_if_needed
   install_extra_packages
   install_heavy_pkgs
   copy_dotfiles

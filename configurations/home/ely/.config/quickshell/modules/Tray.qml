@@ -75,7 +75,7 @@ Item {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     hoverEnabled: true
 
-                    onPressed: mouse => {
+                    onClicked: mouse => {
                         if (mouse.button === Qt.LeftButton) {
                             modelData.activate()
                         } else if (mouse.button === Qt.RightButton && modelData.hasMenu) {

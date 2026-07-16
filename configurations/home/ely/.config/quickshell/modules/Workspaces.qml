@@ -91,7 +91,8 @@ Item {
                     anchors.margins: -5
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch("workspace " + workspaceItem.workspaceId)
+                    acceptedButtons: Qt.LeftButton
+                    onClicked: workspaceItem.ws?.activate()
                 }
             }
         }

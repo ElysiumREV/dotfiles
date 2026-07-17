@@ -43,7 +43,7 @@ detect_distro() {
   fi
 
   # Normalize distribution names
-case "$DISTRO" in
+  case "$DISTRO" in
   arch | archlinux)
     DISTRO="arch"
     ;;
@@ -53,7 +53,7 @@ case "$DISTRO" in
   *)
     die "Unsupported distribution: $DISTRO. Supported: Arch, Debian."
     ;;
-esac
+  esac
 
   echo "$DISTRO"
 }
@@ -71,7 +71,7 @@ install_package() {
       sudo pacman -S --noconfirm --needed "$pkg"
     fi
     ;;
-  fedora)
+  debian)
     sudo apt install -y "$pkg"
     ;;
   esac
@@ -83,7 +83,7 @@ install_packages() {
   arch)
     sudo pacman -S --noconfirm --needed "${pkgs[@]}"
     ;;
-  fedora)
+  debian)
     sudo apt install -y "${pkgs[@]}"
     ;;
   esac
@@ -161,40 +161,40 @@ arch)
     opencode
   )
   ;;
-  debian)
-    DEBIAN_PKGS=(
-      git
-      btop
-      fastfetch
-      brightnessctl
-      power-profiles-daemon
-      wl-clipboard
-      grim
-      slurp
-      easyeffects
-      udiskie
-      udisks2
-      nemo
-      nemo-fileroller
-      gnome-keyring
-      gvfs
-      steam
-      firefox
-      kitty
-      network-manager-applet
-      blueman
-      fonts-jetbrains-mono
-      pipewire
-      pipewire-pulse
-      wireplumber
-      qt5ct
-      qt6ct
-      kvantum
-      kvantum-qt5
-      obsidian
-      zed
-    )
-    ;;
+debian)
+  DEBIAN_PKGS=(
+    git
+    btop
+    fastfetch
+    brightnessctl
+    power-profiles-daemon
+    wl-clipboard
+    grim
+    slurp
+    easyeffects
+    udiskie
+    udisks2
+    nemo
+    nemo-fileroller
+    gnome-keyring
+    gvfs
+    steam
+    firefox
+    kitty
+    network-manager-applet
+    blueman
+    fonts-jetbrains-mono
+    pipewire
+    pipewire-pulse
+    wireplumber
+    qt5ct
+    qt6ct
+    kvantum
+    kvantum-qt5
+    obsidian
+    zed
+  )
+  ;;
 esac
 
 # Pacotes que compilam do source — instalação opcional
@@ -222,23 +222,22 @@ install_paru() {
   success "paru installed."
 }
 
-
 # -----------------------------------------------------------------------------
 # 1. Install required packages
 # -----------------------------------------------------------------------------
 install_required_packages() {
   case "$DISTRO" in
-    arch)
-      install_paru
-      ;;
-    debian)
-      if ! command -v flatpak &>/dev/null; then
-        sudo apt-get install -y flatpak
-        success "Flatpak installed."
-      else
-        success "Flatpak already installed."
-      fi
-      ;;
+  arch)
+    install_paru
+    ;;
+  debian)
+    if ! command -v flatpak &>/dev/null; then
+      sudo apt-get install -y flatpak
+      success "Flatpak installed."
+    else
+      success "Flatpak already installed."
+    fi
+    ;;
   esac
 }
 
@@ -246,7 +245,7 @@ install_required_packages() {
 # 2. Install system packages
 # -----------------------------------------------------------------------------
 install_system_packages() {
-case "$DISTRO" in
+  case "$DISTRO" in
   arch)
     if [[ ${#PACMAN_PKGS[@]} -eq 0 ]]; then
       warn "No pacman packages defined, skipping."
@@ -268,14 +267,14 @@ case "$DISTRO" in
     sudo apt-get install -y "${DEBIAN_PKGS[@]}"
     success "Debian packages installed."
     ;;
-esac
+  esac
 }
 
 # -----------------------------------------------------------------------------
 # 3. Install AUR/Flatpak packages
 # -----------------------------------------------------------------------------
 install_extra_packages() {
-case "$DISTRO" in
+  case "$DISTRO" in
   arch)
     if [[ ${#AUR_PKGS[@]} -eq 0 ]]; then
       warn "No AUR packages defined, skipping."
@@ -286,23 +285,33 @@ case "$DISTRO" in
     paru -S --noconfirm --needed "${AUR_PKGS[@]}"
     success "AUR packages installed."
     ;;
-esac
+  esac
 }
 
 # -----------------------------------------------------------------------------
 # 0. Install SDDM and remove previous DM
 # -----------------------------------------------------------------------------
 install_sddm_if_needed() {
-  # Detect current DM from systemd unit
-  current_dm_service=$(systemctl status display-manager.service 2>/dev/null | grep 'Loaded' | awk '{print $2}' | sed 's/.service$//')
+  local current_dm_service=""
+  if [[ -L /etc/systemd/system/display-manager.service ]]; then
+    current_dm_service=$(basename "$(readlink -f /etc/systemd/system/display-manager.service)" .service)
+  fi
+
   if [[ -n "$current_dm_service" && "$current_dm_service" != "sddm" ]]; then
     info "Removing previous display manager: $current_dm_service"
-    sudo systemctl disable --now "${current_dm_service}.service"
-    sudo apt-get purge -y "$current_dm_service"
+    sudo systemctl disable --now "${current_dm_service}.service" || true
+    case "$DISTRO" in
+    arch) sudo pacman -Rns --noconfirm "$current_dm_service" || true ;;
+    debian) sudo apt-get purge -y "$current_dm_service" || true ;;
+    esac
   fi
-  # Install and enable SDDM
+
   info "Installing SDDM..."
-  sudo apt-get install -y sddm
+  case "$DISTRO" in
+  arch) sudo pacman -S --noconfirm --needed sddm ;;
+  debian) sudo apt-get install -y sddm ;;
+  esac
+
   sudo systemctl enable --now sddm
   success "SDDM installed and enabled."
 }
@@ -372,10 +381,10 @@ install_kvantum_theme() {
       sudo pacman -S --noconfirm kvantum kvantum-qt5
     fi
     ;;
-  fedora)
+  debian)
     if ! command -v kvantummanager &>/dev/null; then
       warn "Kvantum not found. Installing kvantum package..."
-      sudo dnf install -y kvantum
+      sudo apt-get install -y qt5-style-kvantum qt5-style-kvantum-themes
     fi
     ;;
   esac
@@ -468,37 +477,36 @@ EOF
 # 7. Install heavy packages (optional, compile from source)
 # -----------------------------------------------------------------------------
 install_heavy_pkgs() {
-   if [[ "$DISTRO" != "arch" ]]; then
-     return
-   fi
-   if [[ ${#HEAVY_PKGS[@]} -eq 0 ]]; then
-     return
-   fi
-   
-   echo -e "\n${YELLOW}${BOLD}Pacotes pesados (compilados do source):${RESET}"
-   for pkg in "${HEAVY_PKGS[@]}"; do
-     echo -e "  ${CYAN}•${RESET} $pkg"
-   done
-   
-   echo -e "\n${BOLD}Deseja instalar esses pacotes agora? Pode demorar bastante. [y/N]${RESET} "
-   read -r response
-   if [[ "${response,,}" != "y" ]]; then
-     WARNINGS+=("Pacotes pesados não instalados. Rode manualmente: paru -S ${HEAVY_PKGS[*]}")
-     warn "Pacotes pesados ignorados."
-     return
-   fi
-   
-   info "Instalando pacotes pesados (Pode demorar um pouco)..."
-   for pkg in "${HEAVY_PKGS[@]}"; do
-     if ! paru -S --noconfirm --needed "$pkg"; then
-       WARNINGS+=("Pacote pesado '$pkg': falha na compilação. Instale manualmente depois.")
-       warn "$pkg failed, continuing..."
-     else
-       success "$pkg installed."
-     fi
-   done
- }
+  if [[ "$DISTRO" != "arch" ]]; then
+    return
+  fi
+  if [[ ${#HEAVY_PKGS[@]} -eq 0 ]]; then
+    return
+  fi
 
+  echo -e "\n${YELLOW}${BOLD}Pacotes pesados (compilados do source):${RESET}"
+  for pkg in "${HEAVY_PKGS[@]}"; do
+    echo -e "  ${CYAN}•${RESET} $pkg"
+  done
+
+  echo -e "\n${BOLD}Deseja instalar esses pacotes agora? Pode demorar bastante. [y/N]${RESET} "
+  read -r response
+  if [[ "${response,,}" != "y" ]]; then
+    WARNINGS+=("Pacotes pesados não instalados. Rode manualmente: paru -S ${HEAVY_PKGS[*]}")
+    warn "Pacotes pesados ignorados."
+    return
+  fi
+
+  info "Instalando pacotes pesados (Pode demorar um pouco)..."
+  for pkg in "${HEAVY_PKGS[@]}"; do
+    if ! paru -S --noconfirm --needed "$pkg"; then
+      WARNINGS+=("Pacote pesado '$pkg': falha na compilação. Instale manualmente depois.")
+      warn "$pkg failed, continuing..."
+    else
+      success "$pkg installed."
+    fi
+  done
+}
 
 # -----------------------------------------------------------------------------
 # Main
@@ -515,6 +523,8 @@ main() {
   install_colloid_icons
   install_kvantum_theme
   install_cursor_theme
+
+  hyprctl reload
 
   echo -e "\n${GREEN}${BOLD}✓ Instalação completa!${RESET}"
 

@@ -41,7 +41,7 @@ Singleton {
     // Barra e módulos
     property int barInset: 6
     property int barHeight: 30
-    property int barRadius: 10
+    property int barRadius: 5
     property int barContentMargin: 8
     property int moduleHeight: 30
     property int moduleSpacing: 8

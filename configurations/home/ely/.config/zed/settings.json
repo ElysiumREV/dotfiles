@@ -7,6 +7,9 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "disable_ai": true,
+  "proxy": "",
+  "tab_size": 2,
   "project_panel": {
     "dock": "left"
   },

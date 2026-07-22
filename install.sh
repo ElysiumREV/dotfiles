@@ -131,9 +131,15 @@ arch)
     gvfs
     steam
     firefox
-    alacritty
+    mpv
+    mpd
+    mpris
+    playerctl
+    kitty
     networkmanager
     network-manager-applet
+    bluez
+    bluez-utils
     blueman
     ttf-jetbrains-mono-nerd
     pipewire
@@ -299,7 +305,7 @@ install_sddm_if_needed() {
 
   if [[ -n "$current_dm_service" && "$current_dm_service" != "sddm" ]]; then
     info "Removing previous display manager: $current_dm_service"
-    sudo systemctl disable --now "${current_dm_service}.service" || true
+    sudo systemctl disable "${current_dm_service}.service" || true
     case "$DISTRO" in
     arch) sudo pacman -Rns --noconfirm "$current_dm_service" || true ;;
     debian) sudo apt-get purge -y "$current_dm_service" || true ;;
@@ -312,7 +318,7 @@ install_sddm_if_needed() {
   debian) sudo apt-get install -y sddm ;;
   esac
 
-  sudo systemctl enable --now sddm
+  sudo systemctl enable sddm
   success "SDDM installed and enabled."
 }
 

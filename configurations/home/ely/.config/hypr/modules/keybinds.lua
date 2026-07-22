@@ -2,7 +2,7 @@
 -- KEYBINDINGS
 --------------------
 
-local terminal = "alacritty"
+local terminal = "kitty"
 local fileManager = "nemo"
 local menu = "rofi -show drun"
 local browser = "firefox"
@@ -62,6 +62,8 @@ hl.bind(
 	hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
 	{ locked = true, repeating = true }
 )
+hl.bind("SHIFT + XF86AudioRaiseVolume", hl.dsp.exec_cmd("playerctl volume 0.05+"), { locked = true, repeating = true })
+hl.bind("SHIFT + XF86AudioLowerVolume", hl.dsp.exec_cmd("playerctl volume 0.05-"), { locked = true, repeating = true })
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
 hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl set 5%+"), { locked = true, repeating = true })

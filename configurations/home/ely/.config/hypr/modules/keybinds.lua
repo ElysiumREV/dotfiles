@@ -4,7 +4,7 @@
 
 local terminal = "kitty"
 local fileManager = "nemo"
-local menu = "rofi -show drun"
+local menu = "vicinae open"
 local browser = "firefox"
 local mainMod = "SUPER"
 

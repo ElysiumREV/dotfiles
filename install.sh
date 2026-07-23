@@ -165,6 +165,9 @@ arch)
     awww # (swww has been renamed)
     vesktop-bin
     opencode
+    vicinae-bin
+    hayase-desktop-bin
+    stremio-enhanced-bin
   )
   ;;
 debian)

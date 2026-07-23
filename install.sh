@@ -133,7 +133,6 @@ arch)
     firefox
     mpv
     mpd
-    mpris
     playerctl
     kitty
     networkmanager

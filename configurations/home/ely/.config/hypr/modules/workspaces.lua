@@ -32,7 +32,7 @@ hl.workspace_rule({ workspace = "4", layout = "master" })
 -- Discord / Vesktop / Telegram → workspace 4
 hl.window_rule({
 	name = "socials",
-	match = { class = "^(vesktop|discord|org%.telegram%.desktop)$" },
+	match = { class = "^(vesktop|discord|org.telegram.desktop)$" },
 	workspace = 4,
 })
 

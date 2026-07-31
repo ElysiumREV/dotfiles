@@ -20,6 +20,11 @@
       }
    },
    "providers": {
+      "@sovereign/store.vicinae.awww-switcher": {
+         "preferences": {
+            "wallpaperPath": "/home/ely/Pictures/Wallpapers/"
+         }
+      },
       "core": {
          "entrypoints": {
             "sponsor": {

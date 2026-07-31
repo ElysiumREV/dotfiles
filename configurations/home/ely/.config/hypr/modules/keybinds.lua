@@ -74,10 +74,16 @@ hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tru
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 
 -- Screenshot
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd('grim -g "$(slurp -d)" - | wl-copy'))
+hl.bind(
+	mainMod .. " + SHIFT + S",
+	hl.dsp.exec_cmd("grimblast -f copysave area ~/Pictures/Screenshots/$(date +%F-%H-%M-%S).png")
+)
 
 -- Lockscreen
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
 
 -- Wallpaper
-hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.config/scripts/wallpaper.sh"))
+hl.bind(
+	mainMod .. " + W",
+	hl.dsp.exec_cmd("vicinae deeplink vicinae://launch/@sovereign/store.vicinae.awww-switcher/wpgrid")
+)

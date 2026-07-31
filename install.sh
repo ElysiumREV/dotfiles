@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
-# =============================================================================
-# install.sh — Dotfiles installer for multiple Linux distributions
-# =============================================================================
 
 set -e # Abort on error
 
-# -----------------------------------------------------------------------------
-# Colors
-# -----------------------------------------------------------------------------
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -23,188 +17,105 @@ die() {
   exit 1
 }
 
-# -----------------------------------------------------------------------------
-# Distribution Detection
-# -----------------------------------------------------------------------------
-detect_distro() {
+check_arch() {
   if [[ -f /etc/os-release ]]; then
     . /etc/os-release
-    DISTRO=$ID
-    DISTRO_VERSION=$VERSION_ID
-  elif command -v lsb_release &>/dev/null; then
-    DISTRO=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
-    DISTRO_VERSION=$(lsb_release -sr)
-  elif [[ -f /etc/lsb-release ]]; then
-    . /etc/lsb-release
-    DISTRO=$(echo "$DISTRIB_ID" | tr '[:upper:]' '[:lower:]')
-    DISTRO_VERSION=$DISTRIB_RELEASE
-  else
-    die "Distribuição Linux não suportada ou desconhecida. Não há como continuar."
+    if [[ "$ID" != "arch" ]]; then
+      die "Este script é exclusivo para Arch Linux. Distribuição detectada: $ID."
+    fi
+  elif [[ ! -f /etc/arch-release ]]; then
+    die "Este script é exclusivo para Arch Linux. Não foi possível confirmar a distribuição."
   fi
-
-  # Normalize distribution names
-  case "$DISTRO" in
-  arch | archlinux)
-    DISTRO="arch"
-    ;;
-  debian)
-    DISTRO="debian"
-    ;;
-  *)
-    die "Unsupported distribution: $DISTRO. Supported: Arch, Debian."
-    ;;
-  esac
-
-  echo "$DISTRO"
 }
 
-# -----------------------------------------------------------------------------
-# Package Manager Functions
-# -----------------------------------------------------------------------------
 install_package() {
   local pkg=$1
-  case "$DISTRO" in
-  arch)
-    if [[ " ${AUR_PKGS[*]} " =~ " ${pkg} " ]]; then
-      paru -S --noconfirm --needed "$pkg"
-    else
-      sudo pacman -S --noconfirm --needed "$pkg"
-    fi
-    ;;
-  debian)
-    sudo apt install -y "$pkg"
-    ;;
-  esac
+  if [[ " ${AUR_PKGS[*]} " =~ " ${pkg} " ]]; then
+    paru -S --noconfirm --needed "$pkg"
+  else
+    sudo pacman -S --noconfirm --needed "$pkg"
+  fi
 }
 
 install_packages() {
   local pkgs=("$@")
-  case "$DISTRO" in
-  arch)
-    sudo pacman -S --noconfirm --needed "${pkgs[@]}"
-    ;;
-  debian)
-    sudo apt install -y "${pkgs[@]}"
-    ;;
-  esac
+  sudo pacman -S --noconfirm --needed "${pkgs[@]}"
 }
 
-# -----------------------------------------------------------------------------
-# Sanity checks
-# -----------------------------------------------------------------------------
 [[ $EUID -eq 0 ]] && die "Não rode o script com sudo ou como root.\nO script cuida dessa parte pedindo sudo quando necessário."
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Detect distribution
-DISTRO=$(detect_distro)
-info "Distribuição Detectada: $DISTRO"
+check_arch
+info "Arch Linux confirmado."
 
-# Avisos não-fatais acumulados durante a instalação
 WARNINGS=()
 
-case "$DISTRO" in
-arch)
-  PACMAN_PKGS=(
-    git
-    hyprland
-    hyprsunset
-    hypridle
-    hyprlock
-    hyprpolkitagent
-    btop
-    fastfetch
-    brightnessctl
-    power-profiles-daemon
-    mako
-    cliphist
-    wl-clipboard
-    grim
-    slurp
-    easyeffects
-    rnnoise
-    udiskie
-    udisks2
-    nemo
-    nemo-fileroller
-    gnome-keyring
-    gvfs
-    steam
-    firefox
-    mpv
-    mpd
-    mpris
-    playerctl
-    kitty
-    networkmanager
-    network-manager-applet
-    bluez
-    bluez-utils
-    blueman
-    ttf-jetbrains-mono-nerd
-    pipewire
-    pipewire-pulse
-    wireplumber
-    spotify-launcher
-    xdg-desktop-portal-hyprland
-    qt5ct
-    qt6ct
-    kvantum
-    kvantum-qt5
-    kate
-    obsidian
-    zed
-    noto-fonts
-    noto-fonts-cjk
-    noto-fonts-emoji
-    noto-fonts-extra
-  )
+PACMAN_PKGS=(
+  git
+  hyprland
+  hyprsunset
+  hypridle
+  hyprlock
+  hyprpicker
+  hyprpolkitagent
+  btop
+  fastfetch
+  brightnessctl
+  power-profiles-daemon
+  mako
+  cliphist
+  wl-clipboard
+  grim
+  slurp
+  easyeffects
+  rnnoise
+  udiskie
+  udisks2
+  nemo
+  nemo-fileroller
+  ffmpegthumbnailer
+  gnome-keyring
+  gvfs
+  steam
+  firefox
+  mpv
+  mpd
+  playerctl
+  kitty
+  networkmanager
+  network-manager-applet
+  bluez
+  bluez-utils
+  blueman
+  ttf-jetbrains-mono-nerd
+  pipewire
+  pipewire-pulse
+  wireplumber
+  spotify-launcher
+  xdg-desktop-portal-hyprland
+  qt5ct
+  qt6ct
+  kvantum
+  kvantum-qt5
+  kate
+  obsidian
+  zed
+  noto-fonts
+  noto-fonts-cjk
+  noto-fonts-emoji
+  noto-fonts-extra
+)
 
-  AUR_PKGS=(
-    quickshell
-    awww # (swww has been renamed)
-    vesktop-bin
-    opencode
-    vicinae-bin
-    hayase-desktop-bin
-    stremio-enhanced-bin
-  )
-  ;;
-debian)
-  DEBIAN_PKGS=(
-    git
-    btop
-    fastfetch
-    brightnessctl
-    power-profiles-daemon
-    wl-clipboard
-    grim
-    slurp
-    easyeffects
-    udiskie
-    udisks2
-    nemo
-    nemo-fileroller
-    gnome-keyring
-    gvfs
-    steam
-    firefox
-    kitty
-    network-manager-applet
-    blueman
-    fonts-jetbrains-mono
-    pipewire
-    pipewire-pulse
-    wireplumber
-    qt5ct
-    qt6ct
-    kvantum
-    kvantum-qt5
-    obsidian
-    zed
-  )
-  ;;
-esac
+AUR_PKGS=(
+  quickshell
+  awww # (swww has been renamed)
+  vesktop-bin
+  opencode
+  vicinae-bin
+  hayase-desktop-bin
+  stremio-enhanced-bin
+)
 
 # Pacotes que compilam do source — instalação opcional
 HEAVY_PKGS=(
@@ -213,9 +124,6 @@ HEAVY_PKGS=(
   "calf"
 )
 
-# -----------------------------------------------------------------------------
-# Distribution-specific Functions
-# -----------------------------------------------------------------------------
 install_paru() {
   if command -v paru &>/dev/null; then
     success "paru already installed, skipping."
@@ -231,70 +139,53 @@ install_paru() {
   success "paru installed."
 }
 
-# -----------------------------------------------------------------------------
-# 1. Install required packages
-# -----------------------------------------------------------------------------
 install_required_packages() {
-  case "$DISTRO" in
-  arch)
-    install_paru
-    ;;
-  debian)
-    if ! command -v flatpak &>/dev/null; then
-      sudo apt-get install -y flatpak
-      success "Flatpak installed."
-    else
-      success "Flatpak already installed."
-    fi
-    ;;
-  esac
+  install_paru
 }
 
 # -----------------------------------------------------------------------------
 # 2. Install system packages
 # -----------------------------------------------------------------------------
 install_system_packages() {
-  case "$DISTRO" in
-  arch)
-    if [[ ${#PACMAN_PKGS[@]} -eq 0 ]]; then
-      warn "No pacman packages defined, skipping."
-      return
-    fi
+  if [[ ${#PACMAN_PKGS[@]} -eq 0 ]]; then
+    warn "No pacman packages defined, skipping."
+    return
+  fi
 
-    info "Installing pacman packages..."
-    sudo pacman -Syu --noconfirm --needed "${PACMAN_PKGS[@]}"
-    success "pacman packages installed."
-    ;;
-  debian)
-    if [[ ${#DEBIAN_PKGS[@]} -eq 0 ]]; then
-      warn "No Debian packages defined, skipping."
-      return
-    fi
-
-    info "Installing Debian packages..."
-    sudo apt-get update -y
-    sudo apt-get install -y "${DEBIAN_PKGS[@]}"
-    success "Debian packages installed."
-    ;;
-  esac
+  info "Installing pacman packages..."
+  sudo pacman -Syu --noconfirm --needed "${PACMAN_PKGS[@]}"
+  success "pacman packages installed."
 }
 
 # -----------------------------------------------------------------------------
-# 3. Install AUR/Flatpak packages
+# 3. Install AUR packages
 # -----------------------------------------------------------------------------
 install_extra_packages() {
-  case "$DISTRO" in
-  arch)
-    if [[ ${#AUR_PKGS[@]} -eq 0 ]]; then
-      warn "No AUR packages defined, skipping."
-      return
-    fi
+  if [[ ${#AUR_PKGS[@]} -eq 0 ]]; then
+    warn "No AUR packages defined, skipping."
+    return
+  fi
 
-    info "Installing AUR packages..."
-    paru -S --noconfirm --needed "${AUR_PKGS[@]}"
-    success "AUR packages installed."
-    ;;
-  esac
+  echo -e "\n${YELLOW}${BOLD}Pacotes AUR:${RESET}"
+  for pkg in "${AUR_PKGS[@]}"; do
+    echo -e "  ${CYAN}•${RESET} $pkg"
+  done
+
+  echo -e "\n${BOLD}Deseja instalar os pacotes AUR agora? [y/N]${RESET} "
+  read -r response
+  if [[ "${response,,}" != "y" ]]; then
+    WARNINGS+=("Pacotes AUR não instalados. Rode manualmente: paru -S ${AUR_PKGS[*]}")
+    warn "Pacotes AUR ignorados."
+    return
+  fi
+
+  info "Installing AUR packages..."
+  if ! paru -S --noconfirm --needed "${AUR_PKGS[@]}"; then
+    WARNINGS+=("Falha ao instalar um ou mais pacotes AUR. Rode manualmente: paru -S ${AUR_PKGS[*]}")
+    warn "Falha na instalação de pacotes AUR."
+    return
+  fi
+  success "AUR packages installed."
 }
 
 # -----------------------------------------------------------------------------
@@ -309,17 +200,11 @@ install_sddm_if_needed() {
   if [[ -n "$current_dm_service" && "$current_dm_service" != "sddm" ]]; then
     info "Removing previous display manager: $current_dm_service"
     sudo systemctl disable "${current_dm_service}.service" || true
-    case "$DISTRO" in
-    arch) sudo pacman -Rns --noconfirm "$current_dm_service" || true ;;
-    debian) sudo apt-get purge -y "$current_dm_service" || true ;;
-    esac
+    sudo pacman -Rns --noconfirm "$current_dm_service" || true
   fi
 
   info "Installing SDDM..."
-  case "$DISTRO" in
-  arch) sudo pacman -S --noconfirm --needed sddm ;;
-  debian) sudo apt-get install -y sddm ;;
-  esac
+  sudo pacman -S --noconfirm --needed sddm
 
   sudo systemctl enable sddm
   success "SDDM installed and enabled."
@@ -383,20 +268,10 @@ install_colloid_icons() {
 # -----------------------------------------------------------------------------
 install_kvantum_theme() {
   # Check if required Kvantum packages are available
-  case "$DISTRO" in
-  arch)
-    if ! command -v kvantummanager &>/dev/null; then
-      warn "Kvantum not found. Installing kvantum package..."
-      sudo pacman -S --noconfirm kvantum kvantum-qt5
-    fi
-    ;;
-  debian)
-    if ! command -v kvantummanager &>/dev/null; then
-      warn "Kvantum not found. Installing kvantum package..."
-      sudo apt-get install -y qt5-style-kvantum qt5-style-kvantum-themes
-    fi
-    ;;
-  esac
+  if ! command -v kvantummanager &>/dev/null; then
+    warn "Kvantum not found. Installing kvantum package..."
+    sudo pacman -S --noconfirm kvantum kvantum-qt5
+  fi
 
   # Skip Kvantum theme installation if kvantummanager is not available
   if ! command -v kvantummanager &>/dev/null; then
@@ -486,9 +361,6 @@ EOF
 # 7. Install heavy packages (optional, compile from source)
 # -----------------------------------------------------------------------------
 install_heavy_pkgs() {
-  if [[ "$DISTRO" != "arch" ]]; then
-    return
-  fi
   if [[ ${#HEAVY_PKGS[@]} -eq 0 ]]; then
     return
   fi

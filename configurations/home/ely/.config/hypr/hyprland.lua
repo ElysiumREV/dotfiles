@@ -33,6 +33,7 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 
 hl.config({
 	xwayland = {
+		enabled = true,
 		force_zero_scaling = true,
 	},
 
@@ -56,14 +57,14 @@ hl.config({
 	decoration = {
 		rounding = 5,
 		rounding_power = 2,
-		active_opacity = 1.0,
+		active_opacity = 1,
 		inactive_opacity = 0.8,
 		fullscreen_opacity = 1.0,
 		shadow = {
 			enabled = true,
 			range = 50,
 			render_power = 10,
-			color = "rgba(13151a88)", -- rgba(19,21,26,136) convertido
+			color = "rgba(13151a88)",
 		},
 		blur = {
 			enabled = true,
@@ -90,15 +91,10 @@ hl.config({
 		smart_resizing = false,
 	},
 
-	master = {
-		new_status = "slave",
-		-- master_ratio = 0.75,
-		-- master_side = "left",
-	},
-
 	misc = {
 		disable_hyprland_logo = true,
 		disable_splash_rendering = true,
+		vrr = false,
 		mouse_move_enables_dpms = true,
 		key_press_enables_dpms = true,
 		animate_manual_resizes = false,
@@ -108,9 +104,9 @@ hl.config({
 		on_focus_under_fullscreen = 2,
 		allow_session_lock_restore = true,
 		session_lock_xray = true,
-		initial_workspace_tracking = false,
+		initial_workspace_tracking = 1,
 		focus_on_activate = false,
-		render_unfocused_fps = 30,
+		render_unfocused_fps = 60,
 	},
 })
 

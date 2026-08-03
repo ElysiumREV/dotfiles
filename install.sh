@@ -28,20 +28,6 @@ check_arch() {
   fi
 }
 
-install_package() {
-  local pkg=$1
-  if [[ " ${AUR_PKGS[*]} " =~ " ${pkg} " ]]; then
-    paru -S --noconfirm --needed "$pkg"
-  else
-    sudo pacman -S --noconfirm --needed "$pkg"
-  fi
-}
-
-install_packages() {
-  local pkgs=("$@")
-  sudo pacman -S --noconfirm --needed "${pkgs[@]}"
-}
-
 [[ $EUID -eq 0 ]] && die "Não rode o script com sudo ou como root.\nO script cuida dessa parte pedindo sudo quando necessário."
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -143,9 +129,6 @@ install_required_packages() {
   install_paru
 }
 
-# -----------------------------------------------------------------------------
-# 2. Install system packages
-# -----------------------------------------------------------------------------
 install_system_packages() {
   if [[ ${#PACMAN_PKGS[@]} -eq 0 ]]; then
     warn "No pacman packages defined, skipping."
@@ -157,9 +140,6 @@ install_system_packages() {
   success "pacman packages installed."
 }
 
-# -----------------------------------------------------------------------------
-# 3. Install AUR packages
-# -----------------------------------------------------------------------------
 install_extra_packages() {
   if [[ ${#AUR_PKGS[@]} -eq 0 ]]; then
     warn "No AUR packages defined, skipping."
@@ -188,9 +168,6 @@ install_extra_packages() {
   success "AUR packages installed."
 }
 
-# -----------------------------------------------------------------------------
-# 0. Install SDDM and remove previous DM
-# -----------------------------------------------------------------------------
 install_sddm_if_needed() {
   local current_dm_service=""
   if [[ -L /etc/systemd/system/display-manager.service ]]; then
@@ -210,9 +187,6 @@ install_sddm_if_needed() {
   success "SDDM installed and enabled."
 }
 
-# -----------------------------------------------------------------------------
-# 4. Copy dotfiles
-# -----------------------------------------------------------------------------
 copy_dotfiles() {
   info "Copying dotfiles..."
 
@@ -236,130 +210,6 @@ copy_dotfiles() {
   fi
 }
 
-# -----------------------------------------------------------------------------
-# 5. Install Colloid Icon Theme (via GitHub)
-# -----------------------------------------------------------------------------
-install_colloid_icons() {
-  info "Installing Colloid Icon Theme..."
-
-  local tmp
-  tmp=$(mktemp -d)
-
-  if ! git clone --depth=1 https://github.com/vinceliuice/Colloid-icon-theme.git "$tmp/colloid-icons"; then
-    WARNINGS+=("Colloid Icon Theme: falha ao clonar o repositório. Instale manualmente depois.")
-    warn "Could not clone Colloid Icon Theme, skipping."
-    rm -rf "$tmp"
-    return
-  fi
-
-  if ! bash "$tmp/colloid-icons/install.sh"; then
-    WARNINGS+=("Colloid Icon Theme: install script falhou. Instale manualmente depois.")
-    warn "Colloid install script failed, skipping."
-    rm -rf "$tmp"
-    return
-  fi
-
-  rm -rf "$tmp"
-  success "Colloid Icon Theme installed to ~/.local/share/icons."
-}
-
-# -----------------------------------------------------------------------------
-# 6. Install Kvantum theme (from GitHub, non-fatal)
-# -----------------------------------------------------------------------------
-install_kvantum_theme() {
-  # Check if required Kvantum packages are available
-  if ! command -v kvantummanager &>/dev/null; then
-    warn "Kvantum not found. Installing kvantum package..."
-    sudo pacman -S --noconfirm kvantum kvantum-qt5
-  fi
-
-  # Skip Kvantum theme installation if kvantummanager is not available
-  if ! command -v kvantummanager &>/dev/null; then
-    warn "Kvantum manager not available, skipping theme installation."
-    return
-  fi
-
-  info "Installing Colloid KDE theme (Kvantum)..."
-
-  local tmp
-  tmp=$(mktemp -d)
-
-  if ! git clone --depth=1 https://github.com/vinceliuice/Colloid-kde.git "$tmp/colloid-kde"; then
-    WARNINGS+=("Colloid KDE theme: falha ao clonar o repositório. Instale manualmente depois.")
-    warn "Could not clone Colloid KDE theme, skipping."
-    rm -rf "$tmp"
-    return
-  fi
-
-  if ! bash "$tmp/colloid-kde/install.sh"; then
-    WARNINGS+=("Colloid KDE theme: install script falhou. Instale manualmente depois.")
-    warn "Colloid KDE theme install script failed, skipping."
-    rm -rf "$tmp"
-    return
-  fi
-
-  rm -rf "$tmp"
-  success "Colloid KDE theme installed (Kvantum + color schemes)."
-}
-
-# -----------------------------------------------------------------------------
-# 7. Install Hackneyed cursor theme (from GitLab)
-# -----------------------------------------------------------------------------
-install_cursor_theme() {
-  info "Installing Hackneyed cursor theme..."
-
-  local tmp
-  tmp=$(mktemp -d)
-
-  if ! git clone --depth=1 https://gitlab.com/Enthymeme/hackneyed-x11-cursors.git "$tmp/hackneyed-cursors"; then
-    WARNINGS+=("Hackneyed cursor theme: falha ao clonar o repositório. Instale manualmente depois.")
-    warn "Could not clone Hackneyed cursor theme, skipping."
-    rm -rf "$tmp"
-    return
-  fi
-
-  # Create cursors directory if it doesn't exist
-  mkdir -p "$HOME/.icons"
-
-  # Copy the dark theme to the icons directory
-  if ! cp -r "$tmp/hackneyed-cursors/hackneyed-dark" "$HOME/.icons/"; then
-    WARNINGS+=("Hackneyed cursor theme: falha ao copiar os arquivos. Instale manualmente depois.")
-    warn "Could not copy Hackneyed cursor theme files, skipping."
-    rm -rf "$tmp"
-    return
-  fi
-
-  # Set the cursor theme using XDG settings
-  if command -v gsettings &>/dev/null; then
-    # For GNOME-based environments
-    gsettings set org.gnome.desktop.interface cursor-theme 'hackneyed-dark'
-  elif command -v xfconf-query &>/dev/null; then
-    # For XFCE environments
-    xfconf-query -c xsettings -p /Gtk/CursorThemeName -s 'hackneyed-dark'
-  fi
-
-  # Create/update ~/.icons/default/index.theme for consistency
-  mkdir -p "$HOME/.icons/default"
-  cat >"$HOME/.icons/default/index.theme" <<EOF
-[Icon Theme]
-Inherits=hackneyed-dark
-EOF
-
-  # Set cursor theme for Hyprland using hyprcursor
-  if command -v hyprctl &>/dev/null; then
-    hyprctl setcursor hackneyed-dark 24
-    success "Cursor theme set for Hyprland."
-  else
-    warn "Hyprland not detected, skipping Hyprcursor configuration."
-  fi
-
-  rm -rf "$tmp"
-  success "Hackneyed cursor theme installed to ~/.icons/hackneyed-dark."
-}
-
-# -----------------------------------------------------------------------------
-# 7. Install heavy packages (optional, compile from source)
-# -----------------------------------------------------------------------------
 install_heavy_pkgs() {
   if [[ ${#HEAVY_PKGS[@]} -eq 0 ]]; then
     return
@@ -389,34 +239,74 @@ install_heavy_pkgs() {
   done
 }
 
-# -----------------------------------------------------------------------------
-# Main
-# -----------------------------------------------------------------------------
-main() {
-  echo -e "\n${BOLD}Dotfiles Installer${RESET}\n"
-
+full_install() {
   install_required_packages
   install_system_packages
   install_sddm_if_needed
   install_extra_packages
   install_heavy_pkgs
   copy_dotfiles
-  install_colloid_icons
-  install_kvantum_theme
-  install_cursor_theme
 
-  hyprctl reload
-
-  echo -e "\n${GREEN}${BOLD}✓ Instalação completa!${RESET}"
-
-  if [[ ${#WARNINGS[@]} -gt 0 ]]; then
-    echo -e "\n${YELLOW}${BOLD}Pendências manuais:${RESET}"
-    for w in "${WARNINGS[@]}"; do
-      echo -e "  ${YELLOW}•${RESET} $w"
-    done
+  if command -v hyprctl >/dev/null; then
+    hyprctl reload
   fi
+}
 
-  echo -e "\n${YELLOW}  ℹ Algumas mudanças serão aplicadas somente após logout/reboot.${RESET}\n"
+install_dependencies() {
+  install_required_packages
+  install_system_packages
+  install_sddm_if_needed
+  install_extra_packages
+  install_heavy_pkgs
+}
+
+update_configuration() {
+  copy_dotfiles
+  if command -v hyprctl >/dev/null; then
+    hyprctl reload
+  fi
+}
+
+main() {
+    echo
+    echo "Dotfiles Installer"
+    echo
+    echo "1) Instalação Completa"
+    echo "2) Instalar dependências"
+    echo "3) Atualizar configuração"
+    echo "0) Sair"
+    echo
+
+    read -rp "Escolha uma opção: " option
+
+    case "$option" in
+        1)
+            full_install
+            ;;
+        2)
+            install_dependencies
+            ;;
+        3)
+            update_configuration
+            ;;
+        0)
+            exit 0
+            ;;
+        *)
+            die "Opção inválida."
+            ;;
+    esac
+
+    echo
+    success "Concluído."
+
+    if [[ ${#WARNINGS[@]} -gt 0 ]]; then
+        echo
+        warn "Pendências:"
+        for w in "${WARNINGS[@]}"; do
+            echo " • $w"
+        done
+    fi
 }
 
 main "$@"

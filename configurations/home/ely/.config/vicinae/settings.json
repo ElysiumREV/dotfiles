@@ -22,7 +22,17 @@
    "providers": {
       "@sovereign/store.vicinae.awww-switcher": {
          "preferences": {
-            "wallpaperPath": "/home/ely/Pictures/Wallpapers/"
+            "wallpaperPath": "/home/ely/Pictures/Wallpapers/",
+            "colorGenTool": "none",
+            "gridRows": "4",
+            "postCommand": "bash -c 'ln -sf \"${wallpaper}\" \"$HOME/Pictures/Wallpapers/.current-wallpaper.png\"'",
+            "postProduction": "no",
+            "showImageDetails": true,
+            "toggleVicinaeSetting": true,
+            "transitionDuration": "3",
+            "transitionFPS": "60",
+            "transitionStep": "90",
+            "transitionType": "random"
          }
       },
       "core": {

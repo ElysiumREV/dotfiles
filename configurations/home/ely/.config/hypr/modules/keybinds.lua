@@ -22,12 +22,7 @@ hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd(browser .. " -p"))
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal .. " -e btop"))
-hl.bind(
-	mainMod .. " + SHIFT + V",
-	hl.dsp.exec_cmd(
-		"cliphist list | rofi -dmenu --pre-display-cmd \"echo '%s' | cut -f 2\" | cliphist decode | wl-copy"
-	)
-)
+hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("vicinae deeplink vicinae://launch/clipboard/history"))
 
 -- Focus
 hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))

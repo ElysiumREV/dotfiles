@@ -30,9 +30,9 @@ Item {
         Text {
             id: playIcon
             Layout.alignment: Qt.AlignVCenter
-            text: media.playing ? "" : ""
-            font.family: Config.Theme.fontFamily
-            font.pixelSize: Config.Theme.fontSize
+            text: media.playing ? "pause" : "music_note"
+            font.family: "Material Symbols Rounded"
+            font.pixelSize: 18
             color: media.playing ? Config.Theme.colGreen : Config.Theme.colMuted
             verticalAlignment: Text.AlignVCenter
         }
@@ -72,9 +72,9 @@ Item {
         // Ícone musical
         Text {
             Layout.alignment: Qt.AlignVCenter
-            text: ""
-            font.family: Config.Theme.fontFamily
-            font.pixelSize: Config.Theme.fontSize
+            text: "music_note"
+            font.family: "Material Symbols Rounded"
+            font.pixelSize: 18
             color: {
                 if (isHovered) return Config.Theme.colBlue
                 if (media.playing) return Config.Theme.colGreen

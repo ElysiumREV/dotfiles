@@ -49,9 +49,9 @@ Item {
             spacing: Config.Theme.moduleTightSpacing
 
             Text {
-                text: ""
-                font.family: Config.Theme.fontFamily
-                font.pixelSize: Config.Theme.fontSize
+                text: "planner_review"
+                font.family: "Material Symbols Rounded"
+                font.pixelSize: 18
 
                 color: {
                     if (cpuProc.cpuUsage > 85) return Config.Theme.colRed
@@ -97,9 +97,9 @@ Item {
             spacing: Config.Theme.moduleTightSpacing
 
             Text {
-                text: ""
-                font.family: Config.Theme.fontFamily
-                font.pixelSize: Config.Theme.fontSize
+                text: "memory"
+                font.family: "Material Symbols Rounded"
+                font.pixelSize: 18
                 color: Config.Theme.colHighlight
             }
 

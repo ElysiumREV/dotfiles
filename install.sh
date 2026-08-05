@@ -39,6 +39,7 @@ WARNINGS=()
 
 PACMAN_PKGS=(
   git
+  quickshell
   hyprland
   hyprsunset
   hypridle
@@ -84,6 +85,7 @@ PACMAN_PKGS=(
   qt6ct
   kvantum
   kvantum-qt5
+  ttf-material-symbols-variable
   kate
   obsidian
   zed
@@ -94,7 +96,6 @@ PACMAN_PKGS=(
 )
 
 AUR_PKGS=(
-  quickshell
   awww # (swww has been renamed)
   vesktop-bin
   opencode
@@ -268,45 +269,45 @@ update_configuration() {
 }
 
 main() {
-    echo
-    echo "Dotfiles Installer"
-    echo
-    echo "1) Instalação Completa"
-    echo "2) Instalar dependências"
-    echo "3) Atualizar configuração"
-    echo "0) Sair"
-    echo
+  echo
+  echo "Dotfiles Installer"
+  echo
+  echo "1) Instalação Completa"
+  echo "2) Instalar dependências"
+  echo "3) Atualizar configuração"
+  echo "0) Sair"
+  echo
 
-    read -rp "Escolha uma opção: " option
+  read -rp "Escolha uma opção: " option
 
-    case "$option" in
-        1)
-            full_install
-            ;;
-        2)
-            install_dependencies
-            ;;
-        3)
-            update_configuration
-            ;;
-        0)
-            exit 0
-            ;;
-        *)
-            die "Opção inválida."
-            ;;
-    esac
+  case "$option" in
+  1)
+    full_install
+    ;;
+  2)
+    install_dependencies
+    ;;
+  3)
+    update_configuration
+    ;;
+  0)
+    exit 0
+    ;;
+  *)
+    die "Opção inválida."
+    ;;
+  esac
 
+  echo
+  success "Concluído."
+
+  if [[ ${#WARNINGS[@]} -gt 0 ]]; then
     echo
-    success "Concluído."
-
-    if [[ ${#WARNINGS[@]} -gt 0 ]]; then
-        echo
-        warn "Pendências:"
-        for w in "${WARNINGS[@]}"; do
-            echo " • $w"
-        done
-    fi
+    warn "Pendências:"
+    for w in "${WARNINGS[@]}"; do
+      echo " • $w"
+    done
+  fi
 }
 
 main "$@"

@@ -8,7 +8,7 @@ Singleton {
 
     // Cores da barra
     property color colBg: "#13151A"
-    property color colFg: "#d4c5b0"
+    property color colFg: "#cbc5ca"
     property color colText: "#F0F1F5"
     property color colTextSec: "#B8BCCA"
     property color colMuted: "#7C8291"
@@ -39,11 +39,11 @@ Singleton {
     property int fontSizeLarge: 18
 
     // Barra e módulos
-    property int barInset: 6
-    property int barHeight: 30
-    property int barRadius: 5
+    property int barInset: 0
+    property int barHeight: 36
+    property int barRadius: 0
     property int barContentMargin: 8
-    property int moduleHeight: 30
+    property int moduleHeight: 36
     property int moduleSpacing: 8
     property int moduleInnerSpacing: 4
     property int moduleTightSpacing: 3

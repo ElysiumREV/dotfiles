@@ -17,6 +17,25 @@ Item {
     readonly property bool isPluggedIn: isCharging || isFullyCharged
     readonly property bool isLow: batteryLevel <= 25 && !isPluggedIn
     readonly property bool isCritical: batteryLevel <= 20 && !isPluggedIn
+    readonly property string iconName: {
+        if (isCharging)
+            return "battery_charging_full";
+        if (batteryLevel <= 5)
+            return "battery_0_bar";
+        if (batteryLevel <= 20)
+            return "battery_1_bar";
+        if (batteryLevel <= 35)
+            return "battery_2_bar";
+        if (batteryLevel <= 50)
+            return "battery_3_bar";
+        if (batteryLevel <= 65)
+            return "battery_4_bar";
+        if (batteryLevel <= 80)
+            return "battery_5_bar";
+        if (batteryLevel <= 95)
+            return "battery_6_bar";
+        return "battery_full";
+    }
 
     readonly property color normalColor: {
         if (isCritical) return Config.Theme.colBatteryCritical
@@ -40,51 +59,16 @@ Item {
             color: isPluggedIn ? chargingColor : normalColor
         }
 
-        Item {
-            width: Config.Theme.batteryShellWidth
-            height: Config.Theme.batteryShellHeight
+        Text {
+            width: 20
+            height: 20
             anchors.verticalCenter: parent.verticalCenter
-
-            Rectangle {
-                id: batteryBody
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                width: Config.Theme.batteryBodyWidth
-                height: Config.Theme.batteryBodyHeight
-                radius: Config.Theme.batteryBodyRadius
-                color: "transparent"
-                border.width: Config.Theme.batteryBorderWidth
-                border.color: isPluggedIn ? chargingColor : normalColor
-
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.margins: Config.Theme.batteryFillMargin
-                    width: Math.max(0, (parent.width - Config.Theme.batteryFillMargin * 2) * root.percentage)
-                    radius: Config.Theme.batteryFillRadius
-                    color: isPluggedIn ? chargingColor : normalColor
-                }
-            }
-
-            Rectangle {
-                anchors.left: batteryBody.right
-                anchors.leftMargin: Config.Theme.batteryTipOverlap
-                anchors.verticalCenter: parent.verticalCenter
-                width: Config.Theme.batteryTipWidth
-                height: Config.Theme.batteryTipHeight
-                radius: Config.Theme.batteryTipRadius
-                color: isPluggedIn ? chargingColor : normalColor
-            }
-
-            Text {
-                visible: isPluggedIn
-                anchors.centerIn: batteryBody
-                text: ""
-                font.family: Config.Theme.fontFamily
-                font.pixelSize: Config.Theme.batteryIconSize
-                color: batteryLevel > 50 ? Config.Theme.colBatteryIconDark : Config.Theme.colBatteryIconLight
-            }
+            text: root.iconName
+            font.family: "Material Symbols Rounded"
+            font.pixelSize: 20
+            color: isPluggedIn ? chargingColor : normalColor
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
     }
 }

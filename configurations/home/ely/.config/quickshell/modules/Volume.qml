@@ -13,7 +13,13 @@ Item {
     readonly property bool isHovered: mouseArea.containsMouse
     readonly property int percentage: volume?.percentage ?? 0
     readonly property bool muted: volume?.muted ?? false
-    readonly property string icon: volume?.icon ?? "󰕾"
+    readonly property string icon: {
+        if (muted || percentage <= 0)
+            return "volume_off";
+        if (percentage < 35)
+            return "volume_down";
+        return "volume_up";
+    }
 
     implicitWidth: volumeRow.implicitWidth
     implicitHeight: Config.Theme.moduleHeight
@@ -39,8 +45,8 @@ Item {
             id: volumeIcon
             Layout.alignment: Qt.AlignVCenter
             text: root.icon
-            font.family: Config.Theme.fontFamily
-            font.pixelSize: Config.Theme.fontSize
+            font.family: "Material Symbols Rounded"
+            font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
 
             color: {

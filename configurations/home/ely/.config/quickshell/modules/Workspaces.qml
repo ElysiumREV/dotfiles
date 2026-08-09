@@ -123,8 +123,8 @@
                   Image {
                       id: appIcon
                       anchors.centerIn: parent
-                      width: 16
-                      height: 16
+                      width: 22
+                      height: 22
                       sourceSize.width: width * 2
                       sourceSize.height: height * 2
                       asynchronous: true

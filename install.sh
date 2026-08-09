@@ -38,61 +38,110 @@ info "Arch Linux confirmado."
 WARNINGS=()
 
 PACMAN_PKGS=(
-  git
-  quickshell
-  hyprland
-  hyprsunset
-  hypridle
-  hyprlock
-  hyprpicker
-  hyprpolkitagent
-  btop
-  fastfetch
-  brightnessctl
-  power-profiles-daemon
-  mako
-  cliphist
-  wl-clipboard
-  grim
-  slurp
-  easyeffects
-  rnnoise
-  udiskie
-  udisks2
-  nemo
-  nemo-fileroller
-  ffmpegthumbnailer
-  gnome-keyring
-  gvfs
-  steam
-  firefox
-  mpv
-  mpd
-  playerctl
-  kitty
-  networkmanager
-  network-manager-applet
-  bluez
-  bluez-utils
-  blueman
-  ttf-jetbrains-mono-nerd
-  pipewire
-  pipewire-pulse
-  wireplumber
-  spotify-launcher
-  xdg-desktop-portal-hyprland
-  qt5ct
-  qt6ct
-  kvantum
-  kvantum-qt5
-  ttf-material-symbols-variable
-  kate
-  obsidian
-  zed
-  noto-fonts
-  noto-fonts-cjk
-  noto-fonts-emoji
-  noto-fonts-extra
+    git
+
+    # Desktop
+    quickshell
+    hyprland
+    hyprsunset
+    hypridle
+    hyprlock
+    hyprpicker
+    hyprpolkitagent
+    mako
+    cliphist
+    wl-clipboard
+    grim
+    slurp
+
+    # System
+    btop
+    fastfetch
+    brightnessctl
+    power-profiles-daemon
+    udiskie
+    udisks2
+    gnome-keyring
+    gvfs
+
+    # File manager
+    nemo
+    nemo-fileroller
+    ffmpegthumbnailer
+
+    # Audio
+    easyeffects
+    noise-suppression-for-voice
+    pipewire
+    pipewire-pulse
+    wireplumber
+    playerctl
+    mpd
+
+    # Network / Bluetooth
+    networkmanager
+    network-manager-applet
+    bluez
+    bluez-utils
+    blueman
+
+    # Gaming
+    steam
+    vulkan-tools
+    gamescope
+    mangohud
+    umu-launcher
+    protontricks
+    winetricks
+    lutris
+    openal
+    libva
+    libjpeg
+    giflib
+    mpg123
+    alsa-plugins
+    glfw
+    gst-plugins-base-libs
+    opencl-icd-loader
+    goverlay
+
+    # 32-bit gaming libraries
+    lib32-mangohud
+    lib32-alsa-plugins
+    lib32-openal
+    lib32-libva
+    lib32-libjpeg-turbo
+    lib32-mpg123
+    lib32-ocl-icd
+    lib32-giflib
+    lib32-gtk3
+
+    # Graphics
+    vulkan-tools
+
+    # Desktop applications
+    firefox
+    mpv
+    kitty
+    spotify-launcher
+    kate
+    obsidian
+    zed
+
+    # Qt / theming
+    xdg-desktop-portal-hyprland
+    qt5ct
+    qt6ct
+    kvantum
+    kvantum-qt5
+
+    # Fonts
+    ttf-jetbrains-mono-nerd
+    ttf-material-symbols-variable
+    noto-fonts
+    noto-fonts-cjk
+    noto-fonts-emoji
+    noto-fonts-extra
 )
 
 AUR_PKGS=(

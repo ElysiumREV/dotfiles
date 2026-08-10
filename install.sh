@@ -38,138 +38,138 @@ info "Arch Linux confirmado."
 WARNINGS=()
 
 PACMAN_PKGS=(
-    # Base / Utilities
-    git
-    base-devel
-    zsh
-    zsh-autosuggestions
-    zsh-syntax-highlighting
-    vim
-    neovim
+  # Base / Utilities
+  git
+  base-devel
+  zsh
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  vim
+  neovim
 
-    # Security / Network / Services
-    wpa_supplicant
-    ufw
-    cups
-    cups-pk-helper
-    system-config-printer
+  # Security / Network / Services
+  wpa_supplicant
+  ufw
+  cups
+  cups-pk-helper
+  system-config-printer
 
-    # System tools
-    btop
-    fastfetch
-    brightnessctl
-    power-profiles-daemon
-    udiskie
-    udisks2
-    gnome-keyring
-    gvfs
+  # System tools
+  btop
+  fastfetch
+  brightnessctl
+  power-profiles-daemon
+  udiskie
+  udisks2
+  gnome-keyring
+  gvfs
 
-    # Desktop environment
-    quickshell
-    hyprland
-    hyprsunset
-    hypridle
-    hyprlock
-    hyprpicker
-    hyprpolkitagent
-    mako
-    cliphist
-    wl-clipboard
-    grim
-    slurp
+  # Desktop environment
+  quickshell
+  hyprland
+  hyprsunset
+  hypridle
+  hyprlock
+  hyprpicker
+  hyprpolkitagent
+  mako
+  cliphist
+  wl-clipboard
+  grim
+  slurp
+  hyprshot
 
-    # File manager
-    nemo
-    nemo-fileroller
-    ffmpegthumbnailer
+  # File manager
+  nemo
+  nemo-fileroller
+  ffmpegthumbnailer
 
-    # Audio
-    easyeffects
-    noise-suppression-for-voice
-    pipewire
-    pipewire-pulse
-    pipewire-alsa
-    pipewire-jack
-    wireplumber
-    gst-plugin-pipewire
-    gst-plugins-base-libs
-    pavucontrol
-    playerctl
-    mpd
+  # Audio
+  easyeffects
+  noise-suppression-for-voice
+  pipewire
+  pipewire-pulse
+  pipewire-alsa
+  pipewire-jack
+  wireplumber
+  gst-plugin-pipewire
+  gst-plugins-base-libs
+  pavucontrol
+  playerctl
+  mpd
 
-    # Network / Bluetooth
-    networkmanager
-    network-manager-applet
-    bluez
-    bluez-utils
-    blueman
+  # Network / Bluetooth
+  networkmanager
+  network-manager-applet
+  bluez
+  bluez-utils
+  blueman
 
-    # Graphics / OpenCL
-    ocl-icd
-    opencl-icd-loader
-    vulkan-tools
-    glfw
+  # Graphics / OpenCL
+  ocl-icd
+  opencl-icd-loader
+  vulkan-tools
+  glfw
 
-    # Gaming
-    steam
-    gamescope
-    mangohud
-    umu-launcher
-    protontricks
-    winetricks
-    lutris
-    goverlay
+  # Gaming
+  steam
+  gamescope
+  mangohud
+  umu-launcher
+  protontricks
+  winetricks
+  lutris
+  goverlay
 
-    # Gaming libraries
-    openal
-    libva
-    libjpeg
-    giflib
-    mpg123
-    alsa-plugins
+  # Gaming libraries
+  openal
+  libva
+  giflib
+  mpg123
+  alsa-plugins
 
-    # 32-bit gaming libraries
-    lib32-mangohud
-    lib32-alsa-plugins
-    lib32-openal
-    lib32-libva
-    lib32-libjpeg-turbo
-    lib32-mpg123
-    lib32-ocl-icd
-    lib32-giflib
-    lib32-gtk3
+  # 32-bit gaming libraries
+  lib32-mangohud
+  lib32-alsa-plugins
+  lib32-openal
+  lib32-libva
+  lib32-libjpeg-turbo
+  lib32-mpg123
+  lib32-ocl-icd
+  lib32-giflib
+  lib32-gtk3
 
-    # Desktop applications
-    firefox
-    mpv
-    kitty
-    spotify-launcher
-    kate
-    obsidian
-    zed
-    bitwarden
-    discord
-    qbittorrent
-    partitionmanager
+  # Desktop applications
+  firefox
+  mpv
+  kitty
+  spotify-launcher
+  kate
+  obsidian
+  zed
+  bitwarden
+  discord
+  qbittorrent
+  partitionmanager
 
-    # GTK / Qt / Theming
-    xdg-desktop-portal-hyprland
-    qt5ct
-    qt6ct
-    kvantum
-    kvantum-qt5
-    adw-gtk-theme
-    nwg-look
-    papirus-icon-theme
+  # GTK / Qt / Theming
+  xdg-desktop-portal-hyprland
+  qt5ct
+  qt6ct
+  kvantum
+  kvantum-qt5
+  adw-gtk-theme
+  nwg-look
+  papirus-icon-theme
 
-    # Fonts
-    ttf-jetbrains-mono-nerd
-    ttf-material-symbols-variable
-    noto-fonts
-    noto-fonts-cjk
-    noto-fonts-emoji
-    noto-fonts-extra
-    ttf-liberation
+  # Fonts
+  ttf-jetbrains-mono-nerd
+  ttf-material-symbols-variable
+  noto-fonts
+  noto-fonts-cjk
+  noto-fonts-emoji
+  noto-fonts-extra
+  ttf-liberation
 )
 
 AUR_PKGS=(
@@ -308,17 +308,17 @@ copy_dotfiles() {
   # Zsh configuration
 
   if [[ -f "$DOTFILES_SOURCE/.zshrc" ]]; then
-      cp "$DOTFILES_SOURCE/.zshrc" "$HOME/.zshrc"
-      success ".zshrc copied to $HOME."
+    cp "$DOTFILES_SOURCE/.zshrc" "$HOME/.zshrc"
+    success ".zshrc copied to $HOME."
   else
-      warn ".zshrc not found in $DOTFILES_SOURCE, skipping."
+    warn ".zshrc not found in $DOTFILES_SOURCE, skipping."
   fi
 
   if [[ -f "$DOTFILES_SOURCE/.p10k.zsh" ]]; then
-      cp "$DOTFILES_SOURCE/.p10k.zsh" "$HOME/.p10k.zsh"
-      success ".p10k.zsh copied to $HOME."
+    cp "$DOTFILES_SOURCE/.p10k.zsh" "$HOME/.p10k.zsh"
+    success ".p10k.zsh copied to $HOME."
   else
-      warn ".p10k.zsh not found in $DOTFILES_SOURCE, skipping."
+    warn ".p10k.zsh not found in $DOTFILES_SOURCE, skipping."
   fi
 
   # Pictures
@@ -360,17 +360,17 @@ install_heavy_pkgs() {
 }
 
 setup_zsh() {
-    info "Setting default shell to zsh..."
+  info "Setting default shell to zsh..."
 
-    local zsh_path
-    zsh_path=$(which zsh)
+  local zsh_path
+  zsh_path=$(which zsh)
 
-    if [[ "$SHELL" != "$zsh_path" ]]; then
-        chsh -s "$zsh_path"
-        success "Default shell changed to zsh."
-    else
-        success "Zsh is already the default shell."
-    fi
+  if [[ "$SHELL" != "$zsh_path" ]]; then
+    chsh -s "$zsh_path"
+    success "Default shell changed to zsh."
+  else
+    success "Zsh is already the default shell."
+  fi
 }
 
 full_install() {

@@ -9,6 +9,8 @@
       property int workspaceCount: 10
       property real buttonSize: 26
       property real spacing: 4
+      // Temporariamente desligado; mude para true para reativar o alerta vermelho.
+      property bool showUrgencyAlerts: false
 
       readonly property var monitor:
           Hyprland.monitorFor(root.QsWindow.window?.screen)
@@ -81,7 +83,9 @@
                   readonly property bool active:
                       root.activeIndex === index
                   readonly property bool showUrgency:
-                      (workspace?.urgent ?? false) && !(workspace?.focused ?? false)
+                      root.showUrgencyAlerts
+                      && (workspace?.urgent ?? false)
+                      && !(workspace?.focused ?? false)
 
                   x: index * (root.buttonSize + root.spacing)
                   y: 0

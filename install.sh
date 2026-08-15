@@ -20,11 +20,11 @@ die() {
 check_arch() {
   if [[ -f /etc/os-release ]]; then
     . /etc/os-release
-    if [[ "$ID" != "arch" ]]; then
-      die "Este script é exclusivo para Arch Linux. Distribuição detectada: $ID."
+    if [[ "$ID" != "arch" && "$ID" != "cachyos" && "$ID_LIKE" != *arch* ]]; then
+      die "Este script é para Arch Linux ou distros baseadas nele (ex: CachyOS). Distribuição detectada: $ID."
     fi
   elif [[ ! -f /etc/arch-release ]]; then
-    die "Este script é exclusivo para Arch Linux. Não foi possível confirmar a distribuição."
+    die "Este script é para Arch Linux ou distros baseadas nele (ex: CachyOS). Não foi possível confirmar a distribuição."
   fi
 }
 
@@ -72,6 +72,7 @@ PACMAN_PKGS=(
   hyprlock
   hyprpicker
   hyprpolkitagent
+  hyprshutdown
   mako
   cliphist
   wl-clipboard
@@ -97,6 +98,7 @@ PACMAN_PKGS=(
   pavucontrol
   playerctl
   mpd
+  rtkit
 
   # Network / Bluetooth
   networkmanager

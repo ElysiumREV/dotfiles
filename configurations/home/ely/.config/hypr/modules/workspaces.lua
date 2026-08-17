@@ -116,3 +116,28 @@ hl.window_rule({
 	name = "monster-hunter-fix",
 	match = { class = "HunterPie" },
 })
+
+hl.on("window.open", function(w)
+	if w.class ~= "firefox" then
+		return
+	end
+	if w.initial_title ~= "Mozilla Firefox" then
+		return
+	end
+
+	local sub
+	sub = hl.on("window.title", function(tw)
+		if tw.address ~= w.address then
+			return
+		end
+
+		if tw.title:match("^Extension: %(Bitwarden Password Manager%)") then
+			hl.dispatch(hl.dsp.window.float({
+				action = "set",
+				window = tw,
+			}))
+
+			sub:remove()
+		end
+	end)
+end)

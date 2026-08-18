@@ -70,7 +70,7 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 -- Screenshot
 hl.bind(
 	mainMod .. " + SHIFT + S",
-	hl.dsp.exec_cmd("hyprshot -m region -o $HOME/Pictures/Screenshots -f $(date +%F-%H-%M-%S).png")
+	hl.dsp.exec_cmd("hyprshot -m region --freeze -o $HOME/Pictures/Screenshots -f $(date +%F-%H-%M-%S).png")
 )
 
 -- Lockscreen

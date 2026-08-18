@@ -55,6 +55,29 @@ Item {
         }
     }
 
+    CalendarPopup {
+        id: calendarPopup
+        currentDate: clock.currentDate
+        positionProvider: popupWidth => root.QsWindow.mapFromItem(
+            root,
+            (root.implicitWidth - popupWidth) / 2,
+            root.implicitHeight
+        )
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -4
+        cursorShape: Qt.PointingHandCursor
+
+        onClicked: {
+            if (calendarPopup.visible)
+                calendarPopup.visible = false;
+            else
+                calendarPopup.openCalendar();
+        }
+    }
+
     Scope {
         id: clock
         property date currentDate: new Date()

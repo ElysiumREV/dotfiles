@@ -48,6 +48,7 @@ PACMAN_PKGS=(
   vim
   neovim
   pciutils
+  unixodbc
 
   # Security / Network / Services
   wpa_supplicant
@@ -366,21 +367,21 @@ detect_gpu() {
   fi
 
   case "$GPU_VENDOR" in
-    amd)
-      success "GPU AMD detectada."
-      ;;
+  amd)
+    success "GPU AMD detectada."
+    ;;
 
-    nvidia)
-      success "GPU NVIDIA detectada."
-      ;;
+  nvidia)
+    success "GPU NVIDIA detectada."
+    ;;
 
-    intel)
-      success "GPU Intel detectada."
-      ;;
+  intel)
+    success "GPU Intel detectada."
+    ;;
 
-    *)
-      warn "Fabricante da GPU não identificado."
-      ;;
+  *)
+    warn "Fabricante da GPU não identificado."
+    ;;
   esac
 }
 
@@ -388,30 +389,30 @@ install_gpu_drivers() {
   detect_gpu
 
   case "$GPU_VENDOR" in
-    amd)
-      info "Instalando stack gráfico AMD..."
+  amd)
+    info "Instalando stack gráfico AMD..."
 
-      validate_pacman_packages "${AMD_PKGS[@]}"
+    validate_pacman_packages "${AMD_PKGS[@]}"
 
-      sudo pacman -S --noconfirm --needed "${AMD_PKGS[@]}"
+    sudo pacman -S --noconfirm --needed "${AMD_PKGS[@]}"
 
-      success "Stack gráfico AMD instalado."
-      ;;
+    success "Stack gráfico AMD instalado."
+    ;;
 
-    intel)
-      info "GPU Intel detectada."
-      warn "Drivers AMD não serão instalados."
-      ;;
+  intel)
+    info "GPU Intel detectada."
+    warn "Drivers AMD não serão instalados."
+    ;;
 
-    nvidia)
-      info "GPU NVIDIA detectada."
-      warn "Drivers AMD não serão instalados."
-      ;;
+  nvidia)
+    info "GPU NVIDIA detectada."
+    warn "Drivers AMD não serão instalados."
+    ;;
 
-    *)
-      warn "Não foi possível determinar a GPU."
-      warn "Nenhum driver específico será instalado."
-      ;;
+  *)
+    warn "Não foi possível determinar a GPU."
+    warn "Nenhum driver específico será instalado."
+    ;;
   esac
 }
 
@@ -707,25 +708,25 @@ main() {
   read -rp "Escolha uma opção: " option
 
   case "$option" in
-    1)
-      full_install
-      ;;
+  1)
+    full_install
+    ;;
 
-    2)
-      install_dependencies
-      ;;
+  2)
+    install_dependencies
+    ;;
 
-    3)
-      update_configuration
-      ;;
+  3)
+    update_configuration
+    ;;
 
-    0)
-      exit 0
-      ;;
+  0)
+    exit 0
+    ;;
 
-    *)
-      die "Opção inválida."
-      ;;
+  *)
+    die "Opção inválida."
+    ;;
   esac
 
   echo

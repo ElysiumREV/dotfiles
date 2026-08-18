@@ -66,6 +66,29 @@ Variants {
                         verticalAlignment: Text.AlignVCenter
                     }
 
+                    ArchMenu {
+                        id: archMenu
+                        positionProvider: popupWidth => {
+                            const position = archPlaceholder.QsWindow.mapFromItem(
+                                archPlaceholder, 0, 0
+                            );
+                            return { x: Math.max(Config.Theme.barContentMargin, position.x), y: position.y };
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: archPlaceholder
+                        anchors.margins: -6
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            if (archMenu.visible)
+                                archMenu.visible = false;
+                            else
+                                archMenu.openMenu();
+                        }
+                    }
+
                     Row {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter

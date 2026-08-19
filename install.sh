@@ -94,7 +94,7 @@ PACMAN_PKGS=(
   pipewire
   pipewire-pulse
   pipewire-alsa
-  pipewire-jack
+  #pipewire-jack
   wireplumber
   gst-plugin-pipewire
   gst-plugins-base-libs
@@ -135,12 +135,10 @@ PACMAN_PKGS=(
   # 32-bit gaming libraries
   lib32-mangohud
   lib32-alsa-plugins
-  lib32-openal
   lib32-libva
   lib32-libjpeg-turbo
   lib32-mpg123
   lib32-ocl-icd
-  lib32-giflib
   lib32-gtk3
 
   # Desktop applications
@@ -195,15 +193,12 @@ AMD_PKGS=(
   lib32-libva-mesa-driver
 
   # VDPAU
-  mesa-vdpau
-  lib32-mesa-vdpau
+  # mesa-vdpau
+  # lib32-mesa-vdpau
 
   # OpenCL
   opencl-mesa
   lib32-opencl-mesa
-
-  # Firmware
-  linux-firmware
 )
 
 AUR_PKGS=(
@@ -230,23 +225,19 @@ HEAVY_PKGS=(
 enable_multilib() {
   if grep -Eq '^[[:space:]]*\[multilib\][[:space:]]*$' /etc/pacman.conf; then
     success "Multilib já está habilitado."
-    return
+    return 0
   fi
 
   info "Habilitando o repositório multilib..."
 
   if ! grep -Eq '^[[:space:]]*#\[multilib\][[:space:]]*$' /etc/pacman.conf; then
-    die "Não foi possível localizar a seção [multilib] em /etc/pacman.conf."
+    die "A seção [multilib] não foi encontrada em /etc/pacman.conf."
   fi
 
   sudo sed -i \
-    '/^[[:space:]]*#\[multilib\][[:space:]]*$/,/^[[:space:]]*#Include = \/etc\/pacman\.d\/mirrorlist[[:space:]]*$/ {
-      s/^[[:space:]]*#\[multilib\]/[multilib]/
-      s/^[[:space:]]*#Include = \/etc\/pacman.d\/mirrorlist/Include = \/etc\/pacman.d\/mirrorlist/
-    }' \
+    -e '/^[[:space:]]*#\[multilib\][[:space:]]*$/s/^#//' \
+    -e '/^[[:space:]]*#Include[[:space:]]*=[[:space:]]*\/etc\/pacman\.d\/mirrorlist[[:space:]]*$/s/^#//' \
     /etc/pacman.conf
-
-  sudo pacman -Sy --noconfirm
 
   success "Multilib habilitado."
 }
@@ -257,13 +248,17 @@ enable_multilib() {
 
 validate_pacman_packages() {
   local packages=("$@")
-  local missing=()
 
   if [[ ${#packages[@]} -eq 0 ]]; then
-    return
+    return 0
   fi
 
   info "Validando pacotes dos repositórios oficiais..."
+
+  # Atualiza as bases antes da validação.
+  sudo pacman -Syu --noconfirm
+
+  local missing=()
 
   for pkg in "${packages[@]}"; do
     if ! pacman -Si "$pkg" &>/dev/null; then
@@ -280,8 +275,7 @@ validate_pacman_packages() {
     done
 
     echo
-
-    die "Existem pacotes inválidos ou indisponíveis. Corrija a lista de pacotes antes de continuar."
+    die "Existem pacotes inválidos ou indisponíveis."
   fi
 
   success "Todos os pacotes foram encontrados."
@@ -389,15 +383,13 @@ install_gpu_drivers() {
   detect_gpu
 
   case "$GPU_VENDOR" in
-  amd)
-    info "Instalando stack gráfico AMD..."
+    amd)
+      info "Instalando stack gráfico AMD..."
 
-    validate_pacman_packages "${AMD_PKGS[@]}"
+      sudo pacman -Syu --noconfirm --needed "${AMD_PKGS[@]}"
 
-    sudo pacman -S --noconfirm --needed "${AMD_PKGS[@]}"
-
-    success "Stack gráfico AMD instalado."
-    ;;
+      success "Stack gráfico AMD instalado."
+      ;;
 
   intel)
     info "GPU Intel detectada."
@@ -428,11 +420,11 @@ install_system_packages() {
 
   validate_pacman_packages "${PACMAN_PKGS[@]}"
 
-  info "Installing pacman packages..."
+  info "Atualizando sistema e instalando pacotes..."
 
   sudo pacman -Syu --noconfirm --needed "${PACMAN_PKGS[@]}"
 
-  success "pacman packages installed."
+  success "Pacotes instalados."
 }
 
 # ------------------------------------------------------------
@@ -636,7 +628,7 @@ setup_zsh() {
   fi
 
   if [[ "${SHELL:-}" != "$zsh_path" ]]; then
-    sudo chsh -s "$zsh_path" "$USER"
+    sudo chsh -s "$zsh_path" "$(id -un)"
     success "Default shell changed to zsh."
   else
     success "Zsh is already the default shell."
@@ -664,7 +656,7 @@ full_install() {
   setup_zsh
 
   if command -v hyprctl >/dev/null; then
-    hyprctl reload
+    hyprctl reload 2>/dev/null || true
   fi
 }
 
@@ -687,7 +679,7 @@ update_configuration() {
   setup_zsh
 
   if command -v hyprctl >/dev/null; then
-    hyprctl reload
+    hyprctl reload 2>/dev/null || true
   fi
 }
 

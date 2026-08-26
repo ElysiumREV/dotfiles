@@ -19,6 +19,16 @@
          "name": "vicinae-dark"
       }
    },
+   "launcher_window": {
+      "rounding": 0,
+      "client_side_decorations": {
+         "enabled": false,
+         "border_width": 1
+      },
+      "compact_mode": {
+         "enabled": true
+      }
+   },
    "providers": {
       "@sovereign/store.vicinae.awww-switcher": {
          "preferences": {

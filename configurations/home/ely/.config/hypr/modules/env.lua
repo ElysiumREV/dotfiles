@@ -11,8 +11,5 @@ hl.env("QT_QPA_PLATFORM", "wayland;xcb")
 hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
 hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
 
-hl.env("HYPRCURSOR_THEME", "Hackneyed-Dark")
 hl.env("HYPRCURSOR_SIZE", "24")
-
-hl.env("XCURSOR_THEME", "Hackneyed-Dark")
 hl.env("XCURSOR_SIZE", "24")

@@ -38,13 +38,13 @@ hl.config({
 	},
 
 	general = {
-		gaps_in = 4,
-		gaps_out = 6,
+		gaps_in = 5,
+		gaps_out = 10,
 		border_size = 2,
 		resize_on_border = false,
 		col = {
-			active_border = { colors = { "rgb(d4c5b0)", "rgb(A08EC4)" }, angle = 45 },
-			inactive_border = "rgb(2A2D35)",
+			active_border = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 },
+			inactive_border = "rgba(595959aa)",
 		},
 		allow_tearing = true,
 		layout = "dwindle",
@@ -55,7 +55,7 @@ hl.config({
 	},
 
 	decoration = {
-		rounding = 10,
+		rounding = 0,
 		rounding_power = 2,
 		active_opacity = 1,
 		inactive_opacity = 0.8,
@@ -104,7 +104,7 @@ hl.config({
 		on_focus_under_fullscreen = 2,
 		allow_session_lock_restore = true,
 		session_lock_xray = true,
-		initial_workspace_tracking = 1,
+		initial_workspace_tracking = 0,
 		focus_on_activate = false,
 		render_unfocused_fps = 60,
 	},
@@ -114,108 +114,24 @@ hl.config({
 -- ANIMATIONS
 --------------------
 
--- Curves
-hl.curve("expressiveFastSpatial", { type = "bezier", points = { { 0.42, 1.67 }, { 0.21, 0.90 } } })
-hl.curve("expressiveSlowSpatial", { type = "bezier", points = { { 0.39, 1.29 }, { 0.35, 0.98 } } })
-hl.curve("expressiveDefaultSpatial", { type = "bezier", points = { { 0.38, 1.21 }, { 0.22, 1.00 } } })
-hl.curve("expressiveOvershoot", { type = "bezier", points = { { 0.05, 0.9 }, { 0.1, 1.1 } } })
-hl.curve("emphasizedDecel", { type = "bezier", points = { { 0.05, 0.7 }, { 0.1, 1 } } })
-hl.curve("emphasizedAccel", { type = "bezier", points = { { 0.3, 0 }, { 0.8, 0.15 } } })
-hl.curve("standardDecel", { type = "bezier", points = { { 0, 0 }, { 0, 1 } } })
-hl.curve("menu_decel", { type = "bezier", points = { { 0.1, 1 }, { 0, 1 } } })
-hl.curve("menu_accel", { type = "bezier", points = { { 0.52, 0.03 }, { 0.72, 0.08 } } })
-hl.curve("stall", { type = "bezier", points = { { 1, -0.1 }, { 0.7, 0.85 } } })
+hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
+hl.curve("easeInOutCubic", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36, 1 } } })
+hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
+hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1.0 } } })
+hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
 
--- Animations
-hl.animation({
-	leaf = "windowsIn",
-	enabled = true,
-	speed = 2.5,
-	bezier = "expressiveDefaultSpatial",
-	style = "popin 85%",
-})
-hl.animation({
-	leaf = "fadeIn",
-	enabled = true,
-	speed = 2.5,
-	bezier = "expressiveDefaultSpatial",
-})
-hl.animation({
-	leaf = "windowsOut",
-	enabled = true,
-	speed = 1.8,
-	bezier = "emphasizedDecel",
-	style = "popin 90%",
-})
-hl.animation({
-	leaf = "fadeOut",
-	enabled = true,
-	speed = 1.8,
-	bezier = "menu_decel",
-})
-hl.animation({
-	leaf = "windowsMove",
-	enabled = true,
-	speed = 2.5,
-	bezier = "expressiveDefaultSpatial",
-	style = "slide",
-})
-hl.animation({
-	leaf = "border",
-	enabled = true,
-	speed = 4,
-	bezier = "emphasizedDecel",
-})
-hl.animation({
-	leaf = "layersIn",
-	enabled = true,
-	speed = 1.5,
-	bezier = "menu_decel",
-	style = "popin 90%",
-})
-hl.animation({
-	leaf = "layersOut",
-	enabled = true,
-	speed = 1.8,
-	bezier = "menu_accel",
-	style = "popin 94%",
-})
-hl.animation({
-	leaf = "fadeLayersIn",
-	enabled = true,
-	speed = 0.4,
-	bezier = "menu_decel",
-})
-hl.animation({
-	leaf = "fadeLayersOut",
-	enabled = true,
-	speed = 2,
-	bezier = "stall",
-})
-hl.animation({
-	leaf = "workspaces",
-	enabled = true,
-	speed = 4.5,
-	bezier = "expressiveDefaultSpatial",
-	style = "slide fade",
-})
-hl.animation({
-	leaf = "specialWorkspaceIn",
-	enabled = true,
-	speed = 2.2,
-	bezier = "expressiveDefaultSpatial",
-	style = "slidevert popin 85%",
-})
-hl.animation({
-	leaf = "specialWorkspaceOut",
-	enabled = true,
-	speed = 1,
-	bezier = "emphasizedAccel",
-	style = "slidevert",
-})
-hl.animation({
-	leaf = "zoomFactor",
-	enabled = true,
-	speed = 2.5,
-	bezier = "standardDecel",
-})
+hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
+hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
+hl.animation({ leaf = "windows", enabled = true, speed = 3.79, bezier = "easeOutQuint" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 2, bezier = "easeOutQuint", style = "popin 87%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.49, bezier = "linear", style = "popin 87%" })
+hl.animation({ leaf = "fadeIn", enabled = true, speed = 1.73, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeOut", enabled = true, speed = 1.46, bezier = "almostLinear" })
+hl.animation({ leaf = "fade", enabled = true, speed = 3.03, bezier = "quick" })
+hl.animation({ leaf = "fadeSwitch", enabled = false })
+hl.animation({ leaf = "layers", enabled = true, speed = 3.81, bezier = "easeOutQuint" })
+hl.animation({ leaf = "layersIn", enabled = true, speed = 4, bezier = "easeOutQuint", style = "fade" })
+hl.animation({ leaf = "layersOut", enabled = true, speed = 1.5, bezier = "linear", style = "fade" })
+hl.animation({ leaf = "fadeLayersIn", enabled = true, speed = 1.79, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.39, bezier = "almostLinear" })
+hl.animation({ leaf = "workspaces", enabled = false })

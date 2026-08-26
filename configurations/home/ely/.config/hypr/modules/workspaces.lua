@@ -36,6 +36,12 @@ hl.window_rule({
 	workspace = 4,
 })
 
+hl.window_rule({
+  name = "telegram",
+  match = { "org.telegram.desktop" },
+  focus_on_activate = false
+})
+
 -- YouTube Music → workspace 5
 hl.window_rule({
 	name = "Youtube Music",
@@ -54,11 +60,9 @@ hl.window_rule({
 })
 
 -- Steam → workspace 9
-hl.window_rule({
-	name = "steam",
-	match = { class = "^(steam)$" },
-	workspace = 9,
-})
+hl.window_rule({ name = "steam", match = { class = "^(steam)$" }, workspace = 9, center = true, size = { 1100, 700 }, float = false, idle_inhibit = "fullscreen" })
+hl.window_rule({ match = {"steam.*"}, tag = "-default-opacity", opacity = "1 1" })
+hl.window_rule({ match = {class = "steam", title = "Friends List"}, size = { 460, 800 }, float = true })
 
 -- Jogos → workspace 10, fullscreen, sem borda
 hl.window_rule({
@@ -108,7 +112,11 @@ hl.layer_rule({
 -- Fix IntelliJ IDEA (foco inicial)
 hl.window_rule({
 	name = "fix-intellij",
-	match = { class = "jetbrains-idea" },
+	match = {
+	  title = "^(jetbrains-.*)$",
+		class = "^(jetbrains-.*)$",
+	},
+	no_follow_mouse = true,
 	no_initial_focus = true,
 })
 
@@ -141,3 +149,22 @@ hl.on("window.open", function(w)
 		end
 	end)
 end)
+
+hl.window_rule({
+  name = "Bitwarden",
+  match = {
+    title = ("^(Bitwarden)$|^Extension: %(Bitwarden Password Manager%)"),
+    class = ("^(Bitwarden)$|^Extension: %(Bitwarden Password Manager%)")
+  },
+  no_screen_share = true,
+})
+
+hl.window_rule({
+  name = "moonlight",
+  match = {
+    title = "com.moonlight_stream.Moonlight",
+    class = "com.moonlight_stream.Moonlight"
+  },
+  fullscreen = true,
+  idle_inhibit = "fullscreen"
+})

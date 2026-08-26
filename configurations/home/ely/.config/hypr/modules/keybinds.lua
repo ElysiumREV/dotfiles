@@ -15,6 +15,7 @@ hl.bind(mainMod .. " + SHIFT + ESCAPE", hl.dsp.exit())
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("quickshell -p ~/.config/quickshell/widgets/Wlogout.qml"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit")) -- dwindle only
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized" }))
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))

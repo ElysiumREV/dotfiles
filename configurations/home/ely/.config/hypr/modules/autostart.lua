@@ -3,6 +3,12 @@
 --------------------
 
 hl.on("hyprland.start", function()
+  -- Session Environment
+  -- Old fix i made, the new one is from omarchy config
+	-- hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+	hl.exec_cmd("systemctl --user import-environment $(env | cut -d'=' -f 1)")
+  hl.exec_cmd("dbus-update-activation-environment --systemd --all")
+
 	-- Panel / system tray / notifications
 	hl.exec_cmd("qs")
 	hl.exec_cmd("nm-applet")
@@ -21,13 +27,15 @@ hl.on("hyprland.start", function()
 	-- hl.exec_cmd("vesktop --start-minimized")
 	-- hl.exec_cmd("steam -silent")
 	hl.exec_cmd("vicinae server")
-	hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-	hl.exec_cmd("wl-paste --type text --watch cliphist store")
-	hl.exec_cmd("wl-paste --type image --watch cliphist store")
+
+	-- Vicinae has its own clipboard history so no need to use cliphist anymore
+	-- hl.exec_cmd("wl-paste --type text --watch cliphist store")
+	-- hl.exec_cmd("wl-paste --type image --watch cliphist store")
 	-- hl.exec_cmd("cliphist wipe")
 	hl.exec_cmd("udiskie")
 	hl.exec_cmd("easyeffects --gapplication-service")
 	hl.exec_cmd("xdg-mime default nemo.desktop inode/directory application/x-gnome-saved-search")
 	hl.exec_cmd("gsettings set org.cinnamon.desktop.default-applications.terminal exec kitty")
-	hl.exec_cmd("syncthing --no-browser")
+	-- changed to systemctl
+	-- hl.exec_cmd("syncthing --no-browser")
 end)

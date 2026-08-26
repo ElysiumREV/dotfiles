@@ -32,11 +32,6 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 --------------------
 
 hl.config({
-	xwayland = {
-		enabled = true,
-		force_zero_scaling = true,
-	},
-
 	general = {
 		gaps_in = 5,
 		gaps_out = 10,
@@ -55,14 +50,14 @@ hl.config({
 	},
 
 	decoration = {
-		rounding = 0,
+		rounding = 10,
 		rounding_power = 2,
 		active_opacity = 1,
-		inactive_opacity = 0.8,
+		inactive_opacity = 0.9,
 		fullscreen_opacity = 1.0,
 		shadow = {
 			enabled = true,
-			range = 50,
+			range = 25,
 			render_power = 10,
 			color = "rgba(13151a88)",
 		},

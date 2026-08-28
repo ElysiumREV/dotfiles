@@ -138,7 +138,7 @@ PACMAN_PKGS=(
   lib32-alsa-plugins
   lib32-libva
   lib32-libjpeg-turbo
-  lib32-mpg123
+  # lib32-mpg123
   lib32-ocl-icd
   lib32-gtk3
 

@@ -366,71 +366,7 @@ PanelWindow {
             }
         }
 
-        ColumnLayout {
-            Layout.fillWidth: true
-            visible: Services.PowerProfiles.isAvailable
-            spacing: 6
 
-            RowLayout {
-                Layout.fillWidth: true
-                Text {
-                    text: "power"
-                    color: Config.Theme.colHighlight
-                    font { family: "Material Symbols Rounded"; pixelSize: 20 }
-                }
-                Text {
-                    Layout.fillWidth: true
-                    text: "Perfil de energia"
-                    color: Config.Theme.colFg
-                    font { family: Config.Theme.fontFamily; pixelSize: Config.Theme.fontSize; bold: true }
-                }
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 6
-
-                Repeater {
-                    model: Services.PowerProfiles.availableProfiles
-
-                    delegate: Rectangle {
-                        required property string modelData
-                        readonly property bool active: Services.PowerProfiles.activeProfile === modelData
-                        Layout.fillWidth: true
-                        implicitHeight: 54
-                        radius: 8
-                        color: active ? Config.Theme.colHighlight
-                              : profileMouse.containsMouse
-                                ? Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.18)
-                                : Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.10)
-
-                        Column {
-                            anchors.centerIn: parent
-                            spacing: 1
-                            Text {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                text: root.profileIcon(modelData)
-                                color: active ? Config.Theme.colBg : Config.Theme.colFg
-                                font { family: "Material Symbols Rounded"; pixelSize: 20 }
-                            }
-                            Text {
-                                text: root.profileLabel(modelData)
-                                color: active ? Config.Theme.colBg : Config.Theme.colFg
-                                font { family: Config.Theme.fontFamily; pixelSize: 10; bold: active }
-                            }
-                        }
-
-                        MouseArea {
-                            id: profileMouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Services.PowerProfiles.setProfile(modelData)
-                        }
-                    }
-                }
-            }
-        }
 
         Rectangle {
             Layout.fillWidth: true

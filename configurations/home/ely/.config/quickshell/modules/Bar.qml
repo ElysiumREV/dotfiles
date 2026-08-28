@@ -116,10 +116,18 @@ Variants {
 
                                 // Só mostra Battery quando há bateria disponível.
                                 QsModules.Battery {
+                                    id: batteryItem
                                     anchors.verticalCenter: parent.verticalCenter
-                                    visible: !!UPower.displayDevice && UPower.displayDevice.isPresent
-                                }
+                        }
+                        // Close Row
+                        }
+                        QsModules.BatteryMenu {
+                            id: batteryMenu
+                            positionProvider: popupWidth => {
+                                const position = batteryItem.QsWindow.mapFromItem(batteryItem, 0, 0);
+                                return { x: Math.max(Config.Theme.barContentMargin, position.x), y: position.y };
                             }
+                        }
                         }
 
                     }

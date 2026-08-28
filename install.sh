@@ -49,6 +49,7 @@ PACMAN_PKGS=(
   neovim
   pciutils
   unixodbc
+  eza
 
   # Security / Network / Services
   wpa_supplicant
@@ -383,13 +384,13 @@ install_gpu_drivers() {
   detect_gpu
 
   case "$GPU_VENDOR" in
-    amd)
-      info "Instalando stack gráfico AMD..."
+  amd)
+    info "Instalando stack gráfico AMD..."
 
-      sudo pacman -Syu --noconfirm --needed "${AMD_PKGS[@]}"
+    sudo pacman -Syu --noconfirm --needed "${AMD_PKGS[@]}"
 
-      success "Stack gráfico AMD instalado."
-      ;;
+    success "Stack gráfico AMD instalado."
+    ;;
 
   intel)
     info "GPU Intel detectada."
@@ -497,6 +498,15 @@ install_sddm_if_needed() {
 }
 
 install_sddm_theme() {
+  local theme_dir="/usr/share/sddm/themes/silent"
+  local sddm_conf="/etc/sddm.conf"
+
+  # Verifica se o tema já está instalado E configurado.
+  if [[ -d "$theme_dir" ]] && grep -Pzq '\[Theme\]\nCurrent=silent' "$sddm_conf" 2>/dev/null; then
+    success "Tema SilentSDDM já está aplicado, pulando."
+    return
+  fi
+
   info "Installing SilentSDDM theme..."
 
   local tmp

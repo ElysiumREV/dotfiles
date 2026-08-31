@@ -27,6 +27,6 @@ background_opacity      0.75
 
 
 # BEGIN_KITTY_THEME
-# 3024 Night
+# Espresso
 include current-theme.conf
 # END_KITTY_THEME

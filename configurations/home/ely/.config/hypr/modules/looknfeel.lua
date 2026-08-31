@@ -4,8 +4,8 @@
 
 hl.config({
 	general = {
-		gaps_in = 4,
-		gaps_out = 8,
+		gaps_in = 5,
+		gaps_out = 10,
 		border_size = 2,
 		resize_on_border = false,
 		col = {
@@ -19,8 +19,8 @@ hl.config({
 	render = {
 		cm_auto_hdr = false,
 	},
-  
-  decoration = {
+
+	decoration = {
 		rounding = 12,
 		rounding_power = 2,
 		active_opacity = 1,
@@ -37,13 +37,8 @@ hl.config({
 			xray = true,
 			special = false,
 			new_optimizations = true,
-			size = 2,
+			size = 10,
 			passes = 2,
-			brightness = 1,
-			noise = 0.05,
-			contrast = 0.89,
-			vibrancy = 0.5,
-			vibrancy_darkness = 0.5,
 			popups = false,
 			popups_ignorealpha = 0.6,
 			input_methods = true,
@@ -60,7 +55,7 @@ hl.config({
 	misc = {
 		disable_hyprland_logo = true,
 		disable_splash_rendering = true,
-		vrr = false,
+		vrr = -1,
 		mouse_move_enables_dpms = true,
 		key_press_enables_dpms = true,
 		animate_manual_resizes = false,
@@ -72,7 +67,8 @@ hl.config({
 		session_lock_xray = true,
 		initial_workspace_tracking = 0,
 		focus_on_activate = false,
-		render_unfocused_fps = 60,
+    render_unfocused_fps = 60,
+		middle_click_paste = false
 	},
 })
 

@@ -6,8 +6,12 @@ import ".." as Config
 Item {
     id: root
 
+    signal requestMenu()
+
     implicitWidth: row.width
     implicitHeight: Config.Theme.moduleHeight
+
+    property bool hovered: false
 
     readonly property var battery: UPower.displayDevice
     readonly property real percentage: battery?.percentage ?? 0
@@ -17,6 +21,7 @@ Item {
     readonly property bool isPluggedIn: isCharging || isFullyCharged
     readonly property bool isLow: batteryLevel <= 25 && !isPluggedIn
     readonly property bool isCritical: batteryLevel <= 20 && !isPluggedIn
+
     readonly property string iconName: {
         if (isCharging)
             return "battery_charging_full";
@@ -38,37 +43,70 @@ Item {
     }
 
     readonly property color normalColor: {
-        if (isCritical) return Config.Theme.colBatteryCritical
-        if (isLow)      return Config.Theme.colYellow
-        return Config.Theme.colFg
+        if (isCritical)
+            return Config.Theme.colBatteryCritical;
+        if (isLow)
+            return Config.Theme.colYellow;
+        return Config.Theme.colFg;
     }
 
     readonly property color chargingColor: Config.Theme.colFg
 
+    readonly property color moduleColor: {
+        if (hovered)
+            return Config.Theme.colHighlight;
+
+        if (isCharging || isFullyCharged)
+            return chargingColor;
+
+        return normalColor;
+    }
+
     Row {
         id: row
+
         anchors.centerIn: parent
         anchors.verticalCenter: parent.verticalCenter
         spacing: Config.Theme.moduleInnerSpacing
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
+
             text: batteryLevel + "%"
+
             font.pixelSize: Config.Theme.batteryTextSize
             font.weight: isLow ? Font.Bold : Font.Normal
-            color: isPluggedIn ? chargingColor : normalColor
+
+            color: root.moduleColor
         }
 
         Text {
             width: 20
             height: 20
+
             anchors.verticalCenter: parent.verticalCenter
+
             text: root.iconName
+
             font.family: "Material Symbols Rounded"
             font.pixelSize: 20
-            color: isPluggedIn ? chargingColor : normalColor
+
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+
+            color: root.moduleColor
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+
+        onEntered: root.hovered = true
+        onExited: root.hovered = false
+
+        onClicked: root.requestMenu()
     }
 }

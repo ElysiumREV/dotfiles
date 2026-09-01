@@ -18,7 +18,8 @@
    "font": {
       "rendering": "native",
       "normal": {
-         "family": "Adwaita Sans"
+         "family": "JetBrainsMono Nerd Font",
+         "size": 10.5
       }
    },
    "theme": {
@@ -27,7 +28,8 @@
       }
    },
    "launcher_window": {
-      "rounding": 0,
+      "rounding": 16,
+      "opacity": 0.9,
       "client_side_decorations": {
          "enabled": true,
          "border_width": 1
@@ -38,7 +40,7 @@
       "layer_shell": {
          "enabled": true
       },
-      "material": "none"
+      "material": "blur"
    },
    "providers": {
       "@sovereign/store.vicinae.awww-switcher": {

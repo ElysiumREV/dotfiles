@@ -66,7 +66,7 @@ Item {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
 
-        onClicked: volume.toggleMute()
+        onClicked: Quickshell.execDetached(["pavucontrol"])
 
         onWheel: wheel => {
             if (wheel.angleDelta.y > 0) {

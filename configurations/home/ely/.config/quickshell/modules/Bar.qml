@@ -1,199 +1,408 @@
-import Quickshell
-import Quickshell.Wayland
-import Quickshell.Services.UPower
+import "." as QsModules
+import "../." as Config
 import QtQuick
 import QtQuick.Layouts
-import "../." as Config
-import "." as QsModules
-import "services" as QsServices
+import Quickshell
+import Quickshell.Services.UPower
+import Quickshell.Wayland
 
 Variants {
     model: Quickshell.screens
 
     delegate: Component {
-        PanelWindow {
-            id: root
+        Item {
+            /*
+             * =========================================================
+             * CANTOS INFERIORES DA TELA
+             * =========================================================
+             *
+             * Essa é uma janela separada porque o PanelWindow da barra
+             * ocupa somente a região superior da tela.
+             *
+             * Ela é transparente e só possui os dois RoundCorner.
+             */
 
             required property var modelData
-            screen: modelData
 
-            anchors {
-                top: true
-                left: true
-                right: true
-            }
+            /*
+             * =========================================================
+             * BARRA SUPERIOR
+             * =========================================================
+             */
+            PanelWindow {
+                id: root
 
-            margins.top: Config.Theme.barInset
-            margins.left: Config.Theme.barInset
-            margins.right: Config.Theme.barInset
-            margins.bottom: Config.Theme.barInset
-
-            implicitHeight: Config.Theme.barHeight
-            color: "transparent"
-
-            exclusionMode: ExclusionMode.Normal
-            exclusiveZone: implicitHeight
-            WlrLayershell.layer: WlrLayer.Bottom
-
-            Rectangle {
-                id: barSurface
+                screen: modelData
+                margins.top: Config.Theme.barInset
+                margins.left: Config.Theme.barInset
+                margins.right: Config.Theme.barInset
+                margins.bottom: Config.Theme.barInset
+                implicitHeight: Config.Theme.barHeight + Config.Theme.screenRadius
+                color: "transparent"
+                exclusionMode: ExclusionMode.Normal
+                exclusiveZone: Config.Theme.barHeight
+                WlrLayershell.layer: WlrLayer.Bottom
 
                 anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
+                    top: true
+                    left: true
+                    right: true
                 }
-                height: Config.Theme.barHeight
-                radius: Config.Theme.barRadius
-                color: Qt.rgba(Config.Theme.colBg.r, Config.Theme.colBg.g, Config.Theme.colBg.b, 0.88)
-                clip: true
 
                 Item {
-                    anchors.fill: parent
-                    anchors.leftMargin: Config.Theme.barContentMargin
-                    anchors.rightMargin: Config.Theme.barContentMargin
+                    id: barMask
 
-                    Text {
-                        id: archPlaceholder
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: ""
-                        color: Config.Theme.colHighlight
-                        font {
-                            family: Config.Theme.fontFamily
-                            pixelSize: 20
-                        }
-                        verticalAlignment: Text.AlignVCenter
+                    height: Config.Theme.barHeight
+
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        top: parent.top
                     }
 
-                    ArchMenu {
-                        id: archMenu
-                        positionProvider: popupWidth => {
-                            const position = archPlaceholder.QsWindow.mapFromItem(
-                                archPlaceholder, 0, 0
-                            );
-                            return { x: Math.max(Config.Theme.barContentMargin, position.x), y: position.y };
-                        }
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: Config.Theme.screenRadius
                     }
 
-                    MouseArea {
-                        anchors.fill: archPlaceholder
-                        anchors.margins: -6
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            if (archMenu.visible)
-                                archMenu.visible = false;
-                            else
-                                archMenu.openMenu();
-                        }
+                }
+
+                /*
+                 * =====================================================
+                 * SUPERFÍCIE DA BARRA
+                 * =====================================================
+                 */
+                Rectangle {
+                    id: barSurface
+
+                    height: Config.Theme.barHeight
+                    radius: Config.Theme.barRadius
+                    color: Qt.rgba(Config.Theme.colBg.r, Config.Theme.colBg.g, Config.Theme.colBg.b)
+                    clip: true
+
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        top: parent.top
                     }
 
-                    Row {
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: Config.Theme.moduleSpacing
+                    Item {
+                        anchors.fill: parent
+                        anchors.leftMargin: Config.Theme.barContentMargin
+                        anchors.rightMargin: Config.Theme.barContentMargin
 
-                        QsModules.Tray {
+                        /*
+                         * =================================================
+                         * ARCH MENU
+                         * =================================================
+                         */
+                        Text {
+                            id: archPlaceholder
+
+                            anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                            window: root
+                            text: ""
+                            color: Config.Theme.colHighlight
+                            verticalAlignment: Text.AlignVCenter
+
+                            font {
+                                family: Config.Theme.fontFamily
+                                pixelSize: 20
+                            }
+
                         }
 
+                        ArchMenu {
+                            id: archMenu
+
+                            positionProvider: (popupWidth) => {
+                                const position = archPlaceholder.QsWindow.mapFromItem(archPlaceholder, 0, 0);
+                                return {
+                                    "x": Math.max(Config.Theme.barContentMargin, position.x),
+                                    "y": position.y
+                                };
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: archPlaceholder
+                            anchors.margins: -6
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (archMenu.visible)
+                                    archMenu.visible = false;
+                                else
+                                    archMenu.openMenu();
+                            }
+                        }
+
+                        /*
+                         * =================================================
+                         * MÓDULOS DA DIREITA
+                         * =================================================
+                         */
+                        Row {
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: Config.Theme.moduleSpacing
+
+                            QsModules.Tray {
+                                anchors.verticalCenter: parent.verticalCenter
+                                window: root
+                            }
+
+                            Rectangle {
+                                width: deviceIndicators.implicitWidth + 12
+                                height: 28
+                                radius: 10
+                                color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
+
+                                Row {
+                                    id: deviceIndicators
+
+                                    anchors.centerIn: parent
+                                    spacing: Config.Theme.moduleSpacing
+
+                                    QsModules.Volume {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    QsModules.Battery {
+                                        id: batteryItem
+
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onRequestMenu: {
+                                            if (batteryMenu.visible)
+                                                batteryMenu.visible = false;
+                                            else
+                                                batteryMenu.openMenu();
+                                        }
+                                    }
+
+                                }
+
+                            }
+
+                            QsModules.BatteryMenu {
+                                id: batteryMenu
+
+                                positionProvider: (popupWidth) => {
+                                    const position = batteryItem.QsWindow.mapFromItem(batteryItem, 0, 0);
+                                    let desiredX = Math.max(Config.Theme.barContentMargin, position.x);
+                                    const screenWidth = modelData.width;
+                                    const maxX = screenWidth - popupWidth;
+                                    const clampedX = Math.min(Math.max(desiredX, 0), maxX);
+                                    return {
+                                        "x": clampedX,
+                                        "y": position.y
+                                    };
+                                }
+                            }
+
+                        }
+
+                        /*
+                         * =================================================
+                         * WORKSPACES
+                         * =================================================
+                         */
                         Rectangle {
-                            width: deviceIndicators.implicitWidth + 12
+                            id: workspaceGroup
+
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: workspaces.implicitWidth + 12
                             height: 28
                             radius: 10
                             color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
 
-                            Row {
-                                id: deviceIndicators
+                            QsModules.Workspaces {
+                                id: workspaces
+
                                 anchors.centerIn: parent
-                                spacing: Config.Theme.moduleSpacing
-
-                                QsModules.Volume {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-
-                                // Só mostra Battery quando há bateria disponível.
-                                QsModules.Battery {
-                                    id: batteryItem
-                                    anchors.verticalCenter: parent.verticalCenter
-                        }
-                        // Close Row
-                        }
-                        QsModules.BatteryMenu {
-                            id: batteryMenu
-                            positionProvider: popupWidth => {
-                                const position = batteryItem.QsWindow.mapFromItem(batteryItem, 0, 0);
-                                return { x: Math.max(Config.Theme.barContentMargin, position.x), y: position.y };
                             }
+
                         }
+
+                        /*
+                         * =================================================
+                         * MEDIA
+                         * =================================================
+                         */
+                        Rectangle {
+                            id: mediaGroup
+
+                            anchors.right: workspaceGroup.left
+                            anchors.rightMargin: Config.Theme.moduleSpacing
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: media.implicitWidth + 12
+                            height: 28
+                            radius: 10
+                            color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
+
+                            QsModules.Media {
+                                id: media
+
+                                anchors.centerIn: parent
+                            }
+
+                        }
+
+                        /*
+                         * =================================================
+                         * SYSTEM STATUS
+                         * =================================================
+                         */
+                        Rectangle {
+                            anchors.right: mediaGroup.left
+                            anchors.rightMargin: Config.Theme.moduleSpacing
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: systemStatus.implicitWidth + 12
+                            height: 28
+                            radius: 10
+                            color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
+
+                            QsModules.SystemStatus {
+                                id: systemStatus
+
+                                anchors.centerIn: parent
+                            }
+
+                        }
+
+                        /*
+                         * =================================================
+                         * CLOCK
+                         * =================================================
+                         */
+                        Rectangle {
+                            anchors.left: workspaceGroup.right
+                            anchors.leftMargin: Config.Theme.moduleSpacing
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: clock.implicitWidth + 12
+                            height: 28
+                            radius: 10
+                            color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
+
+                            QsModules.Clock {
+                                id: clock
+
+                                anchors.centerIn: parent
+                            }
+
                         }
 
                     }
 
-                    Rectangle {
-                        id: workspaceGroup
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: workspaces.implicitWidth + 12
-                        height: 28
-                        radius: 10
-                        color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
-
-                        QsModules.Workspaces {
-                            id: workspaces
-                            anchors.centerIn: parent
-                        }
-                    }
-
-                    Rectangle {
-                        id: mediaGroup
-                        anchors.right: workspaceGroup.left
-                        anchors.rightMargin: Config.Theme.moduleSpacing
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: media.implicitWidth + 12
-                        height: 28
-                        radius: 10
-                        color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
-
-                        QsModules.Media {
-                            id: media
-                            anchors.centerIn: parent
-                        }
-                    }
-
-                    Rectangle {
-                        anchors.right: mediaGroup.left
-                        anchors.rightMargin: Config.Theme.moduleSpacing
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: systemStatus.implicitWidth + 12
-                        height: 28
-                        radius: 10
-                        color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
-
-                        QsModules.SystemStatus {
-                            id: systemStatus
-                            anchors.centerIn: parent
-                        }
-                    }
-
-                    Rectangle {
-                        anchors.left: workspaceGroup.right
-                        anchors.leftMargin: Config.Theme.moduleSpacing
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: clock.implicitWidth + 12
-                        height: 28
-                        radius: 10
-                        color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
-
-                        QsModules.Clock {
-                            id: clock
-                            anchors.centerIn: parent
-                        }
-                    }
                 }
+
+                /*
+                 * =========================================================
+                 * CANTOS DA BARRA
+                 * =========================================================
+                 */
+                QsModules.RoundCorner {
+                    id: topLeftCorner
+
+                    implicitSize: Config.Theme.screenRadius
+                    color: Config.Theme.colBg
+                    corner: QsModules.RoundCorner.CornerEnum.TopLeft
+
+                    anchors {
+                        left: parent.left
+                        top: barSurface.bottom
+                    }
+
+                }
+
+                QsModules.RoundCorner {
+                    id: topRightCorner
+
+                    implicitSize: Config.Theme.screenRadius
+                    color: Config.Theme.colBg
+                    corner: QsModules.RoundCorner.CornerEnum.TopRight
+
+                    anchors {
+                        right: parent.right
+                        top: barSurface.bottom
+                    }
+
+                }
+
+                /*
+                 * Máscara da barra.
+                 */
+                mask: Region {
+                    item: barMask
+                }
+
             }
+
+            PanelWindow {
+                id: bottomLeftCornerWindow
+
+                screen: modelData
+                implicitWidth: Config.Theme.screenRadius
+                implicitHeight: Config.Theme.screenRadius
+                color: "transparent"
+                exclusionMode: ExclusionMode.Ignore
+                exclusiveZone: 0
+                WlrLayershell.layer: WlrLayer.Bottom
+
+                anchors {
+                    left: true
+                    bottom: true
+                }
+
+                QsModules.RoundCorner {
+                    id: bottomLeftCorner
+
+                    anchors.fill: parent
+                    implicitSize: Config.Theme.screenRadius
+                    color: Config.Theme.colBg
+                    corner: QsModules.RoundCorner.CornerEnum.BottomLeft
+                }
+
+                mask: Region {
+                    item: bottomLeftCorner
+                }
+
+            }
+
+            PanelWindow {
+                id: bottomRightCornerWindow
+
+                screen: modelData
+                implicitWidth: Config.Theme.screenRadius
+                implicitHeight: Config.Theme.screenRadius
+                color: "transparent"
+                exclusionMode: ExclusionMode.Ignore
+                exclusiveZone: 0
+                WlrLayershell.layer: WlrLayer.Bottom
+
+                anchors {
+                    right: true
+                    bottom: true
+                }
+
+                QsModules.RoundCorner {
+                    id: bottomRightCorner
+
+                    anchors.fill: parent
+                    implicitSize: Config.Theme.screenRadius
+                    color: Config.Theme.colBg
+                    corner: QsModules.RoundCorner.CornerEnum.BottomRight
+                }
+
+                mask: Region {
+                    item: bottomRightCorner
+                }
+
+            }
+
         }
+
     }
+
 }

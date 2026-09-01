@@ -43,6 +43,7 @@ Singleton {
     property int barHeight: 36
     property int barRadius: 0
     property int barContentMargin: 8
+    property int screenRadius: 16
     property int moduleHeight: 36
     property int moduleSpacing: 8
     property int moduleInnerSpacing: 4

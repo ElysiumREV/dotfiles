@@ -11,9 +11,9 @@ hl.on("hyprland.start", function()
 
 	-- Panel / system tray / notifications
 	hl.exec_cmd("qs")
+	hl.exec_cmd("mako")
 	hl.exec_cmd("nm-applet")
 	hl.exec_cmd("blueman-applet")
-	hl.exec_cmd("mako")
 
 	-- Hyprland ecosystem
 	hl.exec_cmd("hyprsunset")

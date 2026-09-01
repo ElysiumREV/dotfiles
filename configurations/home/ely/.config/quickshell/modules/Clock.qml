@@ -24,7 +24,9 @@ Item {
         Text {
             Layout.alignment: Qt.AlignVCenter
             text: root.formattedTime
-            color: Config.Theme.colFg
+            color: calendarMouse.containsMouse
+                   ? Config.Theme.colHighlight
+                   : Config.Theme.colFg
             font {
                 family: Config.Theme.fontFamily
                 pixelSize: Config.Theme.fontSize
@@ -35,7 +37,9 @@ Item {
         Text {
             Layout.alignment: Qt.AlignVCenter
             text: "•"
-            color: Config.Theme.colFg
+            color: calendarMouse.containsMouse
+                   ? Config.Theme.colHighlight
+                   : Config.Theme.colFg
             font {
                 family: Config.Theme.fontFamily
                 pixelSize: Config.Theme.fontSizeSmall
@@ -46,7 +50,9 @@ Item {
         Text {
             Layout.alignment: Qt.AlignVCenter
             text: root.formattedDate
-            color: Config.Theme.colFg
+            color: calendarMouse.containsMouse
+                   ? Config.Theme.colHighlight
+                   : Config.Theme.colFg
             font {
                 family: Config.Theme.fontFamily
                 pixelSize: Config.Theme.fontSizeSmall
@@ -66,8 +72,10 @@ Item {
     }
 
     MouseArea {
+        id: calendarMouse
         anchors.fill: parent
         anchors.margins: -4
+        hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
 
         onClicked: {

@@ -173,6 +173,8 @@ PACMAN_PKGS=(
   noto-fonts-emoji
   noto-fonts-extra
   ttf-liberation
+
+  moonlight-qt
 )
 
 # AMD graphics stack.
@@ -210,6 +212,7 @@ AUR_PKGS=(
   vicinae-bin
   hayase-desktop-bin
   stremio-enhanced-bin
+  sunshine-bin
 )
 
 # Pacotes que compilam do source — instalação opcional

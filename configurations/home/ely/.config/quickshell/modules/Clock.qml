@@ -13,6 +13,12 @@ Item {
     property string formattedDate:
         clock.currentDate.toLocaleDateString(Qt.locale(), "ddd, dd MMM")
 
+    readonly property color accentColor:
+        calendarMouse.containsMouse
+        ? Config.Theme.colHighlight
+        : Config.Theme.colFg
+
+
     implicitWidth: clockRow.implicitWidth
     implicitHeight: Config.Theme.moduleHeight
 
@@ -24,9 +30,7 @@ Item {
         Text {
             Layout.alignment: Qt.AlignVCenter
             text: root.formattedTime
-            color: calendarMouse.containsMouse
-                   ? Config.Theme.colHighlight
-                   : Config.Theme.colFg
+            color: root.accentColor
             font {
                 family: Config.Theme.fontFamily
                 pixelSize: Config.Theme.fontSize
@@ -37,9 +41,7 @@ Item {
         Text {
             Layout.alignment: Qt.AlignVCenter
             text: "•"
-            color: calendarMouse.containsMouse
-                   ? Config.Theme.colHighlight
-                   : Config.Theme.colFg
+            color: root.accentColor
             font {
                 family: Config.Theme.fontFamily
                 pixelSize: Config.Theme.fontSizeSmall
@@ -50,9 +52,7 @@ Item {
         Text {
             Layout.alignment: Qt.AlignVCenter
             text: root.formattedDate
-            color: calendarMouse.containsMouse
-                   ? Config.Theme.colHighlight
-                   : Config.Theme.colFg
+            color: root.accentColor
             font {
                 family: Config.Theme.fontFamily
                 pixelSize: Config.Theme.fontSizeSmall

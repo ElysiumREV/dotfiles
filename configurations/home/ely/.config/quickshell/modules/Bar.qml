@@ -117,8 +117,12 @@ Variants {
 
                             positionProvider: (popupWidth) => {
                                 const position = archPlaceholder.QsWindow.mapFromItem(archPlaceholder, 0, 0);
+                                const desiredX = Math.max(Config.Theme.barContentMargin, position.x);
+                                const screenWidth = modelData.width;
+                                const maxX = screenWidth - popupWidth;
+                                const clampedX = Math.min(Math.max(desiredX, 0), maxX);
                                 return {
-                                    "x": Math.max(Config.Theme.barContentMargin, position.x),
+                                    "x": clampedX,
                                     "y": position.y
                                 };
                             }
@@ -152,11 +156,8 @@ Variants {
                                 window: root
                             }
 
-                            Rectangle {
-                                width: deviceIndicators.implicitWidth + 12
-                                height: 28
-                                radius: 10
-                                color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
+                            QsModules.ModuleGroup {
+                                contentWidth: deviceIndicators.implicitWidth
 
                                 Row {
                                     id: deviceIndicators
@@ -207,15 +208,12 @@ Variants {
                          * WORKSPACES
                          * =================================================
                          */
-                        Rectangle {
+                        QsModules.ModuleGroup {
                             id: workspaceGroup
 
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.verticalCenter: parent.verticalCenter
-                            width: workspaces.implicitWidth + 12
-                            height: 28
-                            radius: 10
-                            color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
+                            contentWidth: workspaces.implicitWidth
 
                             QsModules.Workspaces {
                                 id: workspaces
@@ -230,16 +228,13 @@ Variants {
                          * MEDIA
                          * =================================================
                          */
-                        Rectangle {
+                        QsModules.ModuleGroup {
                             id: mediaGroup
 
                             anchors.right: workspaceGroup.left
                             anchors.rightMargin: Config.Theme.moduleSpacing
                             anchors.verticalCenter: parent.verticalCenter
-                            width: media.implicitWidth + 12
-                            height: 28
-                            radius: 10
-                            color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
+                            contentWidth: media.implicitWidth
 
                             QsModules.Media {
                                 id: media
@@ -254,14 +249,11 @@ Variants {
                          * SYSTEM STATUS
                          * =================================================
                          */
-                        Rectangle {
+                        QsModules.ModuleGroup {
                             anchors.right: mediaGroup.left
                             anchors.rightMargin: Config.Theme.moduleSpacing
                             anchors.verticalCenter: parent.verticalCenter
-                            width: systemStatus.implicitWidth + 12
-                            height: 28
-                            radius: 10
-                            color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
+                            contentWidth: systemStatus.implicitWidth
 
                             QsModules.SystemStatus {
                                 id: systemStatus
@@ -276,14 +268,11 @@ Variants {
                          * CLOCK
                          * =================================================
                          */
-                        Rectangle {
+                        QsModules.ModuleGroup {
                             anchors.left: workspaceGroup.right
                             anchors.leftMargin: Config.Theme.moduleSpacing
                             anchors.verticalCenter: parent.verticalCenter
-                            width: clock.implicitWidth + 12
-                            height: 28
-                            radius: 10
-                            color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
+                            contentWidth: clock.implicitWidth
 
                             QsModules.Clock {
                                 id: clock

@@ -53,6 +53,12 @@ Singleton {
     property int separatorHeight: 16
     property int separatorRadius: 1
 
+    // Grupos de módulos
+    property int moduleGroupHeight: 28
+    property int moduleGroupRadius: 10
+    property real moduleGroupOpacity: 0.12
+
+
     // Bateria
     property int batteryTextSize: 11
     property int batteryIconSize: 10

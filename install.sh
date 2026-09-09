@@ -51,6 +51,9 @@ PACMAN_PKGS=(
   unixodbc
   eza
 
+  android-tools
+  gvfs-mtp
+
   # Security / Network / Services
   wpa_supplicant
   ufw

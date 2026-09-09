@@ -3,11 +3,11 @@
 --------------------
 
 hl.on("hyprland.start", function()
-  -- Session Environment
-  -- Old fix i made, the new one is from omarchy config
+	-- Session Environment
+	-- Old fix i made, the new one is from omarchy config
 	-- hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
 	hl.exec_cmd("systemctl --user import-environment $(env | cut -d'=' -f 1)")
-  hl.exec_cmd("dbus-update-activation-environment --systemd --all")
+	hl.exec_cmd("dbus-update-activation-environment --systemd --all")
 
 	-- Panel / system tray / notifications
 	hl.exec_cmd("qs")
@@ -23,9 +23,9 @@ hl.on("hyprland.start", function()
 
 	-- Apps / services
 	hl.exec_cmd("awww-daemon")
-	hl.exec_cmd("discord --start-minimized")
+	-- hl.exec_cmd("discord --start-minimized")
 	-- hl.exec_cmd("vesktop --start-minimized")
-	hl.exec_cmd("steam -silent")
+	-- hl.exec_cmd("steam -silent")
 	hl.exec_cmd("vicinae server")
 
 	hl.exec_cmd("udiskie")

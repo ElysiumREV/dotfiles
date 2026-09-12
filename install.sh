@@ -83,8 +83,6 @@ PACMAN_PKGS=(
   mako
   cliphist
   wl-clipboard
-  grim
-  slurp
   hyprshot
 
   # File manager
@@ -178,6 +176,9 @@ PACMAN_PKGS=(
   ttf-liberation
 
   moonlight-qt
+
+  # AI / dev tools
+  opencode
 )
 
 # AMD graphics stack.
@@ -211,7 +212,6 @@ AUR_PKGS=(
   awww # (swww has been renamed)
   # vesktop-bin
   zsh-theme-powerlevel10k-git
-  opencode
   vicinae-bin
   hayase-desktop-bin
   stremio-enhanced-bin
@@ -655,27 +655,6 @@ setup_zsh() {
 # Installation flows
 # ------------------------------------------------------------
 
-full_install() {
-  install_required_packages
-  enable_multilib
-
-  install_system_packages
-  install_gpu_drivers
-
-  install_sddm_if_needed
-  install_sddm_theme
-
-  install_extra_packages
-  install_heavy_pkgs
-
-  copy_dotfiles
-  setup_zsh
-
-  if command -v hyprctl >/dev/null; then
-    hyprctl reload 2>/dev/null || true
-  fi
-}
-
 install_dependencies() {
   install_required_packages
   enable_multilib
@@ -697,6 +676,11 @@ update_configuration() {
   if command -v hyprctl >/dev/null; then
     hyprctl reload 2>/dev/null || true
   fi
+}
+
+full_install() {
+  install_dependencies
+  update_configuration
 }
 
 # ------------------------------------------------------------

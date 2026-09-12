@@ -3,33 +3,33 @@
 --------------------
 
 hl.gesture({
-    fingers = 3,
-    direction = "swipe",
-    action = "move"
+	fingers = 3,
+	direction = "swipe",
+	action = "move",
 })
 hl.gesture({
-    fingers = 3,
-    direction = "pinch",
-    action = "fullscreen"
+	fingers = 3,
+	direction = "pinch",
+	action = "fullscreen",
 })
 hl.gesture({
-    fingers = 4,
-    direction = "horizontal",
-    action = "workspace"
+	fingers = 4,
+	direction = "horizontal",
+	action = "workspace",
 })
 
 hl.config({
 	general = {
 		gaps_in = 4,
 		gaps_out = 5,
-    gaps_workspaces = 50,
+		gaps_workspaces = 50,
 
 		border_size = 2,
 
 		resize_on_border = false,
 		col = {
-			active_border   = "rgba(44464f77)",
-      inactive_border = "rgba(1a1b2033)",
+			active_border = "rgba(ECECED80)",
+			inactive_border = "rgba(1a1b2033)",
 		},
 		allow_tearing = true,
 		layout = "dwindle",
@@ -46,34 +46,33 @@ hl.config({
 		inactive_opacity = 0.9,
 		fullscreen_opacity = 1,
 		blur = {
-            enabled = true,
-            xray = true,
-            special = false,
-            new_optimizations = true,
-            size = 10,
-            passes = 3,
-            brightness = 1,
-            noise = 0.05,
-            contrast = 0.89,
-            vibrancy = 0.5,
-            vibrancy_darkness = 0.5,
-            popups = false,
-            popups_ignorealpha = 0.6,
-            input_methods = true,
-            input_methods_ignorealpha = 0.8
-        },
-        shadow = {
-            enabled = true,
-            range = 20,
-            offset = {0, 2},
-            render_power = 10,
-            color = "rgba(00000020)"
-
-        },
-        -- Dim
-        dim_inactive = true,
-        dim_strength = 0.05,
-        dim_special = 0.2
+			enabled = true,
+			xray = true,
+			special = false,
+			new_optimizations = true,
+			size = 10,
+			passes = 3,
+			brightness = 1,
+			noise = 0.05,
+			contrast = 0.89,
+			vibrancy = 0.5,
+			vibrancy_darkness = 0.5,
+			popups = false,
+			popups_ignorealpha = 0.6,
+			input_methods = true,
+			input_methods_ignorealpha = 0.8,
+		},
+		shadow = {
+			enabled = true,
+			range = 20,
+			offset = { 0, 2 },
+			render_power = 10,
+			color = "rgba(00000020)",
+		},
+		-- Dim
+		dim_inactive = true,
+		dim_strength = 0.05,
+		dim_special = 0.2,
 	},
 
 	dwindle = {
@@ -99,7 +98,7 @@ hl.config({
 		focus_on_activate = false,
 		render_unfocused_fps = 60,
 		middle_click_paste = false,
-    background_color = "rgba(121318FF)",
+		background_color = "rgba(121318FF)",
 	},
 })
 

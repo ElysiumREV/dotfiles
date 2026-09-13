@@ -697,8 +697,8 @@ enable_fedora_copr() {
   info "Configurando COPR: $FEDORA_COPR..."
 
   # dnf-plugins-core fornece o comando copr.
-  if ! rpm -q dnf-plugins-core &>/dev/null; then
-    sudo dnf install -y dnf-plugins-core
+  if ! rpm -q dnf5-plugins &>/dev/null; then
+    sudo dnf install -y dnf5-plugins
   fi
 
   if sudo dnf copr list 2>/dev/null | grep -qi \

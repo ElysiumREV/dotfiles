@@ -27,7 +27,8 @@
    },
    "theme": {
       "dark": {
-         "name": "vicinae-dark"
+         "name": "libadwaita-dark",
+         "icon_theme": "Papirus-Dark"
       }
    },
    "launcher_window": {
@@ -35,7 +36,8 @@
       "opacity": 0.9,
       "client_side_decorations": {
          "enabled": true,
-         "border_width": 1
+         "border_width": 1,
+         "shadow_size": 12
       },
       "compact_mode": {
          "enabled": false
@@ -68,6 +70,19 @@
                "enabled": true
             },
             "sponsor": {
+               "enabled": false
+            }
+         }
+      },
+      "power": {
+         "entrypoints": {
+            "hibernate": {
+               "enabled": false
+            },
+            "soft-reboot": {
+               "enabled": false
+            },
+            "suspend": {
                "enabled": false
             }
          }

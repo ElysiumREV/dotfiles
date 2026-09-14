@@ -22,7 +22,6 @@ set -e
 #   - Enables multilib
 # ============================================================
 
-
 # ------------------------------------------------------------
 # Colors
 # ------------------------------------------------------------
@@ -33,7 +32,6 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 BOLD='\033[1m'
 RESET='\033[0m'
-
 
 # ------------------------------------------------------------
 # Helpers
@@ -56,7 +54,6 @@ die() {
   exit 1
 }
 
-
 # ------------------------------------------------------------
 # Basic checks
 # ------------------------------------------------------------
@@ -65,14 +62,12 @@ die() {
   "Não rode o script com sudo ou como root.
 O script cuida dessa parte pedindo sudo quando necessário."
 
-
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 WARNINGS=()
 
 DISTRO="unknown"
 GPU_VENDOR="unknown"
-
 
 # ------------------------------------------------------------
 # Distribution detection
@@ -86,40 +81,39 @@ detect_distro() {
   . /etc/os-release
 
   case "$ID" in
-    arch|cachyos)
+  arch | cachyos)
+    DISTRO="arch"
+    ;;
+
+  fedora)
+    DISTRO="fedora"
+    ;;
+
+  *)
+    if [[ "${ID_LIKE:-}" == *arch* ]]; then
       DISTRO="arch"
-      ;;
-
-    fedora)
+    elif [[ "${ID_LIKE:-}" == *fedora* ]]; then
       DISTRO="fedora"
-      ;;
-
-    *)
-      if [[ "${ID_LIKE:-}" == *arch* ]]; then
-        DISTRO="arch"
-      elif [[ "${ID_LIKE:-}" == *fedora* ]]; then
-        DISTRO="fedora"
-      else
-        die "Distribuição não suportada: ${PRETTY_NAME:-$ID}"
-      fi
-      ;;
+    else
+      die "Distribuição não suportada: ${PRETTY_NAME:-$ID}"
+    fi
+    ;;
   esac
 
   echo
 
   case "$DISTRO" in
-    arch)
-      success "Arch-based detectado: ${PRETTY_NAME:-$ID}"
-      ;;
+  arch)
+    success "Arch-based detectado: ${PRETTY_NAME:-$ID}"
+    ;;
 
-    fedora)
-      success "Fedora detectado: ${PRETTY_NAME:-Fedora}"
-      ;;
+  fedora)
+    success "Fedora detectado: ${PRETTY_NAME:-Fedora}"
+    ;;
   esac
 
   echo
 }
-
 
 # ============================================================
 # ARCH PACKAGES
@@ -171,6 +165,7 @@ PACMAN_PKGS=(
   cliphist
   wl-clipboard
   hyprshot
+  matugen
 
   # File manager
   nemo
@@ -267,7 +262,6 @@ PACMAN_PKGS=(
   opencode
 )
 
-
 # ------------------------------------------------------------
 # Arch AMD graphics stack
 # ------------------------------------------------------------
@@ -290,7 +284,6 @@ AMD_PKGS=(
   lib32-opencl-mesa
 )
 
-
 # ------------------------------------------------------------
 # AUR
 # ------------------------------------------------------------
@@ -304,7 +297,6 @@ AUR_PKGS=(
   sunshine-bin
 )
 
-
 # ------------------------------------------------------------
 # Arch heavy packages
 # ------------------------------------------------------------
@@ -315,13 +307,11 @@ HEAVY_PKGS=(
   "calf"
 )
 
-
 # ============================================================
 # FEDORA PACKAGES
 # ============================================================
 
 FEDORA_COPR="lionheartp/Hyprland"
-
 
 # ------------------------------------------------------------
 # Fedora main packages
@@ -452,7 +442,6 @@ FEDORA_PKGS=(
   steam-devices
 )
 
-
 # ------------------------------------------------------------
 # Fedora 32-bit packages
 #
@@ -468,7 +457,6 @@ FEDORA_32BIT_PKGS=(
   gtk3.i686
   mangohud.i686
 )
-
 
 # ------------------------------------------------------------
 # Fedora AMD graphics stack
@@ -498,7 +486,6 @@ FEDORA_AMD_PKGS=(
   ocl-icd.i686
 )
 
-
 # ------------------------------------------------------------
 # Fedora Intel graphics stack
 # ------------------------------------------------------------
@@ -513,7 +500,6 @@ FEDORA_INTEL_PKGS=(
   mesa-dri-drivers.i686
   mesa-vulkan-drivers.i686
 )
-
 
 # ------------------------------------------------------------
 # Fedora optional / Flatpak applications
@@ -530,11 +516,9 @@ FEDORA_OPTIONAL_DNF_PKGS=(
   opencode
 )
 
-
 FEDORA_OPTIONAL_FLATPAKS=(
   com.obsproject.Studio
 )
-
 
 # ============================================================
 # MULTILIB - ARCH
@@ -561,7 +545,6 @@ enable_multilib() {
 
   success "Multilib habilitado."
 }
-
 
 # ============================================================
 # PACMAN
@@ -599,7 +582,6 @@ validate_pacman_packages() {
   success "Todos os pacotes Arch foram encontrados."
 }
 
-
 install_paru() {
   [[ "$DISTRO" != "arch" ]] && return 0
 
@@ -629,7 +611,6 @@ install_paru() {
   success "paru instalado."
 }
 
-
 install_arch_system_packages() {
   validate_pacman_packages "${PACMAN_PKGS[@]}"
 
@@ -639,7 +620,6 @@ install_arch_system_packages() {
 
   success "Pacotes Arch instalados."
 }
-
 
 # ============================================================
 # AUR
@@ -686,7 +666,6 @@ install_extra_packages_arch() {
   success "Pacotes AUR instalados."
 }
 
-
 # ============================================================
 # FEDORA REPOSITORIES
 # ============================================================
@@ -702,7 +681,7 @@ enable_fedora_copr() {
   fi
 
   if sudo dnf copr list 2>/dev/null | grep -qi \
-      'lionheartp/Hyprland'; then
+    'lionheartp/Hyprland'; then
 
     success "COPR $FEDORA_COPR já está habilitado."
     return
@@ -712,7 +691,6 @@ enable_fedora_copr() {
 
   success "COPR $FEDORA_COPR habilitado."
 }
-
 
 enable_rpmfusion() {
   [[ "$DISTRO" != "fedora" ]] && return 0
@@ -740,7 +718,6 @@ enable_rpmfusion() {
   success "RPM Fusion configurado."
 }
 
-
 # ============================================================
 # DNF
 # ============================================================
@@ -756,7 +733,6 @@ dnf_package_available() {
   # Available from enabled repositories
   dnf repoquery --available "$pkg" &>/dev/null
 }
-
 
 install_available_dnf_packages() {
   local packages=("$@")
@@ -792,7 +768,6 @@ install_available_dnf_packages() {
   sudo dnf install -y "${available[@]}"
 }
 
-
 install_fedora_system_packages() {
   info "Atualizando metadados do Fedora..."
 
@@ -805,7 +780,6 @@ install_fedora_system_packages() {
   success "Pacotes Fedora principais processados."
 }
 
-
 install_fedora_32bit() {
   info "Instalando bibliotecas 32-bit para Steam/Wine/Proton..."
 
@@ -813,7 +787,6 @@ install_fedora_32bit() {
 
   success "Bibliotecas 32-bit processadas."
 }
-
 
 install_fedora_optional_packages() {
   echo
@@ -842,7 +815,6 @@ install_fedora_optional_packages() {
 
   success "Pacotes opcionais processados."
 }
-
 
 # ============================================================
 # GPU DETECTION
@@ -896,24 +868,23 @@ detect_gpu() {
   fi
 
   case "$GPU_VENDOR" in
-    amd)
-      success "GPU AMD detectada."
-      ;;
+  amd)
+    success "GPU AMD detectada."
+    ;;
 
-    nvidia)
-      success "GPU NVIDIA detectada."
-      ;;
+  nvidia)
+    success "GPU NVIDIA detectada."
+    ;;
 
-    intel)
-      success "GPU Intel detectada."
-      ;;
+  intel)
+    success "GPU Intel detectada."
+    ;;
 
-    *)
-      warn "Fabricante da GPU não identificado."
-      ;;
+  *)
+    warn "Fabricante da GPU não identificado."
+    ;;
   esac
 }
-
 
 # ============================================================
 # GPU DRIVERS
@@ -924,60 +895,56 @@ install_gpu_drivers() {
 
   case "$GPU_VENDOR" in
 
-    amd)
-      info "Instalando stack gráfico AMD..."
+  amd)
+    info "Instalando stack gráfico AMD..."
 
-      if [[ "$DISTRO" == "arch" ]]; then
-        sudo pacman -Syu \
-          --noconfirm \
-          --needed \
-          "${AMD_PKGS[@]}"
+    if [[ "$DISTRO" == "arch" ]]; then
+      sudo pacman -Syu \
+        --noconfirm \
+        --needed \
+        "${AMD_PKGS[@]}"
 
-      elif [[ "$DISTRO" == "fedora" ]]; then
-        install_available_dnf_packages \
-          "${FEDORA_AMD_PKGS[@]}"
-      fi
+    elif [[ "$DISTRO" == "fedora" ]]; then
+      install_available_dnf_packages \
+        "${FEDORA_AMD_PKGS[@]}"
+    fi
 
-      success "Stack gráfico AMD instalado."
-      ;;
+    success "Stack gráfico AMD instalado."
+    ;;
 
+  intel)
+    info "Instalando stack gráfico Intel/Mesa..."
 
-    intel)
-      info "Instalando stack gráfico Intel/Mesa..."
+    if [[ "$DISTRO" == "arch" ]]; then
+      sudo pacman -Syu \
+        --noconfirm \
+        --needed \
+        mesa \
+        vulkan-intel \
+        lib32-mesa \
+        lib32-vulkan-intel
 
-      if [[ "$DISTRO" == "arch" ]]; then
-        sudo pacman -Syu \
-          --noconfirm \
-          --needed \
-          mesa \
-          vulkan-intel \
-          lib32-mesa \
-          lib32-vulkan-intel
+    elif [[ "$DISTRO" == "fedora" ]]; then
+      install_available_dnf_packages \
+        "${FEDORA_INTEL_PKGS[@]}"
+    fi
 
-      elif [[ "$DISTRO" == "fedora" ]]; then
-        install_available_dnf_packages \
-          "${FEDORA_INTEL_PKGS[@]}"
-      fi
+    success "Stack gráfico Intel instalado."
+    ;;
 
-      success "Stack gráfico Intel instalado."
-      ;;
+  nvidia)
+    info "GPU NVIDIA detectada."
 
+    warn "Drivers NVIDIA não serão instalados automaticamente."
+    warn "Configure o driver NVIDIA conforme sua necessidade."
+    ;;
 
-    nvidia)
-      info "GPU NVIDIA detectada."
-
-      warn "Drivers NVIDIA não serão instalados automaticamente."
-      warn "Configure o driver NVIDIA conforme sua necessidade."
-      ;;
-
-
-    *)
-      warn "Não foi possível determinar a GPU."
-      warn "Nenhum driver específico será instalado."
-      ;;
+  *)
+    warn "Não foi possível determinar a GPU."
+    warn "Nenhum driver específico será instalado."
+    ;;
   esac
 }
-
 
 # ============================================================
 # SDDM
@@ -995,7 +962,7 @@ install_sddm_if_needed() {
   fi
 
   if [[ -n "$current_dm_service" &&
-        "$current_dm_service" != "sddm" ]]; then
+    "$current_dm_service" != "sddm" ]]; then
 
     info "Display manager atual: $current_dm_service"
 
@@ -1035,7 +1002,6 @@ install_sddm_if_needed() {
   success "SDDM instalado e habilitado."
 }
 
-
 # ============================================================
 # SilentSDDM
 # ============================================================
@@ -1045,9 +1011,9 @@ install_sddm_theme() {
   local sddm_conf="/etc/sddm.conf"
 
   if [[ -d "$theme_dir" ]] &&
-     grep -Pzq \
-       '\[Theme\]\nCurrent=silent' \
-       "$sddm_conf" 2>/dev/null; then
+    grep -Pzq \
+      '\[Theme\]\nCurrent=silent' \
+      "$sddm_conf" 2>/dev/null; then
 
     success "Tema SilentSDDM já está aplicado, pulando."
     return
@@ -1059,8 +1025,8 @@ install_sddm_theme() {
   tmp=$(mktemp -d)
 
   if ! git clone \
-      https://github.com/uiriansan/SilentSDDM.git \
-      "$tmp/SilentSDDM"; then
+    https://github.com/uiriansan/SilentSDDM.git \
+    "$tmp/SilentSDDM"; then
 
     rm -rf "$tmp"
 
@@ -1103,7 +1069,6 @@ install_sddm_theme() {
   rm -rf "$tmp"
 }
 
-
 # ============================================================
 # DOTFILES
 # ============================================================
@@ -1112,7 +1077,6 @@ copy_dotfiles() {
   info "Copiando dotfiles..."
 
   local DOTFILES_SOURCE="$DOTFILES_DIR/configurations/home/ely"
-
 
   # ----------------------------------------------------------
   # .config
@@ -1133,7 +1097,6 @@ copy_dotfiles() {
     warn "$DOTFILES_SOURCE"
   fi
 
-
   # ----------------------------------------------------------
   # .zshrc
   # ----------------------------------------------------------
@@ -1150,7 +1113,6 @@ copy_dotfiles() {
     warn ".zshrc não encontrado."
   fi
 
-
   # ----------------------------------------------------------
   # .p10k.zsh
   # ----------------------------------------------------------
@@ -1166,7 +1128,6 @@ copy_dotfiles() {
   else
     warn ".p10k.zsh não encontrado."
   fi
-
 
   # ----------------------------------------------------------
   # Pictures
@@ -1186,7 +1147,6 @@ copy_dotfiles() {
     warn "Pictures não encontrado."
   fi
 }
-
 
 # ============================================================
 # HEAVY PACKAGES - ARCH ONLY
@@ -1241,7 +1201,6 @@ Pode demorar bastante. [y/N]${RESET}"
   done
 }
 
-
 # ============================================================
 # ZSH
 # ============================================================
@@ -1270,7 +1229,6 @@ setup_zsh() {
     success "Zsh já é o shell padrão."
   fi
 }
-
 
 # ============================================================
 # Fedora optional Flatpak
@@ -1324,7 +1282,6 @@ install_fedora_flatpak() {
   done
 }
 
-
 # ============================================================
 # Installation flows
 # ============================================================
@@ -1348,7 +1305,6 @@ install_arch_dependencies() {
 
   install_heavy_pkgs
 }
-
 
 install_fedora_dependencies() {
   info "Iniciando instalação para Fedora..."
@@ -1376,24 +1332,22 @@ install_fedora_dependencies() {
   install_fedora_flatpak
 }
 
-
 install_dependencies() {
   case "$DISTRO" in
 
-    arch)
-      install_arch_dependencies
-      ;;
+  arch)
+    install_arch_dependencies
+    ;;
 
-    fedora)
-      install_fedora_dependencies
-      ;;
+  fedora)
+    install_fedora_dependencies
+    ;;
 
-    *)
-      die "Distribuição não suportada."
-      ;;
+  *)
+    die "Distribuição não suportada."
+    ;;
   esac
 }
-
 
 # ============================================================
 # Configuration
@@ -1409,7 +1363,6 @@ update_configuration() {
   fi
 }
 
-
 # ============================================================
 # Full installation
 # ============================================================
@@ -1419,7 +1372,6 @@ full_install() {
 
   update_configuration
 }
-
 
 # ============================================================
 # Main
@@ -1444,31 +1396,29 @@ main() {
 
   case "$option" in
 
-    1)
-      full_install
-      ;;
+  1)
+    full_install
+    ;;
 
-    2)
-      install_dependencies
-      ;;
+  2)
+    install_dependencies
+    ;;
 
-    3)
-      update_configuration
-      ;;
+  3)
+    update_configuration
+    ;;
 
-    0)
-      exit 0
-      ;;
+  0)
+    exit 0
+    ;;
 
-    *)
-      die "Opção inválida."
-      ;;
+  *)
+    die "Opção inválida."
+    ;;
   esac
-
 
   echo
   success "Concluído."
-
 
   # ----------------------------------------------------------
   # Warnings
@@ -1484,6 +1434,5 @@ main() {
     done
   fi
 }
-
 
 main "$@"

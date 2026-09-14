@@ -1,37 +1,33 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Powerlevel10k instant prompt — deve ficar no topo
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
-
-# Path to your Oh My Zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
-export PATH="/home/ely/.local/bin:$PATH"
-
-# ZSH_THEME="powerlevel10k/powerlevel10k"
+# Oh My Zsh
+export ZSH="/usr/share/oh-my-zsh"
 
 plugins=(git)
 
-source $ZSH/oh-my-zsh.sh
+source "$ZSH/oh-my-zsh.sh"
 
+# Powerlevel10k instalado pelo sistema (pacman)
+source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+
+# Plugins instalados pelo sistema
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# PATH
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$PATH:$HOME/.lmstudio/bin"
+
+# Aliases
 alias ls='eza -lh --group-directories-first --icons=auto'
 alias lsa='ls -a'
 alias lt='eza --tree --level=2 --long --icons --git'
 alias lta='lt -a'
 alias ll='eza -lah --group-directories-first --icons=auto'
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# P10k config
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-
-# Added by Antigravity CLI installer
-export PATH="/home/ely/.local/bin:$PATH"
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/home/ely/.lmstudio/bin"
-# End of LM Studio CLI section
 

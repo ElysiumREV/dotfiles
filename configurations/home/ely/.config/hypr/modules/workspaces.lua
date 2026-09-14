@@ -327,6 +327,9 @@ hl.window_rule({ match = {
 	class = "^(nemo)$",
 	title = "^.+ Properties$",
 }, float = true, center = true })
+hl.window_rule({ match = {
+	title = "^(Firefox - Choose User Profile)",
+}, float = true, center = true })
 
 -- Screen sharing
 hl.window_rule({ match = { title = ".*is sharing (a window|your screen).*" }, float = true })

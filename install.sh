@@ -302,9 +302,8 @@ AUR_PKGS=(
 # ------------------------------------------------------------
 
 HEAVY_PKGS=(
-  "deepfilternet-demos-git"
-  "lsp-plugins"
-  "calf"
+  "noise-suppression-for-voice"
+  "ladspa"
 )
 
 # ============================================================
@@ -369,7 +368,6 @@ FEDORA_PKGS=(
   ffmpegthumbnailer
 
   # Audio
-  easyeffects
   pipewire
   pipewire-pulseaudio
   pipewire-alsa
@@ -382,6 +380,10 @@ FEDORA_PKGS=(
   # GStreamer / PipeWire
   gstreamer1-plugins-base
   gstreamer1-plugin-pipewire
+
+  # Microphone noise suppression
+  noise-suppression-for-voice
+  ladspa
 
   # Network / Bluetooth
   NetworkManager

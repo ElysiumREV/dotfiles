@@ -3,7 +3,7 @@
 --------------------
 
 local terminal = "kitty"
-local fileManager = "nemo"
+local fileManager = "nautilus"
 local menu = "vicinae open"
 local browser = "firefox"
 local mainMod = "SUPER"

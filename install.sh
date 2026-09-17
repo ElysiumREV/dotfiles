@@ -135,6 +135,9 @@ PACMAN_PKGS=(
   android-tools
   gvfs-mtp
 
+  xdg-user-dirs
+  awww
+
   # Security / Network / Services
   wpa_supplicant
   ufw
@@ -226,6 +229,9 @@ PACMAN_PKGS=(
   # Desktop applications
   firefox
   mpv
+  vlc # fallback
+  imv
+  featherpad
   kitty
   spotify-launcher
   kate
@@ -235,6 +241,8 @@ PACMAN_PKGS=(
   discord
   qbittorrent
   partitionmanager
+  gimp
+
 
   # GTK / Qt / Theming
   xdg-desktop-portal-hyprland
@@ -289,12 +297,15 @@ AMD_PKGS=(
 # ------------------------------------------------------------
 
 AUR_PKGS=(
-  awww
   zsh-theme-powerlevel10k-git
-  vicinae-bin
   hayase-desktop-bin
   stremio-enhanced-bin
   sunshine-bin
+  nautilus-open-any-terminal
+  nautilus-admin-gtk4
+  nautilus-checksums
+  nautilus-image-converter
+  davinci-resolve
 )
 
 # ------------------------------------------------------------

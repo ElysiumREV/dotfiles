@@ -53,7 +53,7 @@
             "wallpaperPath": "/home/ely/Pictures/Wallpapers/",
             "colorGenTool": "none",
             "gridRows": "4",
-            "postCommand": "bash -c 'ln -sf \"${wallpaper}\" \"$HOME/Pictures/Wallpapers/.current-wallpaper.png\"'",
+            "postCommand": "bash -c 'ln -sf \"${wallpaper}\" \"$HOME/Pictures/Wallpapers/.current-wallpaper.png\"' && bash \"$HOME/.config/scripts/updateWall.sh\"",
             "postProduction": "no",
             "showImageDetails": true,
             "toggleVicinaeSetting": true,

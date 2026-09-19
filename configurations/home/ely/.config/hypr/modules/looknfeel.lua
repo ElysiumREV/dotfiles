@@ -28,8 +28,8 @@ hl.config({
 
 		resize_on_border = false,
 		col = {
-			active_border = "rgba(ECECED80)",
-			inactive_border = "rgba(1a1b2033)",
+			active_border   = "rgba(44464f80)",
+      inactive_border = "rgba(1a1b2033)",
 		},
 		allow_tearing = true,
 		layout = "dwindle",
@@ -42,7 +42,7 @@ hl.config({
 	decoration = {
 		rounding = 16,
 		rounding_power = 2,
-		active_opacity = 0.99,
+		active_opacity = 1,
 		inactive_opacity = 0.9,
 		fullscreen_opacity = 1,
 		blur = {
@@ -98,7 +98,6 @@ hl.config({
 		focus_on_activate = false,
 		render_unfocused_fps = 60,
 		middle_click_paste = false,
-		background_color = "rgba(121318FF)",
 	},
 })
 

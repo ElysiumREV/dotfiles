@@ -188,11 +188,11 @@ PanelWindow {
         if (action === "lock")
             sessionActionProcess.exec(["hyprlock"]);
         else if (action === "logout")
-            sessionActionProcess.exec(["hyprctl", "dispatch", "exit"]);
+            sessionActionProcess.exec(["hyprshutdown", "--post-cmd", "hyprctl dispatch hl.dsp.exit()"]);
         else if (action === "reboot")
-            sessionActionProcess.exec(["systemctl", "reboot"]);
+            sessionActionProcess.exec(["hyprshutdown", "-t", "Restarting...", "--post-cmd", "reboot"]);
         else if (action === "shutdown")
-            sessionActionProcess.exec(["systemctl", "poweroff"]);
+            sessionActionProcess.exec(["hyprshutdown", "-t", "Shutting down...", "--post-cmd", "shutdown -P 0"]);
     }
 
     color: "transparent"
@@ -647,27 +647,13 @@ PanelWindow {
 
                     }
 
-                    RowLayout {
-                        Item {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: "Wi-Fi"
-                            }
-
-                            MouseArea {
-                                id: wifiMouse
-
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.toggleWifiExpanded()
-                            }
-
-                        }
-
+                    MouseArea {
+                        id: wifiMouse
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.toggleWifiExpanded()
                     }
 
                 }
@@ -1087,27 +1073,13 @@ PanelWindow {
 
                     }
 
-                    RowLayout {
-                        Item {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: "Wi-Fi"
-                            }
-
-                            MouseArea {
-                                id: bluetoothMouse
-
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.toggleBluetoothExpanded()
-                            }
-
-                        }
-
+                    MouseArea {
+                        id: bluetoothMouse
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.toggleBluetoothExpanded()
                     }
 
                 }

@@ -6,30 +6,32 @@ import Quickshell
 Singleton {
     id: root
 
-    // Cores da barra
-    property color colBg: "#13151A"
-    property color colFg: "#cbc5ca"
-    property color colText: "#F0F1F5"
-    property color colTextSec: "#B8BCCA"
-    property color colMuted: "#7C8291"
-    property color colDisabled: "#505563"
-    property color colHighlight: "#A08EC4"
-    property color colBlue: "#7EA3CC"
-    property color colYellow: "#e6c97a"
-    property color colRed: "#C47A7A"
-    property color colOrange: "#C4956A"
-    property color colGreen: "#7EBD9B"
-    property color colBatteryCritical: "#c0392b"
-    property color colBatteryIconDark: "#181616"
-    property color colBatteryIconLight: "#c5c9c5"
-    property color colOsdBg: "#cc181616"
-    property color colOsdMuted: "#2a1a1a"
-    property color colOsdBorder: "#50c5c9c5"
-    property color colWlogoutBg: "#e60c0c0c"
-    property color colWlogoutButton: "#1e1e1e"
-    property color colWlogoutButtonHover: "#3700b3"
-    property color colWlogoutText: "white"
-    property color colBorder: "black"
+    // Cores dinâmicas do Matugen (Colors.qml lê colors.json e observa alterações).
+    // Os nomes antigos são preservados para não precisar alterar cada módulo.
+    // Mantém os cantos visíveis enquanto o JSON do Matugen é recarregado.
+    property color colBg: Colors.md3.surface === "transparent" ? "#13151A" : Colors.md3.surface
+    property color colFg: Colors.md3.on_surface
+    property color colText: Colors.md3.on_surface
+    property color colTextSec: Colors.md3.on_surface_variant
+    property color colMuted: Colors.md3.outline
+    property color colDisabled: Colors.md3.outline_variant
+    property color colHighlight: Colors.md3.primary
+    property color colBlue: Colors.md3.secondary
+    property color colYellow: Colors.md3.tertiary
+    property color colRed: Colors.md3.error
+    property color colOrange: Colors.md3.tertiary
+    property color colGreen: Colors.md3.secondary
+    property color colBatteryCritical: Colors.md3.error
+    property color colBatteryIconDark: Colors.md3.surface_dim
+    property color colBatteryIconLight: Colors.md3.on_surface
+    property color colOsdBg: Colors.md3.surface_container_high
+    property color colOsdMuted: Colors.md3.outline
+    property color colOsdBorder: Colors.md3.outline_variant
+    property color colWlogoutBg: Colors.md3.surface_dim
+    property color colWlogoutButton: Colors.md3.surface_container
+    property color colWlogoutButtonHover: Colors.md3.primary_container
+    property color colWlogoutText: Colors.md3.on_surface
+    property color colBorder: Colors.md3.outline
 
     // Fontes
     property string fontFamily: "JetBrainsMono Nerd Font"

@@ -2,20 +2,21 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
+import ".." as Config
 
 Variants {
 	id: root
 
-	property color backgroundColor: "#e60c0c0c"
-	property color buttonColor: "#1e1e1e"
-	property color buttonHoverColor: "#3700b3"
-	property color textColor: "white"
-	property color borderColor: "black"
-	property real gridScale: 0.75
-	property real iconScale: 0.25
-	property int textMargin: 20
-	property int textSize: 20
-	property int borderWidth: 1
+	property color backgroundColor: Config.Theme.colWlogoutBg
+	property color buttonColor: Config.Theme.colWlogoutButton
+	property color buttonHoverColor: Config.Theme.colWlogoutButtonHover
+	property color textColor: Config.Theme.colWlogoutText
+	property color borderColor: Config.Theme.colBorder
+	property real gridScale: Config.Theme.wlogoutGridScale
+	property real iconScale: Config.Theme.wlogoutIconScale
+	property int textMargin: Config.Theme.wlogoutTextTopMargin
+	property int textSize: Config.Theme.wlogoutTextSize
+	property int borderWidth: Config.Theme.wlogoutBorderWidth
 
 	default property list<LogoutButton> buttons
 
@@ -63,28 +64,29 @@ Variants {
 			Rectangle {
 				anchors.fill: parent
 				color: root.backgroundColor
+				z: 0
 
 				MouseArea {
 					anchors.fill: parent
 					onClicked: Qt.quit()
+				}
+			}
 
-					GridLayout {
-						anchors.centerIn: parent
-						width: parent.width * root.gridScale
-						height: parent.height * root.gridScale
+			Grid {
+				id: buttonGrid
+				anchors.centerIn: parent
+				width: parent.width * root.gridScale
+				height: parent.height * root.gridScale
+				z: 1
+				columns: 3
 
-						columns: 3
-						columnSpacing: 0
-						rowSpacing: 0
+				Repeater {
+					model: root.buttons
 
-						Repeater {
-							model: root.buttons
-
-							delegate: Rectangle {
-								required property LogoutButton modelData
-
-								Layout.fillWidth: true
-								Layout.fillHeight: true
+				delegate: Rectangle {
+					required property LogoutButton modelData
+					width: buttonGrid.width / buttonGrid.columns
+					height: buttonGrid.height / Math.ceil(root.buttons.length / buttonGrid.columns)
 
 								color: mouseArea.containsMouse ? root.buttonHoverColor : root.buttonColor
 								border.color: root.borderColor
@@ -120,11 +122,9 @@ Variants {
 									font.pointSize: root.textSize
 									color: root.textColor
 								}
-							}
-						}
+					}
 					}
 				}
-			}
 		}
 	}
 }

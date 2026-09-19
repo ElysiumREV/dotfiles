@@ -31,3 +31,5 @@ alias ll='eza -lah --group-directories-first --icons=auto'
 # P10k config
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+
+export PATH=$PATH:/home/ely/.spicetify

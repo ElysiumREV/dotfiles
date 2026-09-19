@@ -116,6 +116,7 @@ hl.window_rule({
 	no_anim = true,
 	no_shadow = true,
 	decorate = false,
+  immediate = true
 })
 
 -- Workspace 10: sem gaps

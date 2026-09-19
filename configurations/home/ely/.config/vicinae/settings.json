@@ -49,17 +49,18 @@
    },
    "providers": {
       "@sovereign/store.vicinae.awww-switcher": {
+         "enabled": true,
          "preferences": {
             "wallpaperPath": "/home/ely/Pictures/Wallpapers/",
-            "colorGenTool": "none",
+            "colorGenTool": "matugen",
             "gridRows": "4",
             "postCommand": "bash -c 'ln -sf \"${wallpaper}\" \"$HOME/Pictures/Wallpapers/.current-wallpaper.png\"' && bash \"$HOME/.config/scripts/updateWall.sh\"",
             "postProduction": "no",
             "showImageDetails": true,
             "toggleVicinaeSetting": true,
-            "transitionDuration": "3",
-            "transitionFPS": "60",
-            "transitionStep": "90",
+            "transitionDuration": "2",
+            "transitionFPS": "144",
+            "transitionStep": "120",
             "transitionType": "random"
          }
       },
@@ -85,6 +86,15 @@
             "suspend": {
                "enabled": false
             }
+         }
+      },
+      "snippets": {
+         "preferences": {
+            "enabled": true,
+            "keyDelay": "2",
+            "layout": "",
+            "prePasteDelay": "0",
+            "undo": true
          }
       }
    }

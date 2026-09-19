@@ -14,3 +14,6 @@ mako = { input_path = './templates/mako', output_path = '~/.config/mako/mako-col
 spotify = { input_path = './templates/spicetify.ini', output_path = '~/.config/spicetify/Themes/Sleek/color.ini', post_hook = 'pgrep -x spicetify > /dev/null || spicetify apply -n' }
 
 zed = { input_path = './templates/zed-colors.json', output_path = '~/.config/zed/themes/matugen.json' }
+
+vscode-raw = { input_path = './templates/vscode-colors', output_path = '~/.cache/matugen/vscode-colors' }
+vscode-json = { input_path = './templates/vscode-colors.json', output_path = '~/.cache/matugen/vscode-colors.json' }

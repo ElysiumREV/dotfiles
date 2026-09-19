@@ -1,3 +1,5 @@
+local colors = require("modules.colors")
+
 --------------------
 -- LOOK AND FEEL
 --------------------
@@ -28,8 +30,8 @@ hl.config({
 
 		resize_on_border = false,
 		col = {
-			active_border   = "rgba(44464f80)",
-      inactive_border = "rgba(1a1b2033)",
+			active_border = colors.primary,
+			inactive_border = colors.surface_variant,
 		},
 		allow_tearing = true,
 		layout = "dwindle",
@@ -67,7 +69,7 @@ hl.config({
 			range = 20,
 			offset = { 0, 2 },
 			render_power = 10,
-			color = "rgba(00000020)",
+			color = colors.shadow,
 		},
 		-- Dim
 		dim_inactive = true,

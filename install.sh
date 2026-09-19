@@ -239,10 +239,10 @@ PACMAN_PKGS=(
   zed
   bitwarden
   discord
+  telegram-desktop
   qbittorrent
   partitionmanager
   gimp
-
 
   # GTK / Qt / Theming
   xdg-desktop-portal-hyprland

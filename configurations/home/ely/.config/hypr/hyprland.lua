@@ -8,6 +8,7 @@ require("modules.input")
 require("modules.keybinds")
 require("modules.workspaces")
 require("modules.looknfeel")
+-- require("modules.colors")
 
 -- Debug
 hl.config({

@@ -12,3 +12,5 @@ steam = { input_path = './templates/steam.css', output_path = '~/.config/AdwStea
 mako = { input_path = './templates/mako', output_path = '~/.config/mako/mako-colors', post_hook = 'makoctl reload' }
 
 spotify = { input_path = './templates/spicetify.ini', output_path = '~/.config/spicetify/Themes/Sleek/color.ini', post_hook = 'pgrep -x spicetify > /dev/null || spicetify apply -n' }
+
+zed = { input_path = './templates/zed-colors.json', output_path = '~/.config/zed/themes/matugen.json' }

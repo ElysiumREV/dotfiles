@@ -72,5 +72,7 @@
     }
   ],
   "workbench.iconTheme": "material-icon-theme",
-  "workbench.colorTheme": "Matugen Bordered"
+"workbench.colorTheme": "Matugen Bordered",
+"terminal.integrated.mouseWheelScrollSensitivity": 3,
+"terminal.integrated.gpuAcceleration": "off"
 }

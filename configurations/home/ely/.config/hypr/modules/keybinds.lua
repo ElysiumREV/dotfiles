@@ -82,3 +82,8 @@ hl.bind(
 	mainMod .. " + W",
 	hl.dsp.exec_cmd("vicinae deeplink vicinae://launch/@sovereign/store.vicinae.awww-switcher/wpgrid")
 )
+
+hl.bind(
+	mainMod .. " + SHIFT + W",
+	hl.dsp.exec_cmd("vicinae deeplink vicinae://launch/@aurelleb/store.vicinae.wallhaven/search-wallpapers")
+)

@@ -29,6 +29,7 @@ text/x-readme=featherpad.desktop
 application/x-msdownload=wine.desktop
 x-scheme-handler/hayase=hayase.desktop
 x-scheme-handler/stremio=stremio-enhanced.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 
 [Added Associations]
 application/x-msdownload=wine.desktop;

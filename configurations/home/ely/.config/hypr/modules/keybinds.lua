@@ -85,5 +85,7 @@ hl.bind(
 
 hl.bind(
 	mainMod .. " + SHIFT + W",
-	hl.dsp.exec_cmd("vicinae deeplink vicinae://launch/@aurelleb/store.vicinae.wallhaven/search-wallpapers")
+	hl.dsp.exec_cmd(
+		"vicinae deeplink vicinae://launch/@aurelleb/store.vicinae.wallhaven/search-wallpapers && bash ~/.config/scripts/updateWall.sh"
+	)
 )

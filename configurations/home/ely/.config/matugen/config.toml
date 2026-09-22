@@ -23,3 +23,5 @@ vesktop = { input_path = './templates/midnight-discord.css', output_path = '~/.c
 hyprland = { input_path = './templates/hyprland-colors.lua', output_path = '~/.config/hypr/modules/colors.lua' }
 
 neovim = { input_path = "./templates/nvim-colors.json", output_path = "~/.config/matugen/themes/nvim-colors.json", post_hook = "pkill -SIGUSR1 nvim" }
+
+pywalfox = { input_path = "./templates/pywalfox-colors.json", output_path = "~/.cache/wal/colors.json", post_hook = "pywalfox update" }

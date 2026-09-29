@@ -30,6 +30,9 @@ application/x-msdownload=wine.desktop
 x-scheme-handler/hayase=hayase.desktop
 x-scheme-handler/stremio=stremio-enhanced.desktop
 x-scheme-handler/claude-cli=claude-code-url-handler.desktop
+x-scheme-handler/deadlock-mod-manager=deadlock-modmanager-handler.desktop
+x-scheme-handler/deadlock-modmanager=deadlock-modmanager-handler.desktop
+x-scheme-handler/dlmm=deadlock-modmanager-handler.desktop
 
 [Added Associations]
 application/x-msdownload=wine.desktop;

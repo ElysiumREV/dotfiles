@@ -1,0 +1,5 @@
+singleton Brightness 1.0 Brightness.qml
+singleton Media 1.0 Media.qml
+singleton PowerProfiles 1.0 PowerProfiles.qml
+singleton SystemStats 1.0 SystemStats.qml
+singleton Volume 1.0 Volume.qml

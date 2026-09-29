@@ -9,21 +9,56 @@ Singleton {
 
     readonly property var pipewire: Pipewire
 
+    PwObjectTracker {
+        objects: [root.pipewire.defaultAudioSink]
+    }
+
     property var audioIface: null
     property real volume: 0
     property bool muted: false
     property int percentage: 0
     property string icon: "󰕾"
 
-    Component.onCompleted: checkForSink()
+    Component.onCompleted: bindDefaultSink()
 
-    function checkForSink() {
-        if (pipewire.defaultAudioSink?.audio) {
-            audioIface = pipewire.defaultAudioSink.audio
-            updateProperties()
-            pollTimer.start()
-        } else {
+    function bindDefaultSink() {
+        const nextAudioIface = pipewire.defaultAudioSink?.audio ?? null
+        if (audioIface !== nextAudioIface) {
+            audioIface = nextAudioIface
+            if (audioIface) {
+                updateProperties()
+            } else {
+                volume = 0
+                percentage = 0
+                muted = false
+                icon = "󰕾"
+            }
+        }
+
+        if (!audioIface) {
             sinkTimer.start()
+        } else {
+            sinkTimer.stop()
+        }
+    }
+
+    Connections {
+        target: root.pipewire
+
+        function onDefaultAudioSinkChanged() {
+            root.bindDefaultSink()
+        }
+    }
+
+    Connections {
+        target: root.audioIface
+
+        function onVolumeChanged() {
+            root.updateProperties()
+        }
+
+        function onMutedChanged() {
+            root.updateProperties()
         }
     }
 
@@ -43,17 +78,9 @@ Singleton {
 
     Timer {
         id: sinkTimer
-        interval: 500
+        interval: 2000
         repeat: false
-        onTriggered: root.checkForSink()
-    }
-
-    Timer {
-        id: pollTimer
-        interval: 100
-        repeat: true
-        running: root.audioIface !== null
-        onTriggered: root.updateProperties()
+        onTriggered: root.bindDefaultSink()
     }
 
     function setVolume(value) {

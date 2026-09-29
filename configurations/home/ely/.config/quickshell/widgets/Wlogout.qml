@@ -1,8 +1,41 @@
 import QtQuick
 import Quickshell
+import Quickshell.Io
 
 ShellRoot {
+    FileView {
+        id: colorsFile
+        path: Quickshell.env("HOME") + "/.local/state/quickshell/generated/colors.json"
+        watchChanges: true
+        onFileChanged: reloadTimer.restart()
+
+        JsonAdapter {
+            id: colorsAdapter
+
+            readonly property JsonObject md3: JsonObject {
+                property string surface_dim: "#141218"
+                property string surface_container: "#211f26"
+                property string primary_container: "#4f378b"
+                property string on_surface: "#e6e0e9"
+                property string outline: "#49454f"
+            }
+        }
+    }
+
+    Timer {
+        id: reloadTimer
+        interval: 150
+        repeat: false
+        onTriggered: colorsFile.reload()
+    }
+
 	WLogout {
+        backgroundColor: colorsAdapter.md3.surface_dim
+        buttonColor: colorsAdapter.md3.surface_container
+        buttonHoverColor: colorsAdapter.md3.primary_container
+        textColor: colorsAdapter.md3.on_surface
+        borderColor: colorsAdapter.md3.outline
+
 		LogoutButton {
 			command: "hyprlock"
 			keybind: Qt.Key_L

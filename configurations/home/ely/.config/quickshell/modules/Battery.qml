@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
 import ".." as Config
+import "../services/BatteryRules.js" as BatteryRules
 
 Item {
     id: root
@@ -19,28 +20,10 @@ Item {
     readonly property bool isCharging: battery?.state === UPowerDevice.Charging
     readonly property bool isFullyCharged: battery?.state === UPowerDevice.FullyCharged
     readonly property bool isPluggedIn: isCharging || isFullyCharged
-    readonly property bool isLow: batteryLevel <= 25 && !isPluggedIn
-    readonly property bool isCritical: batteryLevel <= 20 && !isPluggedIn
+    readonly property bool isLow: BatteryRules.isLow(batteryLevel, isPluggedIn)
+    readonly property bool isCritical: BatteryRules.isCritical(batteryLevel, isPluggedIn)
 
-    readonly property string iconName: {
-        if (isCharging)
-            return "battery_charging_full";
-        if (batteryLevel <= 5)
-            return "battery_0_bar";
-        if (batteryLevel <= 20)
-            return "battery_1_bar";
-        if (batteryLevel <= 35)
-            return "battery_2_bar";
-        if (batteryLevel <= 50)
-            return "battery_3_bar";
-        if (batteryLevel <= 65)
-            return "battery_4_bar";
-        if (batteryLevel <= 80)
-            return "battery_5_bar";
-        if (batteryLevel <= 95)
-            return "battery_6_bar";
-        return "battery_full";
-    }
+    readonly property string iconName: BatteryRules.iconName(batteryLevel, isCharging)
 
     readonly property color normalColor: {
         if (isCritical)

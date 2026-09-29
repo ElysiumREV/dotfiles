@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import QtQuick
 import ".." as Config
 import "../services" as Services
+import "../services/BatteryRules.js" as BatteryRules
 
 PanelWindow {
     id: root
@@ -12,12 +13,16 @@ PanelWindow {
     required property var positionProvider
     property real popupX: 0
     property int chargeCycles: -1
+    property bool chargeCyclesLoaded: false
     property string pendingAction: ""
     property string batteryCapacity: "—"
     property string batteryChangeRate: "—"
     property string batteryStatusLabel: "Sem bateria"
     property real batteryPercentage: 0
-    property string batteryIconName: "battery_full"
+    property bool batteryPresent: false
+    readonly property string batteryIconName: batteryPresent
+        ? BatteryRules.iconName(batteryPercentage, isCharging)
+        : "battery_alert"
 
     // --- Omarchy-inspired Properties ---
     property int phraseIndex: 0
@@ -32,8 +37,9 @@ PanelWindow {
     }
 
     // --- Lógica de Bateria Fraca/Crítica do seu módulo ---
-    readonly property bool isLow: batteryPercentage <= 25 && !isCharging && !isFullyCharged
-    readonly property bool isCritical: batteryPercentage <= 20 && !isCharging && !isFullyCharged
+    readonly property bool isPluggedIn: isCharging || isFullyCharged
+    readonly property bool isLow: BatteryRules.isLow(batteryPercentage, isPluggedIn)
+    readonly property bool isCritical: BatteryRules.isCritical(batteryPercentage, isPluggedIn)
 
     readonly property var chargingPhrases: [
         "Injetando elétrons",
@@ -93,6 +99,7 @@ PanelWindow {
     function refresh() {
         const b = UPower.displayDevice;
         if (b && b.isPresent) {
+            batteryPresent = true;
             batteryCapacity = (b.energyCapacity || 0).toFixed(0);
             const rate = Math.abs(b.changeRate || 0).toFixed(1);
 
@@ -125,36 +132,15 @@ PanelWindow {
 
             batteryPercentage = Math.round((b.percentage ?? 0) * 100);
 
-            // --- Lógica do Ícone igual a do módulo ---
-            if (b.state === UPowerDeviceState.Charging || b.state === UPowerDeviceState.PendingCharge) {
-                batteryIconName = "battery_charging_full";
-            } else if (batteryPercentage <= 5) {
-                batteryIconName = "battery_0_bar";
-            } else if (batteryPercentage <= 20) {
-                batteryIconName = "battery_1_bar";
-            } else if (batteryPercentage <= 35) {
-                batteryIconName = "battery_2_bar";
-            } else if (batteryPercentage <= 50) {
-                batteryIconName = "battery_3_bar";
-            } else if (batteryPercentage <= 65) {
-                batteryIconName = "battery_4_bar";
-            } else if (batteryPercentage <= 80) {
-                batteryIconName = "battery_5_bar";
-            } else if (batteryPercentage <= 95) {
-                batteryIconName = "battery_6_bar";
-            } else {
-                batteryIconName = "battery_full";
-            }
-
         } else {
+            batteryPresent = false;
             batteryCapacity = "—";
             batteryChangeRate = "—";
             batteryStatusLabel = "Sem bateria";
             batteryPercentage = 0;
-            batteryIconName = "battery_alert";
         }
-        Services.PowerProfiles.updateActiveProfile();
-        chargeCyclesProcess.running = true;
+        if (!chargeCyclesLoaded)
+            chargeCyclesProcess.running = true;
     }
 
     Process { id: sessionActionProcess }
@@ -171,12 +157,13 @@ PanelWindow {
             }
         }
         onExited: code => {
+            root.chargeCyclesLoaded = true;
             if (code !== 0) root.chargeCycles = -1
         }
     }
 
     Timer {
-        interval: 5000
+        interval: 15000
         repeat: true
         running: root.visible
         onTriggered: root.refresh()

@@ -45,14 +45,10 @@ PanelWindow {
         wifiStatusProcess.running = true;
         wifiNameProcess.running = true;
         bluetoothStatusProcess.running = true;
-        if (wifiEnabled)
-            wifiScanProcess.running = true;
-
-        if (bluetoothEnabled) {
+        if (bluetoothEnabled && bluetoothExpanded) {
             bluetoothDevicesProcess.running = true;
             bluetoothConnectedProcess.running = true;
         }
-        Services.Brightness.readBrightness();
     }
 
     function toggleWifi() {
@@ -214,7 +210,7 @@ PanelWindow {
     }
 
     Timer {
-        interval: 5000
+        interval: 15000
         repeat: true
         running: root.visible
         onTriggered: root.refresh()

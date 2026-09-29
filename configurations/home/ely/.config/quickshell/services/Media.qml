@@ -1,17 +1,14 @@
+pragma Singleton
+
 import Quickshell
 import Quickshell.Services.Mpris
 import QtQuick
 
-Item {
+Singleton {
     id: root
 
-    property int refreshTick: 0
-
     readonly property var allowedPlayers: Mpris.players.values.filter(player => isAllowedPlayer(player))
-    readonly property var activePlayer: {
-        refreshTick
-        return selectPlayer()
-    }
+    readonly property var activePlayer: selectPlayer()
 
     readonly property bool connected: activePlayer !== null
     readonly property bool playing: activePlayer?.isPlaying ?? false
@@ -31,13 +28,6 @@ Item {
         if (isSpotify(activePlayer)) return "Spotify"
         if (isYoutubeMusic(activePlayer)) return "YouTube Music"
         return identity || "MPRIS"
-    }
-
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        onTriggered: root.refreshTick++
     }
 
     function normalized(value) {

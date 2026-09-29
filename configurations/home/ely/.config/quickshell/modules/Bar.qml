@@ -259,6 +259,7 @@ Variants {
                                 id: systemStatus
 
                                 anchors.centerIn: parent
+                                screenWidth: modelData.width
                             }
 
                         }
@@ -276,6 +277,7 @@ Variants {
 
                             QsModules.Clock {
                                 id: clock
+                                screenWidth: modelData.width
 
                                 anchors.centerIn: parent
                             }

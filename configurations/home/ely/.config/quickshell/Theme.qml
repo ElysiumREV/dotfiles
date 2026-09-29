@@ -9,7 +9,7 @@ Singleton {
     // Cores dinâmicas do Matugen (Colors.qml lê colors.json e observa alterações).
     // Os nomes antigos são preservados para não precisar alterar cada módulo.
     // Mantém os cantos visíveis enquanto o JSON do Matugen é recarregado.
-    property color colBg: Colors.md3.surface === "transparent" ? "#13151A" : Colors.md3.surface
+    property color colBg: Colors.md3.surface
     property color colFg: Colors.md3.on_surface
     property color colText: Colors.md3.on_surface
     property color colTextSec: Colors.md3.on_surface_variant
@@ -98,7 +98,6 @@ Singleton {
     // Logout
     property real wlogoutGridScale: 0.75
     property real wlogoutIconScale: 0.25
-    property int wlogoutTextTopMargin: 20
     property int wlogoutTextSize: 20
     property int wlogoutBorderWidth: 1
 }

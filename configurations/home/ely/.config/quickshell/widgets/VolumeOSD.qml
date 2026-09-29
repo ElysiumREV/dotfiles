@@ -1,26 +1,30 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Services.Pipewire
 import Quickshell.Widgets
 import ".." as Config
+import "../services" as QsServices
 
 Scope {
     id: root
 
-    PwObjectTracker {
-        objects: [Pipewire.defaultAudioSink]
-    }
-
     Connections {
-    target: root.volume || null
+        target: root.volume || null
 
-    function onVolumeChanged() {
-        if (!root.startupComplete) return;
-        root.shouldShowOsd = true;
-        hideTimer.restart();
+        function onVolumeChanged() {
+            root.showOsd()
+        }
+
+        function onMutedChanged() {
+            root.showOsd()
+        }
     }
-}
+
+    function showOsd() {
+        if (!startupComplete) return
+        shouldShowOsd = true
+        hideTimer.restart()
+    }
 
     property bool shouldShowOsd: false
     property bool startupComplete: false
@@ -32,16 +36,10 @@ Scope {
         onTriggered: root.startupComplete = true
     }
 
-    readonly property var volume: Pipewire.defaultAudioSink?.audio
-    readonly property int percentage: volume ? Math.round(volume.volume * 100) : 0
-    readonly property bool muted: volume?.mute ?? false
-    readonly property string icon: {
-        if (!volume) return "󰕾"
-        if (muted) return "󰝟"
-        if (percentage <= 33) return "󰕿"
-        if (percentage <= 66) return "󰖀"
-        return "󰕾"
-    }
+    readonly property var volume: QsServices.Volume
+    readonly property int percentage: volume?.percentage ?? 0
+    readonly property bool muted: volume?.muted ?? false
+    readonly property string icon: volume?.icon ?? "󰕾"
 
     Timer {
         id: hideTimer

@@ -7,19 +7,12 @@ set -e
 #
 # Supported:
 #   - Arch Linux
-#   - CachyOS
-#   - Fedora
+#   - CachyOS (and other Arch-based distros)
 #
-# Fedora:
-#   - Uses DNF
-#   - Enables RPM Fusion
-#   - Enables lionheartp/Hyprland COPR
-#   - Uses .i686 packages for 32-bit gaming libraries
-#
-# Arch:
-#   - Uses pacman
-#   - Uses paru/AUR
-#   - Enables multilib
+# Uses:
+#   - pacman
+#   - paru/AUR
+#   - multilib
 # ============================================================
 
 # ------------------------------------------------------------
@@ -66,14 +59,13 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 WARNINGS=()
 
-DISTRO="unknown"
 GPU_VENDOR="unknown"
 
 # ------------------------------------------------------------
-# Distribution detection
+# Distribution check
 # ------------------------------------------------------------
 
-detect_distro() {
+check_distro() {
   if [[ ! -f /etc/os-release ]]; then
     die "Não foi possível identificar a distribuição."
   fi
@@ -82,36 +74,17 @@ detect_distro() {
 
   case "$ID" in
   arch | cachyos)
-    DISTRO="arch"
-    ;;
-
-  fedora)
-    DISTRO="fedora"
     ;;
 
   *)
-    if [[ "${ID_LIKE:-}" == *arch* ]]; then
-      DISTRO="arch"
-    elif [[ "${ID_LIKE:-}" == *fedora* ]]; then
-      DISTRO="fedora"
-    else
+    if [[ "${ID_LIKE:-}" != *arch* ]]; then
       die "Distribuição não suportada: ${PRETTY_NAME:-$ID}"
     fi
     ;;
   esac
 
   echo
-
-  case "$DISTRO" in
-  arch)
-    success "Arch-based detectado: ${PRETTY_NAME:-$ID}"
-    ;;
-
-  fedora)
-    success "Fedora detectado: ${PRETTY_NAME:-Fedora}"
-    ;;
-  esac
-
+  success "Arch-based detectado: ${PRETTY_NAME:-$ID}"
   echo
 }
 
@@ -271,7 +244,7 @@ PACMAN_PKGS=(
 )
 
 # ------------------------------------------------------------
-# Arch AMD graphics stack
+# AMD graphics stack
 # ------------------------------------------------------------
 
 AMD_PKGS=(
@@ -309,7 +282,7 @@ AUR_PKGS=(
 )
 
 # ------------------------------------------------------------
-# Arch heavy packages
+# Heavy packages
 # ------------------------------------------------------------
 
 HEAVY_PKGS=(
@@ -318,228 +291,10 @@ HEAVY_PKGS=(
 )
 
 # ============================================================
-# FEDORA PACKAGES
-# ============================================================
-
-FEDORA_COPR="lionheartp/Hyprland"
-
-# ------------------------------------------------------------
-# Fedora main packages
-# ------------------------------------------------------------
-
-FEDORA_PKGS=(
-  # Base / Utilities
-  git
-  zsh
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-  vim
-  neovim
-  pciutils
-  unixODBC
-  eza
-
-  android-tools
-  gvfs-mtp
-
-  # Security / Network / Services
-  wpa_supplicant
-  ufw
-  cups
-  cups-pk-helper
-  system-config-printer
-
-  # System tools
-  btop
-  fastfetch
-  brightnessctl
-  power-profiles-daemon
-  udiskie
-  udisks2
-  gnome-keyring
-  gvfs
-
-  # Desktop
-  quickshell
-  hyprland
-  hyprsunset
-  hypridle
-  hyprlock
-  hyprpicker
-  hyprpolkitagent
-  hyprshutdown
-  mako
-  cliphist
-  wl-clipboard
-  hyprshot
-
-  # File manager
-  nemo
-  nemo-fileroller
-  ffmpegthumbnailer
-
-  # Audio
-  pipewire
-  pipewire-pulseaudio
-  pipewire-alsa
-  wireplumber
-  pavucontrol
-  playerctl
-  mpd
-  rtkit
-
-  # GStreamer / PipeWire
-  gstreamer1-plugins-base
-  gstreamer1-plugin-pipewire
-
-  # Microphone noise suppression
-  noise-suppression-for-voice
-  ladspa
-
-  # Network / Bluetooth
-  NetworkManager
-  network-manager-applet
-  bluez
-  bluez-tools
-  blueman
-
-  # Graphics / OpenCL
-  ocl-icd
-  mesa-libOpenCL
-  vulkan-tools
-  glfw
-
-  # Gaming
-  steam
-  gamescope
-  mangohud
-  umu-launcher
-  protontricks
-  winetricks
-  lutris
-  goverlay
-
-  # Gaming libraries
-  openal-soft
-  libva
-  giflib
-  mpg123
-  alsa-plugins
-
-  # Desktop applications
-  firefox
-  mpv
-  kitty
-  kate
-  qbittorrent
-
-  # GTK / Qt / Theming
-  xdg-desktop-portal-hyprland
-  qt5-qtbase
-  qt6-qtbase
-  kvantum
-  kvantum-qt5
-  nwg-look
-  papirus-icon-theme
-
-  # Fonts
-  jetbrains-mono-fonts
-  google-noto-fonts
-  google-noto-emoji-fonts
-  liberation-fonts
-
-  # Remote desktop / streaming
-  moonlight-qt
-
-  # Misc
-  steam-devices
-)
-
-# ------------------------------------------------------------
-# Fedora 32-bit packages
-#
-# Fedora uses .i686 instead of Arch's lib32-* naming.
-# ------------------------------------------------------------
-
-FEDORA_32BIT_PKGS=(
-  mesa-dri-drivers.i686
-  mesa-vulkan-drivers.i686
-  libva.i686
-  alsa-plugins-pulseaudio.i686
-  ocl-icd.i686
-  gtk3.i686
-  mangohud.i686
-)
-
-# ------------------------------------------------------------
-# Fedora AMD graphics stack
-# ------------------------------------------------------------
-
-FEDORA_AMD_PKGS=(
-  # OpenGL
-  mesa-dri-drivers
-  mesa-libGL
-  mesa-libEGL
-
-  # Vulkan / RADV
-  mesa-vulkan-drivers
-
-  # VA-API
-  libva-mesa-driver
-
-  # OpenCL
-  mesa-libOpenCL
-  ocl-icd
-
-  # 32-bit
-  mesa-dri-drivers.i686
-  mesa-vulkan-drivers.i686
-  libva-mesa-driver.i686
-  mesa-libOpenCL.i686
-  ocl-icd.i686
-)
-
-# ------------------------------------------------------------
-# Fedora Intel graphics stack
-# ------------------------------------------------------------
-
-FEDORA_INTEL_PKGS=(
-  mesa-dri-drivers
-  mesa-vulkan-drivers
-  mesa-va-drivers
-  mesa-libGL
-  mesa-libEGL
-
-  mesa-dri-drivers.i686
-  mesa-vulkan-drivers.i686
-)
-
-# ------------------------------------------------------------
-# Fedora optional / Flatpak applications
-#
-# These are not required for the base desktop to work.
-# ------------------------------------------------------------
-
-FEDORA_OPTIONAL_DNF_PKGS=(
-  obsidian
-  zed
-  bitwarden
-  discord
-  spotify-client
-  opencode
-)
-
-FEDORA_OPTIONAL_FLATPAKS=(
-  com.obsproject.Studio
-)
-
-# ============================================================
-# MULTILIB - ARCH
+# MULTILIB
 # ============================================================
 
 enable_multilib() {
-  [[ "$DISTRO" != "arch" ]] && return 0
-
   if grep -Eq '^[[:space:]]*\[multilib\][[:space:]]*$' /etc/pacman.conf; then
     success "Multilib já está habilitado."
     return 0
@@ -596,8 +351,6 @@ validate_pacman_packages() {
 }
 
 install_paru() {
-  [[ "$DISTRO" != "arch" ]] && return 0
-
   if command -v paru &>/dev/null; then
     success "paru já está instalado."
     return
@@ -638,9 +391,7 @@ install_arch_system_packages() {
 # AUR
 # ============================================================
 
-install_extra_packages_arch() {
-  [[ "$DISTRO" != "arch" ]] && return 0
-
+install_extra_packages() {
   if [[ ${#AUR_PKGS[@]} -eq 0 ]]; then
     return
   fi
@@ -677,156 +428,6 @@ install_extra_packages_arch() {
   fi
 
   success "Pacotes AUR instalados."
-}
-
-# ============================================================
-# FEDORA REPOSITORIES
-# ============================================================
-
-enable_fedora_copr() {
-  [[ "$DISTRO" != "fedora" ]] && return 0
-
-  info "Configurando COPR: $FEDORA_COPR..."
-
-  # dnf-plugins-core fornece o comando copr.
-  if ! rpm -q dnf5-plugins &>/dev/null; then
-    sudo dnf install -y dnf5-plugins
-  fi
-
-  if sudo dnf copr list 2>/dev/null | grep -qi \
-    'lionheartp/Hyprland'; then
-
-    success "COPR $FEDORA_COPR já está habilitado."
-    return
-  fi
-
-  sudo dnf copr enable -y "$FEDORA_COPR"
-
-  success "COPR $FEDORA_COPR habilitado."
-}
-
-enable_rpmfusion() {
-  [[ "$DISTRO" != "fedora" ]] && return 0
-
-  info "Verificando RPM Fusion..."
-
-  if ! rpm -q rpmfusion-free-release &>/dev/null; then
-    info "Habilitando RPM Fusion Free..."
-
-    sudo dnf install -y \
-      "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
-  else
-    success "RPM Fusion Free já está habilitado."
-  fi
-
-  if ! rpm -q rpmfusion-nonfree-release &>/dev/null; then
-    info "Habilitando RPM Fusion Nonfree..."
-
-    sudo dnf install -y \
-      "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
-  else
-    success "RPM Fusion Nonfree já está habilitado."
-  fi
-
-  success "RPM Fusion configurado."
-}
-
-# ============================================================
-# DNF
-# ============================================================
-
-dnf_package_available() {
-  local pkg="$1"
-
-  # Already installed
-  if rpm -q "$pkg" &>/dev/null; then
-    return 0
-  fi
-
-  # Available from enabled repositories
-  dnf repoquery --available "$pkg" &>/dev/null
-}
-
-install_available_dnf_packages() {
-  local packages=("$@")
-  local available=()
-  local missing=()
-
-  [[ ${#packages[@]} -eq 0 ]] && return 0
-
-  for pkg in "${packages[@]}"; do
-    if dnf_package_available "$pkg"; then
-      available+=("$pkg")
-    else
-      missing+=("$pkg")
-    fi
-  done
-
-  if [[ ${#missing[@]} -gt 0 ]]; then
-    echo
-    warn "Pacotes Fedora não encontrados e que serão ignorados:"
-
-    for pkg in "${missing[@]}"; do
-      echo -e "  ${YELLOW}•${RESET} $pkg"
-    done
-
-    echo
-  fi
-
-  if [[ ${#available[@]} -eq 0 ]]; then
-    warn "Nenhum pacote disponível nesta lista."
-    return 0
-  fi
-
-  sudo dnf install -y "${available[@]}"
-}
-
-install_fedora_system_packages() {
-  info "Atualizando metadados do Fedora..."
-
-  sudo dnf upgrade --refresh -y
-
-  info "Instalando pacotes Fedora..."
-
-  install_available_dnf_packages "${FEDORA_PKGS[@]}"
-
-  success "Pacotes Fedora principais processados."
-}
-
-install_fedora_32bit() {
-  info "Instalando bibliotecas 32-bit para Steam/Wine/Proton..."
-
-  install_available_dnf_packages "${FEDORA_32BIT_PKGS[@]}"
-
-  success "Bibliotecas 32-bit processadas."
-}
-
-install_fedora_optional_packages() {
-  echo
-  echo -e "${YELLOW}${BOLD}Pacotes opcionais Fedora:${RESET}"
-
-  for pkg in "${FEDORA_OPTIONAL_DNF_PKGS[@]}"; do
-    echo -e "  ${CYAN}•${RESET} $pkg"
-  done
-
-  echo
-  echo -e "${BOLD}Deseja tentar instalar os pacotes opcionais disponíveis? [y/N]${RESET}"
-  read -r response
-
-  if [[ "${response,,}" != "y" ]]; then
-    WARNINGS+=(
-      "Pacotes opcionais Fedora não instalados."
-    )
-
-    warn "Pacotes opcionais ignorados."
-    return
-  fi
-
-  info "Instalando pacotes opcionais disponíveis..."
-
-  install_available_dnf_packages "${FEDORA_OPTIONAL_DNF_PKGS[@]}"
-
-  success "Pacotes opcionais processados."
 }
 
 # ============================================================
@@ -911,16 +512,10 @@ install_gpu_drivers() {
   amd)
     info "Instalando stack gráfico AMD..."
 
-    if [[ "$DISTRO" == "arch" ]]; then
-      sudo pacman -Syu \
-        --noconfirm \
-        --needed \
-        "${AMD_PKGS[@]}"
-
-    elif [[ "$DISTRO" == "fedora" ]]; then
-      install_available_dnf_packages \
-        "${FEDORA_AMD_PKGS[@]}"
-    fi
+    sudo pacman -Syu \
+      --noconfirm \
+      --needed \
+      "${AMD_PKGS[@]}"
 
     success "Stack gráfico AMD instalado."
     ;;
@@ -928,19 +523,13 @@ install_gpu_drivers() {
   intel)
     info "Instalando stack gráfico Intel/Mesa..."
 
-    if [[ "$DISTRO" == "arch" ]]; then
-      sudo pacman -Syu \
-        --noconfirm \
-        --needed \
-        mesa \
-        vulkan-intel \
-        lib32-mesa \
-        lib32-vulkan-intel
-
-    elif [[ "$DISTRO" == "fedora" ]]; then
-      install_available_dnf_packages \
-        "${FEDORA_INTEL_PKGS[@]}"
-    fi
+    sudo pacman -Syu \
+      --noconfirm \
+      --needed \
+      mesa \
+      vulkan-intel \
+      lib32-mesa \
+      lib32-vulkan-intel
 
     success "Stack gráfico Intel instalado."
     ;;
@@ -979,36 +568,22 @@ install_sddm_if_needed() {
 
     info "Display manager atual: $current_dm_service"
 
-    warn "O script vai desabilitar o display manager atual."
+    warn "O script vai desabilitar e remover o display manager atual."
 
     sudo systemctl disable \
       "${current_dm_service}.service" || true
 
-    # Só remove automaticamente em Arch.
-    #
-    # No Fedora é melhor não remover o DM anterior
-    # automaticamente para evitar quebrar a instalação.
-
-    if [[ "$DISTRO" == "arch" ]]; then
-      sudo pacman -Rns \
-        --noconfirm \
-        "$current_dm_service" || true
-    fi
+    sudo pacman -Rns \
+      --noconfirm \
+      "$current_dm_service" || true
   fi
 
   info "Instalando SDDM..."
 
-  if [[ "$DISTRO" == "arch" ]]; then
-    sudo pacman -S \
-      --noconfirm \
-      --needed \
-      sddm
-
-  elif [[ "$DISTRO" == "fedora" ]]; then
-    sudo dnf install \
-      -y \
-      sddm
-  fi
+  sudo pacman -S \
+    --noconfirm \
+    --needed \
+    sddm
 
   sudo systemctl enable sddm
 
@@ -1053,9 +628,6 @@ install_sddm_theme() {
 
   if [[ -f "$tmp/SilentSDDM/install.sh" ]]; then
 
-    chmod +x "$tmp/SilentSDM/install.sh" 2>/dev/null || true
-
-    # Corrige caso o diretório esperado exista.
     chmod +x "$tmp/SilentSDDM/install.sh"
 
     (
@@ -1162,12 +734,10 @@ copy_dotfiles() {
 }
 
 # ============================================================
-# HEAVY PACKAGES - ARCH ONLY
+# HEAVY PACKAGES
 # ============================================================
 
 install_heavy_pkgs() {
-  [[ "$DISTRO" != "arch" ]] && return 0
-
   if [[ ${#HEAVY_PKGS[@]} -eq 0 ]]; then
     return
   fi
@@ -1244,62 +814,10 @@ setup_zsh() {
 }
 
 # ============================================================
-# Fedora optional Flatpak
+# Installation flow
 # ============================================================
 
-install_fedora_flatpak() {
-  [[ "$DISTRO" != "fedora" ]] && return 0
-
-  if ! command -v flatpak &>/dev/null; then
-    return 0
-  fi
-
-  if [[ ${#FEDORA_OPTIONAL_FLATPAKS[@]} -eq 0 ]]; then
-    return 0
-  fi
-
-  echo
-  echo -e "${YELLOW}${BOLD}Flatpaks opcionais:${RESET}"
-
-  for app in "${FEDORA_OPTIONAL_FLATPAKS[@]}"; do
-    echo -e "  ${CYAN}•${RESET} $app"
-  done
-
-  echo
-  echo -e \
-    "${BOLD}Deseja instalar esses Flatpaks? [y/N]${RESET}"
-
-  read -r response
-
-  if [[ "${response,,}" != "y" ]]; then
-    warn "Flatpaks opcionais ignorados."
-    return
-  fi
-
-  for app in "${FEDORA_OPTIONAL_FLATPAKS[@]}"; do
-
-    if flatpak info "$app" &>/dev/null; then
-      success "$app já está instalado."
-      continue
-    fi
-
-    if ! flatpak install -y flathub "$app"; then
-      WARNINGS+=(
-        "Flatpak '$app' não pôde ser instalado."
-      )
-
-      warn "Falha ao instalar $app."
-    else
-      success "$app instalado."
-    fi
-  done
-}
-
-# ============================================================
-# Installation flows
-# ============================================================
-
-install_arch_dependencies() {
+install_dependencies() {
   info "Iniciando instalação para Arch/CachyOS..."
 
   install_paru
@@ -1314,52 +832,9 @@ install_arch_dependencies() {
 
   install_sddm_theme
 
-  install_extra_packages_arch
+  install_extra_packages
 
   install_heavy_pkgs
-}
-
-install_fedora_dependencies() {
-  info "Iniciando instalação para Fedora..."
-
-  enable_rpmfusion
-
-  enable_fedora_copr
-
-  info "Atualizando metadados dos repositórios..."
-
-  sudo dnf makecache
-
-  install_fedora_system_packages
-
-  install_fedora_32bit
-
-  install_gpu_drivers
-
-  install_sddm_if_needed
-
-  install_sddm_theme
-
-  install_fedora_optional_packages
-
-  install_fedora_flatpak
-}
-
-install_dependencies() {
-  case "$DISTRO" in
-
-  arch)
-    install_arch_dependencies
-    ;;
-
-  fedora)
-    install_fedora_dependencies
-    ;;
-
-  *)
-    die "Distribuição não suportada."
-    ;;
-  esac
 }
 
 # ============================================================
@@ -1392,12 +867,10 @@ full_install() {
 
 main() {
 
-  detect_distro
+  check_distro
 
   echo
   echo -e "${BOLD}Dotfiles Installer${RESET}"
-  echo
-  echo "Distribuição: $DISTRO"
   echo
   echo "1) Instalação Completa"
   echo "2) Instalar dependências"

@@ -241,6 +241,7 @@ Singleton {
     Timer {
         id: pollTimer
 
+        // Balance quick external-key feedback against short-lived cat processes.
         interval: 200
         repeat: true
         running: root.supported

@@ -12,6 +12,7 @@ Item {
         clock.currentDate.toLocaleTimeString(Qt.locale(), "HH:mm")
     property string formattedDate:
         clock.currentDate.toLocaleDateString(Qt.locale(), "ddd, dd MMM")
+    property real screenWidth: 0
 
     readonly property color accentColor:
         calendarMouse.containsMouse
@@ -64,11 +65,17 @@ Item {
     CalendarPopup {
         id: calendarPopup
         currentDate: clock.currentDate
-        positionProvider: popupWidth => root.QsWindow.mapFromItem(
-            root,
-            (root.implicitWidth - popupWidth) / 2,
-            root.implicitHeight
-        )
+        positionProvider: popupWidth => {
+            const position = root.QsWindow.mapFromItem(
+                root,
+                (root.implicitWidth - popupWidth) / 2,
+                root.implicitHeight
+            )
+            return {
+                "x": Math.max(0, Math.min(position.x, root.screenWidth - popupWidth)),
+                "y": position.y
+            }
+        }
     }
 
     MouseArea {
@@ -91,7 +98,7 @@ Item {
         property date currentDate: new Date()
 
         Timer {
-            interval: 1000
+            interval: 15000
             running: true
             repeat: true
             onTriggered: clock.currentDate = new Date()

@@ -12,9 +12,7 @@ Item {
     implicitWidth: mediaRow.implicitWidth
     implicitHeight: Config.Theme.moduleHeight
 
-    QsServices.Media {
-        id: media
-    }
+    readonly property var media: QsServices.Media
 
     // Mantém espaço estável na barra (sem piscar/sumir).
     opacity: media.connected ? 1 : 0.65

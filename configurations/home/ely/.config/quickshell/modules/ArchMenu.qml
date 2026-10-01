@@ -18,6 +18,8 @@ PanelWindow {
     property bool bluetoothEnabled: false
     property var bluetoothDevices: []
     property var bluetoothConnected: []
+    property var bluetoothPairedDevices: []
+    property var bluetoothKnownDevices: []
     property bool wifiExpanded: false
     property bool bluetoothExpanded: false
     property bool scanningBluetooth: false
@@ -47,23 +49,63 @@ PanelWindow {
         bluetoothStatusProcess.running = true;
         if (bluetoothEnabled && bluetoothExpanded) {
             bluetoothDevicesProcess.running = true;
+            bluetoothKnownDevicesProcess.running = true;
             bluetoothConnectedProcess.running = true;
         }
     }
 
+    function parseNmcliTerseLine(line) {
+        const fields = [];
+        let current = "";
+        let escaped = false;
+        for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (escaped) {
+                current += ch;
+                escaped = false;
+            } else if (ch === "\\") {
+                escaped = true;
+            } else if (ch === ":") {
+                fields.push(current);
+                current = "";
+            } else {
+                current += ch;
+            }
+        }
+        fields.push(current);
+        return fields;
+    }
+
+    function updateBluetoothDevices() {
+        const result = bluetoothPairedDevices.slice();
+        for (const device of bluetoothKnownDevices) {
+            if (!result.some(paired => paired.address === device.address))
+                result.push({ address: device.address, name: device.name, paired: false });
+        }
+        root.bluetoothDevices = result;
+    }
+
     function toggleWifi() {
+        if (wifiEnabled) {
+            wifiExpanded = false;
+            wifiShowAll = false;
+            showWifiPassword = false;
+        }
         wifiToggleProcess.exec(["nmcli", "radio", "wifi", wifiEnabled ? "off" : "on"]);
     }
 
     function toggleBluetooth() {
+        if (bluetoothEnabled) {
+            bluetoothExpanded = false;
+            scanningBluetooth = false;
+            bluetoothScanTimer.stop();
+        }
         bluetoothToggleProcess.exec(["bluetoothctl", "power", bluetoothEnabled ? "off" : "on"]);
     }
 
     function toggleWifiExpanded() {
-        if (!wifiEnabled) {
-            toggleWifi();
+        if (!wifiEnabled)
             return ;
-        }
         wifiExpanded = !wifiExpanded;
         if (wifiExpanded) {
             bluetoothExpanded = false;
@@ -72,14 +114,13 @@ PanelWindow {
     }
 
     function toggleBluetoothExpanded() {
-        if (!bluetoothEnabled) {
-            toggleBluetooth();
+        if (!bluetoothEnabled)
             return ;
-        }
         bluetoothExpanded = !bluetoothExpanded;
         if (bluetoothExpanded) {
             wifiExpanded = false;
             bluetoothDevicesProcess.running = true;
+            bluetoothKnownDevicesProcess.running = true;
             bluetoothConnectedProcess.running = true;
         }
     }
@@ -118,14 +159,16 @@ PanelWindow {
 
         scanningBluetooth = true;
         bluetoothScanOnProcess.running = true;
-        bluetoothDevicesProcess.running = true;
+        bluetoothKnownDevicesProcess.running = true;
         bluetoothScanTimer.restart();
     }
 
     function stopBluetoothScan() {
         scanningBluetooth = false;
+        bluetoothScanTimer.stop();
         bluetoothScanOffProcess.running = true;
-        bluetoothDevicesProcess.running = true;
+        if (!bluetoothKnownDevicesProcess.running)
+            bluetoothKnownDevicesProcess.running = true;
     }
 
     function isBluetoothConnected(address) {
@@ -193,6 +236,7 @@ PanelWindow {
 
     color: "transparent"
     visible: false
+    focusable: true
     implicitWidth: 360
     implicitHeight: content.implicitHeight + 32
     exclusionMode: ExclusionMode.Ignore
@@ -209,6 +253,8 @@ PanelWindow {
         left: root.popupX
     }
 
+    PopupDismissBehavior { popup: root }
+
     Timer {
         interval: 15000
         repeat: true
@@ -222,6 +268,16 @@ PanelWindow {
         interval: 8000
         repeat: false
         onTriggered: root.stopBluetoothScan()
+    }
+
+    Timer {
+        interval: 1500
+        repeat: true
+        running: root.visible && root.scanningBluetooth
+        onTriggered: {
+            if (!bluetoothKnownDevicesProcess.running)
+                bluetoothKnownDevicesProcess.running = true;
+        }
     }
 
     Process {
@@ -244,11 +300,18 @@ PanelWindow {
     Process {
         id: wifiNameProcess
 
-        command: ["sh", "-c", "nmcli -t -f ACTIVE,SSID dev wifi | awk -F: '$1 == \"yes\" { print $2; exit }'"]
+        command: ["nmcli", "--terse", "--fields", "IN-USE,SSID", "device", "wifi", "list"]
 
         stdout: StdioCollector {
             onStreamFinished: {
-                root.wifiName = text.trim() || "Desconectado";
+                root.wifiName = "Desconectado";
+                for (const line of text.trim().split("\n")) {
+                    const fields = root.parseNmcliTerseLine(line);
+                    if (fields.length >= 2 && (fields[0] === "*" || fields[0] === "yes")) {
+                        root.wifiName = fields[1] || "Desconectado";
+                        break;
+                    }
+                }
             }
         }
 
@@ -271,28 +334,11 @@ PanelWindow {
                     * nmcli terse mode escapes ':' as '\:'.
                     * SSIDs can therefore safely contain colons.
                     */
-                    const fields = [];
-                    let current = "";
-                    let escaped = false;
-                    for (let i = 0; i < line.length; i++) {
-                        const ch = line[i];
-                        if (escaped) {
-                            current += ch;
-                            escaped = false;
-                        } else if (ch === "\\") {
-                            escaped = true;
-                        } else if (ch === ":") {
-                            fields.push(current);
-                            current = "";
-                        } else {
-                            current += ch;
-                        }
-                    }
-                    fields.push(current);
+                    const fields = root.parseNmcliTerseLine(line);
                     if (fields.length < 4)
                         continue;
 
-                    const active = fields[0] === "yes";
+                    const active = fields[0] === "*" || fields[0] === "yes";
                     const ssid = fields[1];
                     const signal = parseInt(fields[2]) || 0;
                     const security = fields[3];
@@ -303,13 +349,13 @@ PanelWindow {
                     for (let existing of result) {
                         if (existing.ssid === ssid) {
                             duplicate = true;
+                            existing.active = existing.active || active;
                             /*
                             * Keep the stronger access point if multiple
                             * APs advertise the same SSID.
                             */
                             if (signal > existing.signal) {
                                 existing.signal = signal;
-                                existing.active = active;
                             }
                             break;
                         }
@@ -366,10 +412,16 @@ PanelWindow {
             onStreamFinished: {
                 root.bluetoothEnabled = /Powered:\s+yes/.test(text);
                 if (!root.bluetoothEnabled) {
+                    root.bluetoothPairedDevices = [];
+                    root.bluetoothKnownDevices = [];
                     root.bluetoothDevices = [];
                     root.bluetoothConnected = [];
                     root.bluetoothExpanded = false;
                     root.scanningBluetooth = false;
+                } else if (root.bluetoothExpanded) {
+                    bluetoothDevicesProcess.running = true;
+                    bluetoothKnownDevicesProcess.running = true;
+                    bluetoothConnectedProcess.running = true;
                 }
             }
         }
@@ -399,10 +451,30 @@ PanelWindow {
                         "name": match[2]
                     });
                 }
-                root.bluetoothDevices = result;
+                root.bluetoothPairedDevices = result.map(device => ({ address: device.address, name: device.name, paired: true }));
+                root.updateBluetoothDevices();
             }
         }
 
+    }
+
+    Process {
+        id: bluetoothKnownDevicesProcess
+
+        command: ["bluetoothctl", "devices"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const result = [];
+                for (const line of text.trim().split("\n")) {
+                    const match = line.trim().match(/^Device\s+([0-9A-Fa-f:]{17})\s+(.+)$/);
+                    if (match)
+                        result.push({ address: match[1], name: match[2] });
+                }
+                root.bluetoothKnownDevices = result;
+                root.updateBluetoothDevices();
+            }
+        }
     }
 
     Process {
@@ -433,6 +505,7 @@ PanelWindow {
             bluetoothStatusProcess.running = true;
             if (root.bluetoothEnabled) {
                 bluetoothDevicesProcess.running = true;
+                bluetoothKnownDevicesProcess.running = true;
                 bluetoothConnectedProcess.running = true;
             }
         }
@@ -442,6 +515,18 @@ PanelWindow {
         id: bluetoothConnectProcess
 
         onExited: {
+            bluetoothDevicesProcess.running = true;
+            bluetoothKnownDevicesProcess.running = true;
+            bluetoothConnectedProcess.running = true;
+        }
+    }
+
+    Process {
+        id: bluetoothPairProcess
+
+        onExited: {
+            bluetoothDevicesProcess.running = true;
+            bluetoothKnownDevicesProcess.running = true;
             bluetoothConnectedProcess.running = true;
         }
     }
@@ -571,7 +656,9 @@ PanelWindow {
             Layout.fillWidth: true
             implicitHeight: wifiColumn.implicitHeight + 20
             radius: 9
-            color: wifiMouse.containsMouse ? Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.18) : Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.1)
+            color: wifiHover.hovered ? Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.18) : Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.1)
+
+            HoverHandler { id: wifiHover }
 
             ColumnLayout {
                 id: wifiColumn
@@ -589,6 +676,13 @@ PanelWindow {
                     id: wifiHeader
 
                     Layout.fillWidth: true
+
+                    MouseArea {
+                        anchors.fill: parent
+                        z: -1
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.toggleWifiExpanded()
+                    }
 
                     Text {
                         text: root.wifiEnabled ? "wifi" : "wifi_off"
@@ -633,7 +727,7 @@ PanelWindow {
                     }
 
                     Text {
-                        text: root.wifiEnabled ? (root.wifiExpanded ? "expand_less" : "expand_more") : "power_settings_new"
+                        text: root.wifiEnabled ? (root.wifiExpanded ? "expand_less" : "expand_more") : ""
                         color: Config.Theme.colMuted
 
                         font {
@@ -643,13 +737,28 @@ PanelWindow {
 
                     }
 
-                    MouseArea {
-                        id: wifiMouse
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.toggleWifiExpanded()
+                    Rectangle {
+                        id: wifiToggle
+                        Layout.preferredWidth: 38
+                        Layout.preferredHeight: 22
+                        radius: height / 2
+                        color: root.wifiEnabled ? Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g, Config.Theme.colHighlight.b, 0.45) : Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.35)
+
+                        Rectangle {
+                            x: root.wifiEnabled ? parent.width - width - 3 : 3
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 16
+                            height: 16
+                            radius: height / 2
+                            color: root.wifiEnabled ? Config.Theme.colHighlight : Config.Theme.colFg
+                            Behavior on x { NumberAnimation { duration: 140 } }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.toggleWifi()
+                        }
                     }
 
                 }
@@ -989,7 +1098,9 @@ PanelWindow {
             Layout.fillWidth: true
             implicitHeight: bluetoothColumn.implicitHeight + 20
             radius: 9
-            color: bluetoothMouse.containsMouse ? Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.18) : Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.1)
+            color: bluetoothHover.hovered ? Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.18) : Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.1)
+
+            HoverHandler { id: bluetoothHover }
 
             ColumnLayout {
                 id: bluetoothColumn
@@ -1007,6 +1118,13 @@ PanelWindow {
                     id: bluetoothHeader
 
                     Layout.fillWidth: true
+
+                    MouseArea {
+                        anchors.fill: parent
+                        z: -1
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.toggleBluetoothExpanded()
+                    }
 
                     Text {
                         text: "bluetooth"
@@ -1059,7 +1177,7 @@ PanelWindow {
                     }
 
                     Text {
-                        text: root.bluetoothEnabled ? (root.bluetoothExpanded ? "expand_less" : "expand_more") : "power_settings_new"
+                        text: root.bluetoothEnabled ? (root.bluetoothExpanded ? "expand_less" : "expand_more") : ""
                         color: Config.Theme.colMuted
 
                         font {
@@ -1069,13 +1187,28 @@ PanelWindow {
 
                     }
 
-                    MouseArea {
-                        id: bluetoothMouse
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.toggleBluetoothExpanded()
+                    Rectangle {
+                        id: bluetoothToggle
+                        Layout.preferredWidth: 38
+                        Layout.preferredHeight: 22
+                        radius: height / 2
+                        color: root.bluetoothEnabled ? Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g, Config.Theme.colHighlight.b, 0.45) : Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.35)
+
+                        Rectangle {
+                            x: root.bluetoothEnabled ? parent.width - width - 3 : 3
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 16
+                            height: 16
+                            radius: height / 2
+                            color: root.bluetoothEnabled ? Config.Theme.colHighlight : Config.Theme.colFg
+                            Behavior on x { NumberAnimation { duration: 140 } }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.toggleBluetooth()
+                        }
                     }
 
                 }
@@ -1152,7 +1285,7 @@ PanelWindow {
                                     }
 
                                     Text {
-                                        text: root.isBluetoothConnected(modelData.address) ? "Conectado" : "Pareado"
+                                        text: root.isBluetoothConnected(modelData.address) ? "Conectado" : (modelData.paired ? "Pareado" : "Disponível para parear")
                                         color: root.isBluetoothConnected(modelData.address) ? Config.Theme.colHighlight : Config.Theme.colMuted
 
                                         font {
@@ -1186,8 +1319,10 @@ PanelWindow {
                                 onClicked: {
                                     if (root.isBluetoothConnected(modelData.address))
                                         root.disconnectBluetooth(modelData.address);
-                                    else
+                                    else if (modelData.paired)
                                         root.connectBluetooth(modelData.address);
+                                    else
+                                        bluetoothPairProcess.exec(["bluetoothctl", "pair", modelData.address]);
                                 }
                             }
 

@@ -31,6 +31,8 @@ PanelWindow {
         left: root.popupX
     }
 
+    PopupDismissBehavior { popup: root }
+
     readonly property int firstDayOffset: {
         const firstDay = new Date(
             viewedMonth.getFullYear(), viewedMonth.getMonth(), 1

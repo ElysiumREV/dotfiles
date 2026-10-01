@@ -13,11 +13,23 @@ Item {
     implicitHeight: Config.Theme.moduleHeight
 
     readonly property var media: QsServices.Media
+    property real screenWidth: 0
 
     // Mantém espaço estável na barra (sem piscar/sumir).
     opacity: media.connected ? 1 : 0.65
 
     Behavior on opacity { NumberAnimation { duration: 120 } }
+
+    function popupPosition(width) {
+        const point = root.QsWindow.mapFromItem(
+            root,
+            (root.implicitWidth - width) / 2,
+            root.implicitHeight
+        )
+        return {
+            x: Math.max(0, Math.min(point.x, Math.max(0, root.screenWidth - width)))
+        }
+    }
 
     RowLayout {
         id: mediaRow
@@ -89,9 +101,12 @@ Item {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
 
-        onClicked: media.togglePlayPause()
-
-        onDoubleClicked: media.next()
+        onClicked: {
+            if (mediaPopup.visible)
+                mediaPopup.visible = false
+            else
+                mediaPopup.openPopup()
+        }
 
         // Scroll para volume (Shift + scroll) ou navegação (normal)
         WheelHandler {
@@ -110,5 +125,11 @@ Item {
                 }
             }
         }
+    }
+
+    MediaPopup {
+        id: mediaPopup
+        media: root.media
+        positionProvider: root.popupPosition
     }
 }

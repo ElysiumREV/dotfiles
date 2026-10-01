@@ -76,6 +76,8 @@ PanelWindow {
         left: root.popupX
     }
 
+    PopupDismissBehavior { popup: root }
+
     function openMenu() {
         popupX = positionProvider(implicitWidth).x;
         refresh();

@@ -240,6 +240,7 @@ Variants {
                                 id: media
 
                                 anchors.centerIn: parent
+                                screenWidth: modelData.width
                             }
 
                         }

@@ -15,11 +15,16 @@ Singleton {
     readonly property string title: activePlayer?.trackTitle ?? ""
     readonly property string artist: activePlayer?.trackArtist ?? ""
     readonly property string album: activePlayer?.trackAlbum ?? ""
+    readonly property string albumArtist: activePlayer?.trackAlbumArtist ?? ""
+    readonly property string artUrl: activePlayer?.trackArtUrl ?? ""
     readonly property bool volumeSupported: activePlayer?.volumeSupported ?? false
     readonly property int volume: volumeSupported ? Math.round((activePlayer?.volume ?? 0) * 100) : 0
     readonly property string identity: activePlayer?.identity ?? ""
     readonly property string desktopEntry: activePlayer?.desktopEntry ?? ""
     readonly property string dbusName: activePlayer?.dbusName ?? ""
+    readonly property bool canToggle: activePlayer?.canTogglePlaying ?? false
+    readonly property bool canPrevious: activePlayer?.canGoPrevious ?? false
+    readonly property bool canNext: activePlayer?.canGoNext ?? false
 
     readonly property string displayTitle: title || "Unknown Title"
     readonly property string displayArtist: artist || "Unknown Artist"
@@ -49,12 +54,24 @@ Singleton {
         const dbus = normalized(player?.dbusName)
         const entry = normalized(player?.desktopEntry)
         const identity = normalized(player?.identity)
+        const metadata = player?.metadata ?? ({})
+        const url = normalized(metadata["xesam:url"] ?? metadata["url"])
 
         return dbus.indexOf("org.mpris.mediaplayer2.youtubemusic") === 0
+            || dbus.indexOf("org.mpris.mediaplayer2.youtube-music") === 0
+            || dbus.indexOf("org.mpris.mediaplayer2.peardesktop") === 0
+            || dbus.indexOf("org.mpris.mediaplayer2.pear-desktop") === 0
             || entry === "com.github.th_ch.youtube_music"
+            || entry === "youtube music"
             || entry === "youtube-music"
             || entry === "youtube_music"
+            || entry === "pear-desktop"
+            || entry === "peardesktop"
+            || entry === "pear_desktop"
             || identity === "youtube music"
+            || identity === "youtubemusic"
+            || identity === "pear desktop"
+            || url.indexOf("music.youtube.com") !== -1
     }
 
     function isAllowedPlayer(player) {
@@ -88,6 +105,11 @@ Singleton {
     function previous() {
         if (activePlayer?.canGoPrevious)
             activePlayer.previous()
+    }
+
+    function raisePlayer() {
+        if (activePlayer?.canRaise)
+            activePlayer.raise()
     }
 
     function setVolume(value) {

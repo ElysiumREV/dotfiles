@@ -15,7 +15,7 @@ PanelWindow {
     color: "transparent"
     visible: false
     implicitWidth: 380
-    implicitHeight: 492
+    implicitHeight: 540
     exclusionMode: ExclusionMode.Ignore
     exclusiveZone: 0
     WlrLayershell.layer: WlrLayer.Overlay
@@ -29,6 +29,8 @@ PanelWindow {
         top: Config.Theme.barHeight + 8
         left: root.popupX
     }
+
+    PopupDismissBehavior { popup: root }
 
     function openPopup() {
         popupX = positionProvider(implicitWidth).x
@@ -66,6 +68,29 @@ PanelWindow {
             0.25
         )
 
+        Text {
+            anchors {
+                top: parent.top
+                right: parent.right
+                topMargin: 14
+                rightMargin: 14
+            }
+            text: "close"
+            font.family: "Material Symbols Rounded"
+            font.pixelSize: 20
+            color: closeMouse.containsMouse ? Config.Theme.colHighlight : Config.Theme.colTextSec
+            z: 10
+
+            MouseArea {
+                id: closeMouse
+                anchors.fill: parent
+                anchors.margins: -8
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.visible = false
+            }
+        }
+
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 16
@@ -102,21 +127,6 @@ PanelWindow {
                     }
                 }
 
-                Text {
-                    text: "close"
-                    font.family: "Material Symbols Rounded"
-                    font.pixelSize: 20
-                    color: closeMouse.containsMouse ? Config.Theme.colHighlight : Config.Theme.colTextSec
-
-                    MouseArea {
-                        id: closeMouse
-                        anchors.fill: parent
-                        anchors.margins: -6
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.visible = false
-                    }
-                }
             }
 
             Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.25) }
@@ -132,11 +142,14 @@ PanelWindow {
                     Text { text: Services.SystemStats.cpuUsage + "%"; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize; font.bold: true }
                 }
 
-                UsageBar { value: Services.SystemStats.cpuUsage }
+                UsageBar {
+                    Layout.fillWidth: true
+                    value: Services.SystemStats.cpuUsage
+                }
 
                 GridLayout {
                     Layout.fillWidth: true
-                    columns: 4
+                    columns: 3
                     rowSpacing: 6
                     columnSpacing: 6
 
@@ -159,7 +172,12 @@ PanelWindow {
                                     Text { Layout.fillWidth: true; text: "Core " + (modelData.id + 1); color: Config.Theme.colTextSec; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize - 3 }
                                     Text { text: modelData.usage + "%"; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize - 3 }
                                 }
-                                UsageBar { value: modelData.usage; implicitHeight: 4 }
+                                UsageBar {
+                                    Layout.fillWidth: true
+                                    Layout.minimumWidth: 0
+                                    value: modelData.usage
+                                    implicitHeight: 4
+                                }
                             }
                         }
                     }

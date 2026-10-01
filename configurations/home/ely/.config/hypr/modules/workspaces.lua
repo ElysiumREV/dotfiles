@@ -20,7 +20,7 @@ hl.window_rule({
 hl.window_rule({ match = { class = "^()$", title = "^()$" }, no_blur = true })
 
 -- Disable blur for every window
-hl.window_rule({ match = { class = ".*" }, no_blur = true })
+-- hl.window_rule({ match = { class = ".*" }, no_blur = true })
 
 hl.layer_rule({
 	match = { namespace = "^dunst$" },
@@ -116,7 +116,7 @@ hl.window_rule({
 	no_anim = true,
 	no_shadow = true,
 	decorate = false,
-  immediate = true
+	immediate = true,
 })
 
 -- Workspace 10: sem gaps

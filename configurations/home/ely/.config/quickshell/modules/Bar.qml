@@ -5,6 +5,8 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.UPower
 import Quickshell.Wayland
+import "../services" as Services
+import "../widgets" as Widgets
 
 Variants {
     model: Quickshell.screens
@@ -110,6 +112,77 @@ Variants {
                                 pixelSize: 20
                             }
 
+                        }
+
+                        Text {
+                            id: launcherPlaceholder
+
+                            anchors.left: archPlaceholder.right
+                            anchors.leftMargin: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "apps"
+                            color: launcherMouse.containsMouse
+                                   ? Config.Theme.colHighlight : Config.Theme.colFg
+                            verticalAlignment: Text.AlignVCenter
+
+                            font {
+                                family: "Material Symbols Rounded"
+                                pixelSize: 19
+                            }
+                        }
+
+                        QsModules.ApplicationLauncher {
+                            id: applicationLauncher
+                            targetScreen: modelData
+                        }
+
+                        Text {
+                            id: wallpaperPlaceholder
+
+                            anchors.left: launcherPlaceholder.right
+                            anchors.leftMargin: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "wallpaper"
+                            color: wallpaperMouse.containsMouse
+                                ? Config.Theme.colHighlight : Config.Theme.colFg
+                            verticalAlignment: Text.AlignVCenter
+                            font {
+                                family: "Material Symbols Rounded"
+                                pixelSize: 19
+                            }
+                        }
+
+                        Widgets.Wallpaper {
+                            id: wallpaperPicker
+                            targetScreen: modelData
+                        }
+
+                        MouseArea {
+                            id: wallpaperMouse
+                            anchors.fill: wallpaperPlaceholder
+                            anchors.margins: -6
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (Services.WindowControl.wallpaperVisible)
+                                    wallpaperPicker.closePicker();
+                                else
+                                    wallpaperPicker.openPicker();
+                            }
+                        }
+
+                        MouseArea {
+                            id: launcherMouse
+                            anchors.fill: launcherPlaceholder
+                            anchors.margins: -6
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (Services.WindowControl.launcherVisible)
+                                    applicationLauncher.closeLauncher();
+                                else
+                                    applicationLauncher.openLauncher();
+                            }
                         }
 
                         ArchMenu {

@@ -1,12 +1,12 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import "../services" as Services
 
 Variants {
     id: root
 
-    // Wlogout is launched as its own Quickshell config, so it cannot rely on
-    // the singleton imports from the main shell's root directory.
+    // Defaults keep this component usable as a standalone configuration too.
     property color backgroundColor: "#141218"
     property color buttonColor: "#211f26"
     property color buttonHoverColor: "#4f378b"
@@ -17,9 +17,17 @@ Variants {
     property real iconScale: 0.25
     property int textSize: 20
     property int borderWidth: 1
+    property bool standalone: true
 
     default property list<LogoutButton> buttons
     model: Quickshell.screens
+
+    function dismiss() {
+        if (standalone)
+            Qt.quit()
+        else
+            Services.WindowControl.logoutVisible = false
+    }
 
     delegate: Component {
         PanelWindow {
@@ -27,9 +35,13 @@ Variants {
 
             required property var modelData
             screen: modelData
+            visible: root.standalone || Services.WindowControl.logoutVisible
+            focusable: visible
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+            WlrLayershell.keyboardFocus: visible
+                ? WlrKeyboardFocus.Exclusive
+                : WlrKeyboardFocus.None
             color: "transparent"
             BackgroundEffect.blurRegion: Region {
                 item: panel.contentItem
@@ -47,7 +59,7 @@ Variants {
 
                 Keys.onPressed: event => {
                     if (event.key === Qt.Key_Escape) {
-                        Qt.quit()
+                        root.dismiss()
                         return
                     }
 
@@ -55,6 +67,7 @@ Variants {
                         const button = root.buttons[i]
                         if (event.key === button.keybind) {
                             button.exec()
+                            root.dismiss()
                             return
                         }
                     }
@@ -72,7 +85,7 @@ Variants {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: Qt.quit()
+                    onClicked: root.dismiss()
                 }
             }
 
@@ -126,7 +139,10 @@ Variants {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: modelData.exec()
+                            onClicked: {
+                                modelData.exec()
+                                root.dismiss()
+                            }
                         }
                     }
                 }

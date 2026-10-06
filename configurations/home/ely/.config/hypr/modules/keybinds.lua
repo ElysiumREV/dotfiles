@@ -79,14 +79,6 @@ hl.bind(
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
 
 -- Wallpaper
-hl.bind(
-	mainMod .. " + W",
-	hl.dsp.exec_cmd("qs ipc call shell toggleWallpaper")
-)
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("qs ipc call shell toggleWallpaper"))
 
-hl.bind(
-	mainMod .. " + SHIFT + W",
-	hl.dsp.exec_cmd(
-		"vicinae deeplink vicinae://launch/@aurelleb/store.vicinae.wallhaven/search-wallpapers && bash ~/.config/scripts/updateWall.sh"
-	)
-)
+hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("qs ipc call shell toggleWallhaven"))

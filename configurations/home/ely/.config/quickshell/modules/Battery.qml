@@ -15,6 +15,7 @@ Item {
     property bool hovered: false
 
     readonly property var battery: UPower.displayDevice
+    readonly property bool batteryPresent: battery?.isPresent ?? false
     readonly property real percentage: battery?.percentage ?? 0
     readonly property int batteryLevel: Math.round(percentage * 100)
     readonly property bool isCharging: battery?.state === UPowerDevice.Charging
@@ -23,9 +24,13 @@ Item {
     readonly property bool isLow: BatteryRules.isLow(batteryLevel, isPluggedIn)
     readonly property bool isCritical: BatteryRules.isCritical(batteryLevel, isPluggedIn)
 
-    readonly property string iconName: BatteryRules.iconName(batteryLevel, isCharging)
+    readonly property string iconName: batteryPresent
+        ? BatteryRules.iconName(batteryLevel, isCharging)
+        : "desktop_windows"
 
     readonly property color normalColor: {
+        if (!batteryPresent)
+            return Config.Theme.colMuted;
         if (isCritical)
             return Config.Theme.colBatteryCritical;
         if (isLow)
@@ -56,6 +61,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             text: batteryLevel + "%"
+            visible: root.batteryPresent
 
             font.pixelSize: Config.Theme.batteryTextSize
             font.weight: isLow ? Font.Bold : Font.Normal

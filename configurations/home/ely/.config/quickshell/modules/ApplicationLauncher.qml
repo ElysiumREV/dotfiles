@@ -13,6 +13,7 @@ PanelWindow {
 
     required property var targetScreen
     property var applications: []
+    property var indexedApplications: []
     property int selectedIndex: 0
     property string searchText: ""
 
@@ -39,17 +40,94 @@ PanelWindow {
         const entries = DesktopEntries.applications.values ?? [];
         root.applications = entries.filter(entry => !entry.noDisplay && entry.name)
             .sort((a, b) => a.name.localeCompare(b.name));
+        root.indexedApplications = root.applications.map(entry => ({
+            entry: entry,
+            id: entry.id || entry.name,
+            name: root.normalizeSearchText(entry.name),
+            genericName: root.normalizeSearchText(entry.genericName),
+            comment: root.normalizeSearchText(entry.comment),
+            keywords: (entry.keywords ?? []).map(keyword => root.normalizeSearchText(keyword))
+        }));
+    }
+
+    function normalizeSearchText(value) {
+        return (value ?? "").toString().normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase().trim();
+    }
+
+    function scoreField(field, token, weight) {
+        if (!field)
+            return 0;
+        if (field === token)
+            return weight + 120;
+        if (field.startsWith(token))
+            return weight + 100;
+        if (field.split(/[\s._-]+/).some(word => word.startsWith(token)))
+            return weight + 80;
+
+        const position = field.indexOf(token);
+        if (position >= 0)
+            return weight + 60 - Math.min(position, 40);
+
+        // Subsequence matching tolerates small gaps, e.g. "ffx" -> "Firefox".
+        let cursor = 0;
+        let gaps = 0;
+        for (const character of token) {
+            const next = field.indexOf(character, cursor);
+            if (next < 0)
+                return 0;
+            gaps += next - cursor;
+            cursor = next + 1;
+        }
+        return weight + Math.max(1, 30 - gaps);
     }
 
     readonly property var filteredApplications: {
-        const query = root.searchText.trim().toLocaleLowerCase();
-        if (!query)
-            return root.applications;
-        return root.applications.filter(entry => {
-            const fields = [entry.name, entry.genericName, entry.comment,
-                            ...(entry.keywords ?? [])];
-            return fields.some(value => (value ?? "").toLocaleLowerCase().includes(query));
+        // Depend on the cache revision so launch counts update the blank-query order.
+        const usageRevision = Services.ApplicationUsage.revision;
+        const tokens = root.normalizeSearchText(root.searchText).split(/\s+/).filter(Boolean);
+        const ranked = [];
+
+        for (const item of root.indexedApplications) {
+            let relevance = 0;
+            let matches = true;
+
+            for (const token of tokens) {
+                let best = Math.max(
+                    root.scoreField(item.name, token, 500),
+                    root.scoreField(item.genericName, token, 300),
+                    root.scoreField(item.comment, token, 150)
+                );
+                for (const keyword of item.keywords)
+                    best = Math.max(best, root.scoreField(keyword, token, 250));
+                if (best === 0) {
+                    matches = false;
+                    break;
+                }
+                relevance += best;
+            }
+
+            if (!matches)
+                continue;
+            ranked.push({
+                entry: item.entry,
+                name: item.name,
+                relevance: relevance,
+                usageCount: Services.ApplicationUsage.countFor(item.id),
+                lastUsed: Services.ApplicationUsage.lastUsedFor(item.id)
+            });
+        }
+
+        ranked.sort((a, b) => {
+            if (a.relevance !== b.relevance)
+                return b.relevance - a.relevance;
+            if (a.usageCount !== b.usageCount)
+                return b.usageCount - a.usageCount;
+            if (a.lastUsed !== b.lastUsed)
+                return b.lastUsed - a.lastUsed;
+            return a.name.localeCompare(b.name);
         });
+        return ranked.map(item => item.entry);
     }
 
     function openLauncher() {
@@ -60,6 +138,8 @@ PanelWindow {
     }
 
     function closeLauncher() {
+        searchText = "";
+        selectedIndex = 0;
         Services.WindowControl.launcherVisible = false;
         Services.WindowControl.launcherMonitor = null;
     }
@@ -67,12 +147,17 @@ PanelWindow {
     onVisibleChanged: {
         if (visible)
             Qt.callLater(() => searchField.forceActiveFocus());
+        else {
+            searchText = "";
+            selectedIndex = 0;
+        }
     }
 
     function launchSelected() {
         const entry = filteredApplications[selectedIndex];
         if (!entry)
             return;
+        Services.ApplicationUsage.record(entry.id || entry.name);
         closeLauncher();
         entry.execute();
     }

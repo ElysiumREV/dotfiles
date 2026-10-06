@@ -14,8 +14,10 @@ PanelWindow {
     property real popupX: 0
     property int chargeCycles: -1
     property bool chargeCyclesLoaded: false
+    property bool batteryHealthLoaded: false
     property string pendingAction: ""
     property string batteryCapacity: "—"
+    property string batteryHealth: "—"
     property string batteryChangeRate: "—"
     property string batteryStatusLabel: "Sem bateria"
     property real batteryPercentage: 0
@@ -35,6 +37,14 @@ PanelWindow {
         const s = UPower.displayDevice?.state
         return s === UPowerDeviceState.Discharging || s === UPowerDeviceState.PendingDischarge
     }
+    readonly property real estimatedTimeSeconds: {
+        const battery = UPower.displayDevice;
+        if (!batteryPresent)
+            return 0;
+        return isCharging ? (battery.timeToFull ?? 0)
+            : (isDischarging ? (battery.timeToEmpty ?? 0) : 0);
+    }
+    readonly property string estimatedTime: formatDuration(estimatedTimeSeconds)
 
     // --- Lógica de Bateria Fraca/Crítica do seu módulo ---
     readonly property bool isPluggedIn: isCharging || isFullyCharged
@@ -80,8 +90,17 @@ PanelWindow {
 
     function openMenu() {
         popupX = positionProvider(implicitWidth).x;
-        refresh();
+        refresh(true);
         visible = true;
+    }
+
+    function formatDuration(seconds) {
+        const minutes = Math.round(Number(seconds) / 60);
+        if (!Number.isFinite(minutes) || minutes <= 0)
+            return "—";
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        return hours > 0 ? hours + " h " + remainingMinutes + " min" : minutes + " min";
     }
 
     function requestAction(action) {
@@ -98,11 +117,12 @@ PanelWindow {
         else if (action === "shutdown") sessionActionProcess.exec(["systemctl", "poweroff"]);
     }
 
-    function refresh() {
+    function refresh(retryChargeCycles) {
         const b = UPower.displayDevice;
         if (b && b.isPresent) {
             batteryPresent = true;
-            batteryCapacity = (b.energyCapacity || 0).toFixed(0);
+            batteryCapacity = Number.isFinite(b.energyCapacity) && b.energyCapacity > 0
+                ? b.energyCapacity.toFixed(0) : "—";
             const rate = Math.abs(b.changeRate || 0).toFixed(1);
 
             if (b.state === UPowerDeviceState.Charging || b.state === UPowerDeviceState.PendingCharge) {
@@ -137,25 +157,47 @@ PanelWindow {
         } else {
             batteryPresent = false;
             batteryCapacity = "—";
+            batteryHealth = "—";
             batteryChangeRate = "—";
             batteryStatusLabel = "Sem bateria";
             batteryPercentage = 0;
+            chargeCycles = -1;
+            chargeCyclesLoaded = false;
+            batteryHealthLoaded = false;
         }
-        if (!chargeCyclesLoaded)
+        if (batteryPresent && !chargeCyclesProcess.running
+                && (!chargeCyclesLoaded || (retryChargeCycles && chargeCycles < 0)))
             chargeCyclesProcess.running = true;
+        if (batteryPresent && !batteryHealthProcess.running
+                && (!batteryHealthLoaded || (retryChargeCycles && batteryHealth === "—")))
+            batteryHealthProcess.running = true;
     }
 
     Process { id: sessionActionProcess }
 
     Process {
+        id: batteryHealthProcess
+        command: ["sh", "-c", "path=$(upower -e | awk '/\\/battery_[^/]+$/ { print; exit }'); [ -n \"$path\" ] || exit 1; busctl --system get-property org.freedesktop.UPower \"$path\" org.freedesktop.UPower.Device Capacity | awk '$1 == \"d\" && $2 ~ /^[0-9]+([.][0-9]+)?$/ { print $2; found=1; exit } END { if (!found) exit 1 }'"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const value = Number(text.trim());
+                root.batteryHealth = Number.isFinite(value) && value >= 0 && value <= 100
+                    ? Math.round(value) + "%" : "—";
+            }
+        }
+        onExited: code => {
+            root.batteryHealthLoaded = true;
+            if (code !== 0) root.batteryHealth = "—";
+        }
+    }
+
+    Process {
         id: chargeCyclesProcess
-        command: ["sh", "-c", "path=$(upower -e | grep -E '/battery_[^/]+$' | head -1); [ -n \"$path\" ] && busctl --system get-property org.freedesktop.UPower \"$path\" org.freedesktop.UPower.Device ChargeCycles 2>/dev/null | grep -E '^i\\s+-?\\d+$' | sed 's/^i\\s*//' || echo -1"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (!data) return
-                const match = data.trim().match(/^(-?\d+)$/)
-                if (match) root.chargeCycles = parseInt(match[1])
-                else root.chargeCycles = -1
+        command: ["sh", "-c", "path=$(upower -e | awk '/\\/battery_[^/]+$/ { print; exit }'); [ -n \"$path\" ] || exit 1; busctl --system get-property org.freedesktop.UPower \"$path\" org.freedesktop.UPower.Device ChargeCycles | awk '$1 == \"i\" && $2 ~ /^[0-9]+$/ { print $2; found=1; exit } END { if (!found) exit 1 }'"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const value = text.trim();
+                root.chargeCycles = /^\d+$/.test(value) ? Number(value) : -1;
             }
         }
         onExited: code => {
@@ -168,7 +210,7 @@ PanelWindow {
         interval: 15000
         repeat: true
         running: root.visible
-        onTriggered: root.refresh()
+        onTriggered: root.refresh(false)
     }
 
     // --- Omarchy Phrase Rotation Timer ---
@@ -273,20 +315,22 @@ PanelWindow {
                 }
             }
 
-            Text {
-                text: Math.round(root.batteryPercentage) + "%"
-                color: Config.Theme.colFg
-                font { family: Config.Theme.fontFamily; pixelSize: 36; bold: true }
-                anchors.verticalCenter: parent.verticalCenter
-                width: 80
-                horizontalAlignment: Text.AlignRight
-            }
+                Text {
+                    text: Math.round(root.batteryPercentage) + "%"
+                    visible: root.batteryPresent
+                    color: Config.Theme.colFg
+                    font { family: Config.Theme.fontFamily; pixelSize: 36; bold: true }
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 80
+                    horizontalAlignment: Text.AlignRight
+                }
         }
 
         // 2. Animated Progress Bar
         Item {
             width: parent.width
             implicitHeight: 8
+            visible: root.batteryPresent
 
             Rectangle {
                 id: barTrack
@@ -318,28 +362,29 @@ PanelWindow {
             }
         }
 
-        // 3. Stats Grid (2x2 Omarchy Layout)
+        // 3. Battery information grid
         Row {
             width: parent.width
             spacing: 16
+            visible: root.batteryPresent
 
             Column {
                 width: (parent.width - 16) / 2
                 spacing: 10
 
-                InfoPair { label: "Capacidade"; value: root.batteryCapacity + " Wh" }
+                InfoPair { label: "Saúde"; value: root.batteryHealth }
                 InfoPair { label: "Ciclos"; value: root.chargeCycles >= 0 ? String(root.chargeCycles) : "—" }
+                InfoPair { label: "Capacidade"; value: root.batteryCapacity + " Wh" }
             }
 
             Column {
                 width: (parent.width - 16) / 2
                 spacing: 10
 
-                InfoPair { label: "Energia"; value: root.batteryChangeRate }
+                InfoPair { label: "Potência"; value: root.batteryChangeRate }
                 InfoPair {
-                    label: "Estado"
-                    value: root.batteryStatusLabel
-                    valueColor: (root.isCharging || root.isFullyCharged) ? Config.Theme.colGreen : Config.Theme.colFg
+                    label: root.isCharging ? "Até carga completa" : "Autonomia estimada"
+                    value: root.estimatedTime
                 }
             }
         }

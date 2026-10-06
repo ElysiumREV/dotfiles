@@ -13,6 +13,7 @@ ShellRoot {
         function toggleLauncher(): void { Services.WindowControl.toggleLauncher(); }
         function toggleLogout(): void { Services.WindowControl.toggleLogout(); }
         function toggleWallpaper(): void { Services.WindowControl.toggleWallpaper(); }
+        function toggleWallhaven(): void { Services.WindowControl.toggleWallhaven(); }
     }
 
     Bar {}

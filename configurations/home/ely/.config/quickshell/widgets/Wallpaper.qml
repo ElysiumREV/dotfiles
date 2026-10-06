@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import Quickshell.Widgets
 import Quickshell.Hyprland
 import "../services" as Services
 
@@ -16,7 +17,6 @@ PanelWindow {
     property string wallpaperDirectory: defaultDirectory
     property var wallpapers: []
     property string searchText: ""
-    property string pendingWallpaper: ""
     property string currentWallpaper: ""
     property string statusMessage: ""
     property bool folderExists: true
@@ -58,6 +58,72 @@ PanelWindow {
         Services.WindowControl.wallpaperMonitor = null;
     }
 
+    function selectIndex(index) {
+        const count = filteredWallpapers.length;
+        if (count === 0) {
+            selectedIndex = 0;
+            wallpaperGrid.currentIndex = -1;
+            return;
+        }
+        selectedIndex = Math.max(0, Math.min(index, count - 1));
+        wallpaperGrid.currentIndex = selectedIndex;
+    }
+
+    function handleSearchKey(event) {
+        if (event.key === Qt.Key_Escape) {
+            closePicker();
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Down || event.key === Qt.Key_Up) {
+            selectIndex(selectedIndex);
+            wallpaperGrid.forceActiveFocus();
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            const path = filteredWallpapers[selectedIndex];
+            if (path)
+                applyWallpaper(path);
+            event.accepted = true;
+        }
+    }
+
+    function handleGridKey(event) {
+        // Let the focused search field handle text entry and cursor editing.
+        if (searchField.activeFocus)
+            return;
+
+        const columns = Math.max(1, Math.floor(wallpaperGrid.width / 220));
+        if (event.key === Qt.Key_Escape) {
+            closePicker();
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Left) {
+            selectIndex(selectedIndex - 1);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Right) {
+            selectIndex(selectedIndex + 1);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Up) {
+            selectIndex(selectedIndex - columns);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Down) {
+            selectIndex(selectedIndex + columns);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            const path = filteredWallpapers[selectedIndex];
+            if (path)
+                applyWallpaper(path);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Backspace) {
+            searchText = searchText.slice(0, -1);
+            selectIndex(0);
+            Qt.callLater(() => searchField.forceActiveFocus());
+            event.accepted = true;
+        } else if (event.text && !event.text.startsWith("\u001b")) {
+            searchText += event.text;
+            selectIndex(0);
+            Qt.callLater(() => searchField.forceActiveFocus());
+            event.accepted = true;
+        }
+    }
+
     function scanDirectory(path) {
         const cleanPath = (path ?? "").trim();
         if (cleanPath === "") {
@@ -84,26 +150,79 @@ PanelWindow {
     }
 
     function applyWallpaper(path) {
-        pendingWallpaper = path;
-        statusMessage = "Aplicando wallpaper…";
-        wallpaperProcess.exec([
-            "sh", "-c",
-            "if command -v swww >/dev/null 2>&1; then exec swww img \"$1\"; else exec awww img \"$1\"; fi",
-            "wallpaper-switch", path
-        ]);
+        if (Services.WallpaperManager.busy)
+            return;
+        Services.WallpaperManager.apply(path);
     }
 
     function showError(message) {
         statusMessage = message;
     }
 
+    component ActionButton: Rectangle {
+        id: action
+
+        required property string label
+        required property string iconName
+        property bool emphasized: false
+        signal clicked()
+
+        implicitWidth: actionRow.implicitWidth + 24
+        implicitHeight: 38
+        radius: 9
+        color: actionMouse.containsMouse
+            ? Config.Theme.colWlogoutButtonHover
+            : (emphasized
+                ? Config.Theme.colWlogoutButton
+                : Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
+                          Config.Theme.colTextSec.b, 0.10))
+        border.width: 1
+        border.color: actionMouse.containsMouse || emphasized
+            ? Config.Theme.colHighlight
+            : Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
+                      Config.Theme.colTextSec.b, 0.18)
+
+        RowLayout {
+            id: actionRow
+            anchors.centerIn: parent
+            spacing: 6
+
+            Text {
+                text: action.iconName
+                color: action.emphasized ? Config.Theme.colHighlight : Config.Theme.colFg
+                font.family: "Material Symbols Rounded"
+                font.pixelSize: 17
+            }
+            Text {
+                text: action.label
+                color: Config.Theme.colFg
+                font.family: Config.Theme.fontFamily
+                font.pixelSize: Config.Theme.fontSizeSmall
+                font.bold: action.emphasized
+            }
+        }
+
+        MouseArea {
+            id: actionMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: action.clicked()
+        }
+    }
+
     onVisibleChanged: {
         if (visible) {
             scanDirectory(wallpaperDirectory);
-            Qt.callLater(() => searchField.forceActiveFocus());
+            Qt.callLater(() => wallpaperGrid.forceActiveFocus());
         } else {
             searchText = "";
         }
+    }
+
+    contentItem {
+        focus: root.visible
+        Keys.onPressed: event => root.handleGridKey(event)
     }
 
     Process {
@@ -135,44 +254,14 @@ PanelWindow {
         }
     }
 
-    Process {
-        id: wallpaperProcess
-        onExited: (exitCode, exitStatus) => {
-            if (exitCode !== 0) {
-                root.showError("Falha ao trocar o wallpaper. Confira se o daemon swww/awww está ativo.");
-                return;
-            }
-            currentLinkProcess.exec([
-                "sh", "-c",
-                "mkdir -p \"$2\" && ln -sfn \"$1\" \"$2/.current-wallpaper.png\"",
-                "wallpaper-link", root.pendingWallpaper, root.defaultDirectory
-            ]);
+    Connections {
+        target: Services.WallpaperManager
+        function onStatusChanged() {
+            root.statusMessage = Services.WallpaperManager.status;
         }
-    }
-
-    Process {
-        id: currentLinkProcess
-        onExited: (exitCode, exitStatus) => {
-            if (exitCode !== 0) {
-                root.showError("Wallpaper trocado, mas não consegui atualizar o link usado pelo Hyprlock.");
-                return;
-            }
-            matugenProcess.exec([
-                "bash", Quickshell.env("HOME") + "/.config/scripts/updateWall.sh"
-            ]);
-        }
-    }
-
-    Process {
-        id: matugenProcess
-        onExited: (exitCode, exitStatus) => {
-            if (exitCode === 0) {
-                root.currentWallpaper = root.pendingWallpaper;
-                root.statusMessage = "Wallpaper e paleta atualizados.";
-            } else {
-                root.currentWallpaper = root.pendingWallpaper;
-                root.statusMessage = "Wallpaper trocado, mas a geração de cores pelo Matugen falhou.";
-            }
+        function onOperationFinished(path, success) {
+            if (success)
+                root.currentWallpaper = path;
         }
     }
 
@@ -263,13 +352,16 @@ PanelWindow {
                                            Config.Theme.colTextSec.b, 0.10)
                         }
                     }
-                    Button {
-                        text: "Carregar"
+                    ActionButton {
+                        label: "Carregar"
+                        iconName: "folder_open"
+                        emphasized: true
                         onClicked: root.scanDirectory(directoryField.text)
                     }
-                    Button {
+                    ActionButton {
                         visible: !root.folderExists && directoryField.text.trim() === root.defaultDirectory
-                        text: "Criar pasta padrão"
+                        label: "Criar pasta padrão"
+                        iconName: "create_new_folder"
                         onClicked: root.createDefaultDirectory()
                     }
                 }
@@ -293,26 +385,7 @@ PanelWindow {
                         color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
                                        Config.Theme.colTextSec.b, 0.10)
                     }
-                    Keys.onPressed: event => {
-                        if (event.key === Qt.Key_Escape) {
-                            root.closePicker();
-                            event.accepted = true;
-                        } else if (event.key === Qt.Key_Down) {
-                            root.selectedIndex = Math.min(root.selectedIndex + 1,
-                                Math.max(0, root.filteredWallpapers.length - 1));
-                            wallpaperGrid.currentIndex = root.selectedIndex;
-                            event.accepted = true;
-                        } else if (event.key === Qt.Key_Up) {
-                            root.selectedIndex = Math.max(0, root.selectedIndex - 1);
-                            wallpaperGrid.currentIndex = root.selectedIndex;
-                            event.accepted = true;
-                        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                            const path = root.filteredWallpapers[root.selectedIndex];
-                            if (path)
-                                root.applyWallpaper(path);
-                            event.accepted = true;
-                        }
-                    }
+                    Keys.onPressed: event => root.handleSearchKey(event)
                 }
 
                 GridView {
@@ -321,9 +394,10 @@ PanelWindow {
                     Layout.fillHeight: true
                     clip: true
                     model: root.filteredWallpapers
-                    cellWidth: 220
-                    cellHeight: 166
+                    cellWidth: width / Math.max(1, Math.floor(width / 220))
+                    cellHeight: cellWidth * 0.76
                     currentIndex: root.selectedIndex
+                    Keys.onPressed: event => root.handleGridKey(event)
                     ScrollBar.vertical: ScrollBar { }
 
                     delegate: Rectangle {
@@ -334,35 +408,50 @@ PanelWindow {
                         radius: 10
                         clip: true
                         color: Config.Theme.colOsdBg
-                        border.width: modelData === root.currentWallpaper || index === root.selectedIndex ? 2 : 0
-                        border.color: modelData === root.currentWallpaper ? Config.Theme.colHighlight : Config.Theme.colTextSec
 
-                        Image {
+                        ClippingRectangle {
                             anchors.fill: parent
-                            source: "file://" + modelData
-                            asynchronous: true
-                            cache: true
-                            fillMode: Image.PreserveAspectCrop
+                            radius: 10
+                            color: Config.Theme.colOsdBg
+
+                            Image {
+                                anchors.fill: parent
+                                source: "file://" + modelData
+                                asynchronous: true
+                                cache: true
+                                fillMode: Image.PreserveAspectCrop
+                            }
+
+                            Rectangle {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.bottom: parent.bottom
+                                height: 36
+                                color: "#bb000000"
+
+                                Text {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 9
+                                    anchors.rightMargin: 8
+                                    verticalAlignment: Text.AlignVCenter
+                                    text: modelData.split("/").pop()
+                                    color: "white"
+                                    font.family: Config.Theme.fontFamily
+                                    font.pixelSize: Config.Theme.fontSizeSmall
+                                    elide: Text.ElideMiddle
+                                }
+                            }
                         }
 
                         Rectangle {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.bottom: parent.bottom
-                            height: 36
-                            color: "#bb000000"
-
-                            Text {
-                                anchors.fill: parent
-                                anchors.leftMargin: 9
-                                anchors.rightMargin: 8
-                                verticalAlignment: Text.AlignVCenter
-                                text: modelData.split("/").pop()
-                                color: "white"
-                                font.family: Config.Theme.fontFamily
-                                font.pixelSize: Config.Theme.fontSizeSmall
-                                elide: Text.ElideMiddle
-                            }
+                            anchors.fill: parent
+                            z: 2
+                            radius: 10
+                            color: "transparent"
+                            border.width: index === root.selectedIndex
+                                ? 3 : (modelData === root.currentWallpaper ? 1 : 0)
+                            border.color: index === root.selectedIndex
+                                ? Config.Theme.colHighlight : Config.Theme.colTextSec
                         }
 
                         MouseArea {
@@ -389,7 +478,7 @@ PanelWindow {
                         elide: Text.ElideRight
                     }
                     Text {
-                        text: "↑ ↓ navegar     ↵ aplicar     ESC fechar"
+                        text: "↓ lista     ← → ↑ ↓ escolher     ↵ aplicar     ESC fechar"
                         color: Config.Theme.colMuted
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSizeSmall

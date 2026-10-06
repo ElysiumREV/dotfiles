@@ -171,6 +171,39 @@ Variants {
                             }
                         }
 
+                        Text {
+                            id: wallhavenPlaceholder
+                            anchors.left: wallpaperPlaceholder.right
+                            anchors.leftMargin: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "travel_explore"
+                            color: wallhavenMouse.containsMouse ? Config.Theme.colHighlight : Config.Theme.colFg
+                            verticalAlignment: Text.AlignVCenter
+                            font {
+                                family: "Material Symbols Rounded"
+                                pixelSize: 19
+                            }
+                        }
+
+                        Widgets.Wallhaven {
+                            id: wallhavenPicker
+                            targetScreen: modelData
+                        }
+
+                        MouseArea {
+                            id: wallhavenMouse
+                            anchors.fill: wallhavenPlaceholder
+                            anchors.margins: -6
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (Services.WindowControl.wallhavenVisible)
+                                    wallhavenPicker.closePicker();
+                                else
+                                    wallhavenPicker.openPicker();
+                            }
+                        }
+
                         MouseArea {
                             id: launcherMouse
                             anchors.fill: launcherPlaceholder

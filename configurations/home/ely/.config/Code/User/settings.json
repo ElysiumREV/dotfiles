@@ -49,7 +49,6 @@
   "chat.disableAIFeatures": true,
 
   "svelte.enable-ts-plugin": true,
-  "jdk.telemetry.enabled": false,
 
   "[java]": {
     "editor.defaultFormatter": "redhat.java"
@@ -74,5 +73,6 @@
   "workbench.iconTheme": "material-icon-theme",
 "workbench.colorTheme": "Matugen",
 "terminal.integrated.mouseWheelScrollSensitivity": 3,
-"terminal.integrated.gpuAcceleration": "off"
+"terminal.integrated.gpuAcceleration": "off",
+"jdk.telemetry.enabled": false
 }

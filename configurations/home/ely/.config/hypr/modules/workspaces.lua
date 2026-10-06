@@ -52,7 +52,8 @@ hl.window_rule({
 hl.window_rule({
 	name = "Youtube Music",
 	match = {
-		class = "^com.github.th_ch.youtube_music$",
+		class = "^com.github.th-ch.youtube-music$",
+		title = "YouTube Music",
 	},
 	workspace = 5,
 })
@@ -73,10 +74,6 @@ hl.window_rule({
 	},
 	workspace = 9,
 	center = true,
-	size = {
-		1100,
-		700,
-	},
 	-- float = false,
 	idle_inhibit = "fullscreen",
 })

@@ -3,6 +3,7 @@ import "../." as Config
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Services.UPower
 import Quickshell.Wayland
 import "../services" as Services
@@ -98,10 +99,23 @@ Variants {
                          * ARCH MENU
                          * =================================================
                          */
+                        QsModules.ModuleGroup {
+                            id: leftControlsGroup
+
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            contentWidth: archPlaceholder.implicitWidth
+                                          + launcherPlaceholder.implicitWidth
+                                          + wallpaperPlaceholder.implicitWidth
+                                          + wallhavenPlaceholder.implicitWidth + 30
+                            z: -1
+                        }
+
                         Text {
                             id: archPlaceholder
 
-                            anchors.left: parent.left
+                            anchors.left: leftControlsGroup.left
+                            anchors.leftMargin: 6
                             anchors.verticalCenter: parent.verticalCenter
                             text: ""
                             color: Config.Theme.colHighlight
@@ -255,6 +269,7 @@ Variants {
                         Row {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
+                            height: Config.Theme.barHeight
                             spacing: Config.Theme.moduleSpacing
 
                             QsModules.Tray {
@@ -264,6 +279,7 @@ Variants {
 
                             QsModules.ModuleGroup {
                                 contentWidth: deviceIndicators.implicitWidth
+                                anchors.verticalCenter: parent.verticalCenter
 
                                 Row {
                                     id: deviceIndicators
@@ -287,23 +303,77 @@ Variants {
                                         }
                                     }
 
+                                    Item {
+                                        id: notificationAnchor
+                                        width: 22
+                                        height: Config.Theme.moduleHeight
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: Services.Notifications.unreadCount > 0
+                                                ? "notifications_active" : "notifications_none"
+                                            color: notificationMouse.containsMouse
+                                                ? Config.Theme.colHighlight : Config.Theme.colFg
+                                            font.family: "Material Symbols Rounded"
+                                            font.pixelSize: 19
+                                        }
+
+                                        Rectangle {
+                                            anchors.right: parent.right
+                                            anchors.top: parent.top
+                                            anchors.topMargin: 4
+                                            width: Services.Notifications.unreadCount > 9 ? 14 : 8
+                                            height: 8
+                                            radius: 4
+                                            visible: Services.Notifications.unreadCount > 0
+                                            color: Config.Theme.colRed
+
+                                            Text {
+                                                anchors.centerIn: parent
+                                                visible: Services.Notifications.unreadCount > 9
+                                                text: "9+"
+                                                color: Config.Theme.colBg
+                                                font.family: Config.Theme.fontFamily
+                                                font.pixelSize: 7
+                                                font.bold: true
+                                            }
+                                        }
+
+                                        MouseArea {
+                                            id: notificationMouse
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: Services.Notifications.toggleCenter(Hyprland.monitorFor(modelData))
+                                        }
+                                    }
+
                                 }
 
                             }
 
                             QsModules.BatteryMenu {
                                 id: batteryMenu
+                                targetScreen: modelData
 
                                 positionProvider: (popupWidth) => {
                                     const position = batteryItem.QsWindow.mapFromItem(batteryItem, 0, 0);
-                                    let desiredX = Math.max(Config.Theme.barContentMargin, position.x);
                                     const screenWidth = modelData.width;
-                                    const maxX = screenWidth - popupWidth;
-                                    const clampedX = Math.min(Math.max(desiredX, 0), maxX);
+                                    const desiredRight = screenWidth - (position.x + batteryItem.width);
+                                    const maxRight = Math.max(0, screenWidth - popupWidth);
                                     return {
-                                        "x": clampedX,
-                                        "y": position.y
+                                        "right": Math.max(0, Math.min(desiredRight, maxRight))
                                     };
+                                }
+                            }
+
+                            QsModules.NotificationCenter {
+                                targetScreen: modelData
+                                positionProvider: popupWidth => {
+                                    const position = notificationAnchor.QsWindow.mapFromItem(notificationAnchor, 0, 0);
+                                    const desiredRight = modelData.width - (position.x + notificationAnchor.width);
+                                    const maxRight = Math.max(0, modelData.width - popupWidth);
+                                    return { "right": Math.max(0, Math.min(desiredRight, maxRight)) };
                                 }
                             }
 
@@ -337,7 +407,7 @@ Variants {
                         QsModules.ModuleGroup {
                             id: mediaGroup
 
-                            anchors.right: workspaceGroup.left
+                            anchors.right: systemStatusGroup.left
                             anchors.rightMargin: Config.Theme.moduleSpacing
                             anchors.verticalCenter: parent.verticalCenter
                             contentWidth: media.implicitWidth
@@ -357,7 +427,9 @@ Variants {
                          * =================================================
                          */
                         QsModules.ModuleGroup {
-                            anchors.right: mediaGroup.left
+                            id: systemStatusGroup
+
+                            anchors.right: workspaceGroup.left
                             anchors.rightMargin: Config.Theme.moduleSpacing
                             anchors.verticalCenter: parent.verticalCenter
                             contentWidth: systemStatus.implicitWidth

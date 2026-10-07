@@ -11,7 +11,8 @@ PanelWindow {
     id: root
 
     required property var positionProvider
-    property real popupX: 0
+    required property var targetScreen
+    property real popupRight: 16
     property int chargeCycles: -1
     property bool chargeCyclesLoaded: false
     property bool batteryHealthLoaded: false
@@ -70,6 +71,7 @@ PanelWindow {
 
     color: "transparent"
     visible: false
+    screen: targetScreen
     implicitWidth: 380
     implicitHeight: content.implicitHeight + 32
     exclusionMode: ExclusionMode.Ignore
@@ -78,18 +80,18 @@ PanelWindow {
 
     anchors {
         top: true
-        left: true
+        right: true
     }
 
     margins {
         top: Config.Theme.barHeight + 8
-        left: root.popupX
+        right: root.popupRight
     }
 
     PopupDismissBehavior { popup: root }
 
     function openMenu() {
-        popupX = positionProvider(implicitWidth).x;
+        popupRight = positionProvider(implicitWidth).right;
         refresh(true);
         visible = true;
     }

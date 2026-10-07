@@ -16,6 +16,7 @@ PanelWindow {
     property var indexedApplications: []
     property int selectedIndex: 0
     property string searchText: ""
+    property bool keyboardNavigationActive: false
 
     color: "transparent"
     screen: targetScreen
@@ -134,22 +135,26 @@ PanelWindow {
         refreshApplications();
         searchText = "";
         selectedIndex = 0;
+        keyboardNavigationActive = true;
         Services.WindowControl.openLauncher(Hyprland.monitorFor(targetScreen));
     }
 
     function closeLauncher() {
         searchText = "";
         selectedIndex = 0;
+        keyboardNavigationActive = false;
         Services.WindowControl.launcherVisible = false;
         Services.WindowControl.launcherMonitor = null;
     }
 
     onVisibleChanged: {
-        if (visible)
+        if (visible) {
+            keyboardNavigationActive = true;
             Qt.callLater(() => searchField.forceActiveFocus());
-        else {
+        } else {
             searchText = "";
             selectedIndex = 0;
+            keyboardNavigationActive = false;
         }
     }
 
@@ -253,6 +258,17 @@ PanelWindow {
                                 root.searchText = text;
                                 root.selectedIndex = 0;
                             }
+                            onTextEdited: {
+                                root.keyboardNavigationActive = true;
+                                root.selectedIndex = 0;
+                                Qt.callLater(() => {
+                                    if (root.visible && searchField.activeFocus)
+                                        appList.positionViewAtIndex(0, ListView.Beginning);
+                                });
+                            }
+                            onActiveFocusChanged: {
+                                root.keyboardNavigationActive = activeFocus;
+                            }
                             placeholderText: "Buscar aplicativos..."
                             color: Config.Theme.colFg
                             placeholderTextColor: Config.Theme.colMuted
@@ -266,10 +282,12 @@ PanelWindow {
                                     root.closeLauncher();
                                     event.accepted = true;
                                 } else if (event.key === Qt.Key_Down) {
+                                    root.keyboardNavigationActive = true;
                                     root.selectedIndex = Math.min(root.selectedIndex + 1,
                                         Math.max(0, root.filteredApplications.length - 1));
                                     event.accepted = true;
                                 } else if (event.key === Qt.Key_Up) {
+                                    root.keyboardNavigationActive = true;
                                     root.selectedIndex = Math.max(0, root.selectedIndex - 1);
                                     event.accepted = true;
                                 } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
@@ -349,8 +367,14 @@ PanelWindow {
                             id: rowMouse
                             anchors.fill: parent
                             hoverEnabled: true
-                            onEntered: root.selectedIndex = index
-                            onClicked: root.launchSelected()
+                            onEntered: {
+                                if (!root.keyboardNavigationActive)
+                                    root.selectedIndex = index;
+                            }
+                            onClicked: {
+                                root.selectedIndex = index;
+                                root.launchSelected();
+                            }
                         }
                     }
 

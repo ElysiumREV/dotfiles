@@ -1,6 +1,7 @@
 //@ pragma UseQApplication
 import Quickshell
 import Quickshell.Io
+import Quickshell.Hyprland
 import "widgets"
 import "modules"
 import "services" as Services
@@ -14,9 +15,13 @@ ShellRoot {
         function toggleLogout(): void { Services.WindowControl.toggleLogout(); }
         function toggleWallpaper(): void { Services.WindowControl.toggleWallpaper(); }
         function toggleWallhaven(): void { Services.WindowControl.toggleWallhaven(); }
+        function toggleNotificationCenter(): void {
+            Services.Notifications.toggleCenter(Hyprland.focusedMonitor);
+        }
     }
 
     Bar {}
+    NotificationPopups {}
     VolumeOSD {}
     BrightnessOSD {}
     WLogout {

@@ -4,7 +4,9 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Bluetooth
 import Quickshell.Io
+import Quickshell.Networking
 import Quickshell.Wayland
 
 PanelWindow {
@@ -12,17 +14,44 @@ PanelWindow {
 
     required property var positionProvider
     property real popupX: 0
-    property bool wifiEnabled: false
-    property string wifiName: "Desconectado"
-    property var wifiNetworks: []
-    property bool bluetoothEnabled: false
+    readonly property var wifiDevice: {
+        for (const device of Networking.devices.values) {
+            if (device.type === DeviceType.Wifi)
+                return device;
+        }
+        return null;
+    }
+    readonly property var wifiNetworks: {
+        const networks = wifiDevice?.networks?.values ?? [];
+        const sorted = networks.slice();
+        sorted.sort((a, b) => {
+            if (a.connected !== b.connected)
+                return a.connected ? -1 : 1;
+            if (a.known !== b.known)
+                return a.known ? -1 : 1;
+            return (b.signalStrength ?? 0) - (a.signalStrength ?? 0);
+        });
+        return sorted;
+    }
+    readonly property var activeWifiNetwork: wifiNetworks.find(network => network.connected) ?? null
+    readonly property bool wifiEnabled: Networking.wifiEnabled
+    readonly property bool wifiHardwareEnabled: Networking.wifiHardwareEnabled
+    readonly property string wifiName: activeWifiNetwork?.name ?? "Desconectado"
+    property var pendingWifiNetwork: null
+    property string wifiErrorText: ""
+    readonly property var bluetoothAdapter: Bluetooth.defaultAdapter
+    readonly property bool bluetoothEnabled: bluetoothAdapter?.enabled ?? false
     property var bluetoothDevices: []
     property var bluetoothConnected: []
     property var bluetoothPairedDevices: []
     property var bluetoothKnownDevices: []
+    property string bluetoothActionMessage: ""
+    property string bluetoothBusyAddress: ""
+    property string bluetoothBusyAction: ""
+    property string pendingForgetAddress: ""
     property bool wifiExpanded: false
     property bool bluetoothExpanded: false
-    property bool scanningBluetooth: false
+    readonly property bool scanningBluetooth: bluetoothAdapter?.discovering ?? false
     property string wifiPassword: ""
     property string pendingWifiSsid: ""
     property bool showWifiPassword: false
@@ -43,37 +72,36 @@ PanelWindow {
         visible = true;
     }
 
+    onVisibleChanged: {
+        if (!visible) {
+            wifiScanStopTimer.stop();
+            if (wifiDevice)
+                wifiDevice.scannerEnabled = false;
+            stopBluetoothScan();
+            if (bluetoothBusyAction !== "pair" && bluetoothBusyAction !== "trust"
+                    && Services.BluetoothPairingAgent.promptType === "")
+                Services.BluetoothPairingAgent.release();
+        }
+    }
+
+    onBluetoothEnabledChanged: {
+        if (!bluetoothEnabled) {
+            bluetoothExpanded = false;
+            bluetoothPairedDevices = [];
+            bluetoothKnownDevices = [];
+            bluetoothDevices = [];
+            bluetoothConnected = [];
+            bluetoothScanTimer.stop();
+            Services.BluetoothPairingAgent.release();
+        }
+    }
+
     function refresh() {
-        wifiStatusProcess.running = true;
-        wifiNameProcess.running = true;
-        bluetoothStatusProcess.running = true;
         if (bluetoothEnabled && bluetoothExpanded) {
             bluetoothDevicesProcess.running = true;
             bluetoothKnownDevicesProcess.running = true;
             bluetoothConnectedProcess.running = true;
         }
-    }
-
-    function parseNmcliTerseLine(line) {
-        const fields = [];
-        let current = "";
-        let escaped = false;
-        for (let i = 0; i < line.length; i++) {
-            const ch = line[i];
-            if (escaped) {
-                current += ch;
-                escaped = false;
-            } else if (ch === "\\") {
-                escaped = true;
-            } else if (ch === ":") {
-                fields.push(current);
-                current = "";
-            } else {
-                current += ch;
-            }
-        }
-        fields.push(current);
-        return fields;
     }
 
     function updateBluetoothDevices() {
@@ -86,21 +114,30 @@ PanelWindow {
     }
 
     function toggleWifi() {
-        if (wifiEnabled) {
+        wifiErrorText = "";
+        if (!wifiHardwareEnabled) {
+            wifiErrorText = "O adaptador Wi-Fi está bloqueado pelo sistema.";
+            return;
+        }
+        if (Networking.wifiEnabled) {
+            if (wifiDevice)
+                wifiDevice.scannerEnabled = false;
             wifiExpanded = false;
             wifiShowAll = false;
             showWifiPassword = false;
         }
-        wifiToggleProcess.exec(["nmcli", "radio", "wifi", wifiEnabled ? "off" : "on"]);
+        Networking.wifiEnabled = !Networking.wifiEnabled;
     }
 
     function toggleBluetooth() {
         if (bluetoothEnabled) {
             bluetoothExpanded = false;
-            scanningBluetooth = false;
             bluetoothScanTimer.stop();
+            if (bluetoothAdapter)
+                bluetoothAdapter.discovering = false;
         }
-        bluetoothToggleProcess.exec(["bluetoothctl", "power", bluetoothEnabled ? "off" : "on"]);
+        if (bluetoothAdapter)
+            bluetoothAdapter.enabled = !bluetoothEnabled;
     }
 
     function toggleWifiExpanded() {
@@ -109,7 +146,15 @@ PanelWindow {
         wifiExpanded = !wifiExpanded;
         if (wifiExpanded) {
             bluetoothExpanded = false;
-            wifiScanProcess.running = true;
+            wifiErrorText = "";
+            if (wifiDevice) {
+                wifiDevice.scannerEnabled = true;
+                wifiScanStopTimer.restart();
+            }
+        } else {
+            wifiScanStopTimer.stop();
+            if (wifiDevice)
+                wifiDevice.scannerEnabled = false;
         }
     }
 
@@ -119,60 +164,156 @@ PanelWindow {
         bluetoothExpanded = !bluetoothExpanded;
         if (bluetoothExpanded) {
             wifiExpanded = false;
+            Services.BluetoothPairingAgent.ensureStarted();
             bluetoothDevicesProcess.running = true;
             bluetoothKnownDevicesProcess.running = true;
             bluetoothConnectedProcess.running = true;
-        }
+        } else if (bluetoothBusyAction !== "pair" && bluetoothBusyAction !== "trust"
+                && Services.BluetoothPairingAgent.promptType === "")
+            Services.BluetoothPairingAgent.release();
     }
 
-    function connectWifi(ssid, secured) {
-        if (secured) {
-            pendingWifiSsid = ssid;
+    function connectWifi(network) {
+        if (!network) return;
+        wifiErrorText = "";
+        pendingWifiNetwork = network;
+        network.connect();
+    }
+
+    function handleWifiConnectionFailure(network, reason) {
+        if (reason === ConnectionFailReason.NoSecrets) {
+            pendingWifiNetwork = network;
+            pendingWifiSsid = network.name;
             wifiPassword = "";
+            wifiErrorText = "";
             showWifiPassword = true;
-            return ;
+            Qt.callLater(() => wifiPasswordField.forceActiveFocus());
+            return;
         }
-        wifiConnectProcess.exec(["nmcli", "device", "wifi", "connect", ssid]);
+        wifiErrorText = "Falha ao conectar em " + network.name + ": " + ConnectionFailReason.toString(reason);
     }
 
     function connectSecuredWifi() {
-        if (pendingWifiSsid === "" || wifiPassword === "")
+        if (!pendingWifiNetwork || wifiPassword === "")
             return ;
-
-        wifiConnectProcess.exec(["nmcli", "device", "wifi", "connect", pendingWifiSsid, "password", wifiPassword]);
+        wifiErrorText = "";
+        const pskSecurity = pendingWifiNetwork.security === WifiSecurityType.WpaPsk
+            || pendingWifiNetwork.security === WifiSecurityType.Wpa2Psk
+            || pendingWifiNetwork.security === WifiSecurityType.Sae;
+        if (pskSecurity && pendingWifiNetwork.connectWithPsk)
+            pendingWifiNetwork.connectWithPsk(wifiPassword);
+        else
+            wifiErrorText = "Esta rede exige credenciais avançadas que ainda não são suportadas pelo menu.";
         showWifiPassword = false;
         wifiPassword = "";
         pendingWifiSsid = "";
+        pendingWifiNetwork = null;
     }
 
     function connectBluetooth(address) {
+        if (bluetoothBusyAction !== "") return;
+        bluetoothActionMessage = "";
+        bluetoothBusyAddress = address;
+        bluetoothBusyAction = "connect";
         bluetoothConnectProcess.exec(["bluetoothctl", "connect", address]);
     }
 
     function disconnectBluetooth(address) {
+        if (bluetoothBusyAction !== "") return;
+        bluetoothActionMessage = "";
+        bluetoothBusyAddress = address;
+        bluetoothBusyAction = "disconnect";
         bluetoothDisconnectProcess.exec(["bluetoothctl", "disconnect", address]);
+    }
+
+    function pairBluetooth(address) {
+        if (bluetoothBusyAction !== "") return;
+        bluetoothActionMessage = "";
+        bluetoothBusyAddress = address;
+        bluetoothBusyAction = "pair";
+        Services.BluetoothPairingAgent.ensureStarted();
+        bluetoothPairStartTimer.restart();
+    }
+
+    function forgetBluetooth(address) {
+        if (bluetoothBusyAction !== "") return;
+        pendingForgetAddress = address;
+    }
+
+    function confirmBluetoothForget() {
+        if (pendingForgetAddress === "") return;
+        bluetoothActionMessage = "";
+        bluetoothBusyAddress = pendingForgetAddress;
+        bluetoothBusyAction = "forget";
+        bluetoothForgetProcess.exec(["bluetoothctl", "remove", pendingForgetAddress]);
+        pendingForgetAddress = "";
+    }
+
+    function bluetoothName(address) {
+        const device = bluetoothDevices.find(entry => entry.address === address);
+        return device?.name ?? address;
+    }
+
+    function refreshBluetoothDevices() {
+        if (!bluetoothDevicesProcess.running)
+            bluetoothDevicesProcess.running = true;
+        if (!bluetoothKnownDevicesProcess.running)
+            bluetoothKnownDevicesProcess.running = true;
+        if (!bluetoothConnectedProcess.running)
+            bluetoothConnectedProcess.running = true;
+    }
+
+    function completeBluetoothAction(action, address, code) {
+        bluetoothBusyAddress = "";
+        bluetoothBusyAction = "";
+        if (code !== 0) {
+            bluetoothActionMessage = action === "pair"
+                ? "Não foi possível parear. Confira se o dispositivo está em modo de pareamento."
+                : action === "connect" ? "Não foi possível conectar ao dispositivo."
+                : action === "disconnect" ? "Não foi possível desconectar o dispositivo."
+                : "Não foi possível remover o dispositivo pareado.";
+            if (!visible && Services.BluetoothPairingAgent.promptType === "")
+                Services.BluetoothPairingAgent.release();
+            return;
+        }
+        bluetoothActionMessage = "";
+        if (action === "pair") {
+            bluetoothBusyAddress = address;
+            bluetoothBusyAction = "trust";
+            bluetoothTrustProcess.exec(["bluetoothctl", "trust", address]);
+            return;
+        }
+        refreshBluetoothDevices();
+        if (!visible && Services.BluetoothPairingAgent.promptType === "")
+            Services.BluetoothPairingAgent.release();
     }
 
     function startBluetoothScan() {
         if (!bluetoothEnabled)
             return ;
 
-        scanningBluetooth = true;
-        bluetoothScanOnProcess.running = true;
+        if (bluetoothAdapter)
+            bluetoothAdapter.discovering = true;
         bluetoothKnownDevicesProcess.running = true;
         bluetoothScanTimer.restart();
     }
 
     function stopBluetoothScan() {
-        scanningBluetooth = false;
         bluetoothScanTimer.stop();
-        bluetoothScanOffProcess.running = true;
+        if (bluetoothAdapter)
+            bluetoothAdapter.discovering = false;
         if (!bluetoothKnownDevicesProcess.running)
             bluetoothKnownDevicesProcess.running = true;
     }
 
     function isBluetoothConnected(address) {
         return bluetoothConnected.indexOf(address) !== -1;
+    }
+
+    function bluetoothBatteryLabel(address) {
+        const liveDevices = Bluetooth.devices.values;
+        const device = liveDevices.find(entry => entry.address === address);
+        return device?.batteryAvailable ? Math.round(device.battery * 100) + "%" : "";
     }
 
     function wifiSignalIcon(signal) {
@@ -192,7 +333,19 @@ PanelWindow {
     }
 
     function wifiSecurityIcon(security) {
-        return security !== "" ? "lock" : "lock_open";
+        return security === WifiSecurityType.Open ? "lock_open" : "lock";
+    }
+
+    function refreshWifiNetworks() {
+        if (!wifiDevice)
+            return;
+        wifiDevice.scannerEnabled = false;
+        Qt.callLater(() => {
+            if (root.wifiExpanded && root.wifiEnabled && root.wifiDevice) {
+                root.wifiDevice.scannerEnabled = true;
+                wifiScanStopTimer.restart();
+            }
+        });
     }
 
     function profileLabel(profile) {
@@ -271,6 +424,31 @@ PanelWindow {
     }
 
     Timer {
+        id: bluetoothPairStartTimer
+        interval: 800
+        repeat: false
+        onTriggered: {
+            if (Services.BluetoothPairingAgent.ready && root.bluetoothBusyAddress !== "") {
+                bluetoothPairProcess.exec(["bluetoothctl", "pair", root.bluetoothBusyAddress]);
+            } else {
+                root.bluetoothBusyAddress = "";
+                root.bluetoothBusyAction = "";
+                root.bluetoothActionMessage = Services.BluetoothPairingAgent.status || "Agente de pareamento indisponível.";
+            }
+        }
+    }
+
+    Timer {
+        id: wifiScanStopTimer
+        interval: 8000
+        repeat: false
+        onTriggered: {
+            if (root.wifiDevice)
+                root.wifiDevice.scannerEnabled = false;
+        }
+    }
+
+    Timer {
         interval: 1500
         repeat: true
         running: root.visible && root.scanningBluetooth
@@ -278,154 +456,6 @@ PanelWindow {
             if (!bluetoothKnownDevicesProcess.running)
                 bluetoothKnownDevicesProcess.running = true;
         }
-    }
-
-    Process {
-        id: wifiStatusProcess
-
-        command: ["nmcli", "-t", "-f", "WIFI", "general"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                root.wifiEnabled = text.trim() === "enabled";
-                if (!root.wifiEnabled) {
-                    root.wifiNetworks = [];
-                    root.wifiExpanded = false;
-                }
-            }
-        }
-
-    }
-
-    Process {
-        id: wifiNameProcess
-
-        command: ["nmcli", "--terse", "--fields", "IN-USE,SSID", "device", "wifi", "list"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                root.wifiName = "Desconectado";
-                for (const line of text.trim().split("\n")) {
-                    const fields = root.parseNmcliTerseLine(line);
-                    if (fields.length >= 2 && (fields[0] === "*" || fields[0] === "yes")) {
-                        root.wifiName = fields[1] || "Desconectado";
-                        break;
-                    }
-                }
-            }
-        }
-
-    }
-
-    Process {
-        id: wifiScanProcess
-
-        command: ["nmcli", "--terse", "--fields", "IN-USE,SSID,SIGNAL,SECURITY", "device", "wifi", "list", "--rescan", "yes"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const result = [];
-                const lines = text.trim().split("\n");
-                for (let line of lines) {
-                    if (!line.trim())
-                        continue;
-
-                    /*
-                    * nmcli terse mode escapes ':' as '\:'.
-                    * SSIDs can therefore safely contain colons.
-                    */
-                    const fields = root.parseNmcliTerseLine(line);
-                    if (fields.length < 4)
-                        continue;
-
-                    const active = fields[0] === "*" || fields[0] === "yes";
-                    const ssid = fields[1];
-                    const signal = parseInt(fields[2]) || 0;
-                    const security = fields[3];
-                    if (ssid === "")
-                        continue;
-
-                    let duplicate = false;
-                    for (let existing of result) {
-                        if (existing.ssid === ssid) {
-                            duplicate = true;
-                            existing.active = existing.active || active;
-                            /*
-                            * Keep the stronger access point if multiple
-                            * APs advertise the same SSID.
-                            */
-                            if (signal > existing.signal) {
-                                existing.signal = signal;
-                            }
-                            break;
-                        }
-                    }
-                    if (!duplicate)
-                        result.push({
-                            "ssid": ssid,
-                            "signal": signal,
-                            "security": security,
-                            "active": active
-                        });
-
-                }
-                result.sort(function(a, b) {
-                    if (a.active !== b.active)
-                        return a.active ? -1 : 1;
-
-                    return b.signal - a.signal;
-                });
-                root.wifiNetworks = result;
-            }
-        }
-
-    }
-
-    Process {
-        id: wifiToggleProcess
-
-        onExited: {
-            wifiStatusProcess.running = true;
-            wifiNameProcess.running = true;
-            if (root.wifiEnabled)
-                wifiScanProcess.running = true;
-
-        }
-    }
-
-    Process {
-        id: wifiConnectProcess
-
-        onExited: {
-            wifiStatusProcess.running = true;
-            wifiNameProcess.running = true;
-            wifiScanProcess.running = true;
-        }
-    }
-
-    Process {
-        id: bluetoothStatusProcess
-
-        command: ["bluetoothctl", "show"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                root.bluetoothEnabled = /Powered:\s+yes/.test(text);
-                if (!root.bluetoothEnabled) {
-                    root.bluetoothPairedDevices = [];
-                    root.bluetoothKnownDevices = [];
-                    root.bluetoothDevices = [];
-                    root.bluetoothConnected = [];
-                    root.bluetoothExpanded = false;
-                    root.scanningBluetooth = false;
-                } else if (root.bluetoothExpanded) {
-                    bluetoothDevicesProcess.running = true;
-                    bluetoothKnownDevicesProcess.running = true;
-                    bluetoothConnectedProcess.running = true;
-                }
-            }
-        }
-
     }
 
     Process {
@@ -499,56 +529,39 @@ PanelWindow {
     }
 
     Process {
-        id: bluetoothToggleProcess
-
-        onExited: {
-            bluetoothStatusProcess.running = true;
-            if (root.bluetoothEnabled) {
-                bluetoothDevicesProcess.running = true;
-                bluetoothKnownDevicesProcess.running = true;
-                bluetoothConnectedProcess.running = true;
-            }
-        }
-    }
-
-    Process {
         id: bluetoothConnectProcess
 
-        onExited: {
-            bluetoothDevicesProcess.running = true;
-            bluetoothKnownDevicesProcess.running = true;
-            bluetoothConnectedProcess.running = true;
-        }
+        onExited: (code) => root.completeBluetoothAction("connect", root.bluetoothBusyAddress, code)
     }
 
     Process {
         id: bluetoothPairProcess
 
-        onExited: {
-            bluetoothDevicesProcess.running = true;
-            bluetoothKnownDevicesProcess.running = true;
-            bluetoothConnectedProcess.running = true;
-        }
+        onExited: (code) => root.completeBluetoothAction("pair", root.bluetoothBusyAddress, code)
     }
 
     Process {
         id: bluetoothDisconnectProcess
 
-        onExited: {
-            bluetoothConnectedProcess.running = true;
+        onExited: (code) => root.completeBluetoothAction("disconnect", root.bluetoothBusyAddress, code)
+    }
+
+    Process {
+        id: bluetoothTrustProcess
+        onExited: (code) => {
+            root.bluetoothBusyAddress = "";
+            root.bluetoothBusyAction = "";
+            if (code !== 0)
+                root.bluetoothActionMessage = "Pareado, mas não foi possível marcar como confiável.";
+            root.refreshBluetoothDevices();
+            if (!root.visible && Services.BluetoothPairingAgent.promptType === "")
+                Services.BluetoothPairingAgent.release();
         }
     }
 
     Process {
-        id: bluetoothScanOnProcess
-
-        command: ["bluetoothctl", "scan", "on"]
-    }
-
-    Process {
-        id: bluetoothScanOffProcess
-
-        command: ["bluetoothctl", "scan", "off"]
+        id: bluetoothForgetProcess
+        onExited: (code) => root.completeBluetoothAction("forget", root.bluetoothBusyAddress, code)
     }
 
     Process {
@@ -672,17 +685,13 @@ PanelWindow {
                     margins: 10
                 }
 
-                RowLayout {
-                    id: wifiHeader
-
+                Item {
                     Layout.fillWidth: true
+                    implicitHeight: wifiHeader.implicitHeight
 
-                    MouseArea {
+                    RowLayout {
+                        id: wifiHeader
                         anchors.fill: parent
-                        z: -1
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.toggleWifiExpanded()
-                    }
 
                     Text {
                         text: root.wifiEnabled ? "wifi" : "wifi_off"
@@ -761,6 +770,14 @@ PanelWindow {
                         }
                     }
 
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        z: -1
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.toggleWifiExpanded()
+                    }
                 }
 
                 /*
@@ -770,6 +787,22 @@ PanelWindow {
                     Layout.fillWidth: true
                     visible: root.wifiExpanded && root.wifiEnabled
                     spacing: 4
+
+                    Repeater {
+                        model: root.wifiNetworks
+                        delegate: Item {
+                            required property var modelData
+                            width: 0
+                            height: 0
+
+                            Connections {
+                                target: modelData
+                                function onConnectionFailed(reason) {
+                                    root.handleWifiConnectionFailure(modelData, reason);
+                                }
+                            }
+                        }
+                    }
 
                     Rectangle {
                         Layout.fillWidth: true
@@ -787,6 +820,15 @@ PanelWindow {
                         clip: true
                         boundsBehavior: Flickable.StopAtBounds
                         interactive: contentHeight > height
+
+                        Text {
+                            anchors.centerIn: parent
+                            visible: root.wifiNetworks.length === 0
+                            text: root.wifiDevice?.scannerEnabled ? "Buscando redes…" : "Nenhuma rede encontrada"
+                            color: Config.Theme.colMuted
+                            font.family: Config.Theme.fontFamily
+                            font.pixelSize: Config.Theme.fontSizeSmall
+                        }
 
                         Column {
                             id: wifiNetworkColumn
@@ -811,8 +853,9 @@ PanelWindow {
                                         spacing: 8
 
                                         Text {
-                                            text: modelData.active ? "check" : wifiSignalIcon(modelData.signal)
-                                            color: modelData.active ? Config.Theme.colHighlight : Config.Theme.colFg
+                                            text: modelData.stateChanging ? "sync"
+                                                : (modelData.connected ? "check_circle" : wifiSignalIcon(Math.round((modelData.signalStrength ?? 0) * 100)))
+                                            color: modelData.connected ? Config.Theme.colHighlight : Config.Theme.colFg
 
                                             font {
                                                 family: "Material Symbols Rounded"
@@ -823,7 +866,7 @@ PanelWindow {
 
                                         Text {
                                             Layout.fillWidth: true
-                                            text: modelData.ssid
+                                            text: modelData.name
                                             color: Config.Theme.colFg
                                             elide: Text.ElideRight
 
@@ -836,25 +879,24 @@ PanelWindow {
 
                                         Text {
                                             text: wifiSecurityIcon(modelData.security)
-                                            visible: modelData.security !== ""
+                                            visible: modelData.security !== WifiSecurityType.Open
                                             color: Config.Theme.colMuted
-
-                                            font {
-                                                family: "Material Symbols Rounded"
-                                                pixelSize: 16
-                                            }
-
+                                            font.family: "Material Symbols Rounded"
+                                            font.pixelSize: 16
                                         }
 
                                         Text {
-                                            text: modelData.signal + "%"
+                                            text: Math.round((modelData.signalStrength ?? 0) * 100) + "%"
                                             color: Config.Theme.colMuted
+                                            font.family: Config.Theme.fontFamily
+                                            font.pixelSize: 10
+                                        }
 
-                                            font {
-                                                family: Config.Theme.fontFamily
-                                                pixelSize: 10
-                                            }
-
+                                        Text {
+                                            text: modelData.known ? "Salva" : ""
+                                            color: Config.Theme.colMuted
+                                            font.family: Config.Theme.fontFamily
+                                            font.pixelSize: 9
                                         }
 
                                     }
@@ -864,10 +906,13 @@ PanelWindow {
 
                                         anchors.fill: parent
                                         hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
+                                        enabled: !modelData.stateChanging
+                                        cursorShape: modelData.stateChanging ? Qt.ArrowCursor : Qt.PointingHandCursor
                                         onClicked: {
-                                            if (!modelData.active)
-                                                root.connectWifi(modelData.ssid, modelData.security !== "");
+                                            if (modelData.connected && !modelData.stateChanging)
+                                                modelData.disconnect();
+                                            else if (!modelData.stateChanging)
+                                                root.connectWifi(modelData);
 
                                         }
                                     }
@@ -971,9 +1016,19 @@ PanelWindow {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: wifiScanProcess.running = true
+                            onClicked: root.refreshWifiNetworks()
                         }
 
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        visible: root.wifiErrorText !== ""
+                        text: root.wifiErrorText
+                        color: Config.Theme.colRed
+                        wrapMode: Text.Wrap
+                        font.family: Config.Theme.fontFamily
+                        font.pixelSize: 10
                     }
 
                     /*
@@ -1114,17 +1169,13 @@ PanelWindow {
                     margins: 10
                 }
 
-                RowLayout {
-                    id: bluetoothHeader
-
+                Item {
                     Layout.fillWidth: true
+                    implicitHeight: bluetoothHeader.implicitHeight
 
-                    MouseArea {
+                    RowLayout {
+                        id: bluetoothHeader
                         anchors.fill: parent
-                        z: -1
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.toggleBluetoothExpanded()
-                    }
 
                     Text {
                         text: "bluetooth"
@@ -1211,11 +1262,19 @@ PanelWindow {
                         }
                     }
 
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        z: -1
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.toggleBluetoothExpanded()
+                    }
                 }
 
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    visible: root.bluetoothExpanded && root.bluetoothEnabled
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        visible: root.bluetoothExpanded && root.bluetoothEnabled
                     spacing: 4
 
                     Rectangle {
@@ -1225,28 +1284,149 @@ PanelWindow {
                     }
 
                     Text {
+                        Layout.fillWidth: true
+                        visible: Services.BluetoothPairingAgent.status !== ""
+                        text: Services.BluetoothPairingAgent.status
+                        color: Services.BluetoothPairingAgent.ready ? Config.Theme.colMuted : Config.Theme.colYellow
+                        wrapMode: Text.Wrap
+                        font.family: Config.Theme.fontFamily
+                        font.pixelSize: 9
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        visible: Services.BluetoothPairingAgent.promptType !== ""
+                        implicitHeight: bluetoothAgentPrompt.implicitHeight + 16
+                        radius: 7
+                        color: Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g, Config.Theme.colHighlight.b, 0.12)
+
+                        ColumnLayout {
+                            id: bluetoothAgentPrompt
+                            anchors.fill: parent
+                            anchors.margins: 8
+                            spacing: 6
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: Services.BluetoothPairingAgent.promptText
+                                color: Config.Theme.colFg
+                                wrapMode: Text.Wrap
+                                font.family: Config.Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+
+                            TextField {
+                                id: bluetoothPinInput
+                                Layout.fillWidth: true
+                                visible: Services.BluetoothPairingAgent.promptType === "pin"
+                                placeholderText: "PIN ou código"
+                                inputMethodHints: Qt.ImhDigitsOnly
+                                color: Config.Theme.colFg
+                                font.family: Config.Theme.fontFamily
+                                font.pixelSize: 11
+                                onVisibleChanged: if (visible) forceActiveFocus()
+                                Keys.onReturnPressed: {
+                                    Services.BluetoothPairingAgent.answerPrompt(text);
+                                    text = "";
+                                }
+                                background: Rectangle {
+                                    radius: 6
+                                    color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.14)
+                                    border.width: 1
+                                    border.color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.25)
+                                }
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 8
+
+                                Item { Layout.fillWidth: true }
+
+                                Text {
+                                    text: Services.BluetoothPairingAgent.promptType === "display" ? "OK" : "Recusar"
+                                    color: Config.Theme.colMuted
+                                    font.family: Config.Theme.fontFamily
+                                    font.pixelSize: 10
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        anchors.margins: -5
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: Services.BluetoothPairingAgent.cancelPrompt()
+                                    }
+                                }
+
+                                Text {
+                                    visible: Services.BluetoothPairingAgent.promptType === "confirm"
+                                    text: "Confirmar"
+                                    color: Config.Theme.colHighlight
+                                    font.family: Config.Theme.fontFamily
+                                    font.pixelSize: 10
+                                    font.bold: true
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        anchors.margins: -5
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: Services.BluetoothPairingAgent.answerPrompt("yes")
+                                    }
+                                }
+
+                                Text {
+                                    visible: Services.BluetoothPairingAgent.promptType === "pin"
+                                    text: "Enviar"
+                                    color: Config.Theme.colHighlight
+                                    font.family: Config.Theme.fontFamily
+                                    font.pixelSize: 10
+                                    font.bold: true
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        anchors.margins: -5
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            Services.BluetoothPairingAgent.answerPrompt(bluetoothPinInput.text);
+                                            bluetoothPinInput.text = "";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Text {
                         visible: root.bluetoothDevices.length === 0
                         Layout.fillWidth: true
-                        text: "Nenhum dispositivo pareado"
+                        text: root.scanningBluetooth ? "Procurando dispositivos…" : "Nenhum dispositivo conhecido"
                         color: Config.Theme.colMuted
                         horizontalAlignment: Text.AlignHCenter
                         topPadding: 8
                         bottomPadding: 8
-
-                        font {
-                            family: Config.Theme.fontFamily
-                            pixelSize: 11
-                        }
-
+                        font.family: Config.Theme.fontFamily
+                        font.pixelSize: 11
                     }
 
-                    Repeater {
-                        model: root.bluetoothDevices
+                    Flickable {
+                        id: bluetoothDevicesFlickable
+                        Layout.fillWidth: true
+                        visible: root.bluetoothDevices.length > 0
+                        implicitHeight: Math.min(bluetoothDeviceRows.implicitHeight, 220)
+                        contentWidth: width
+                        contentHeight: bluetoothDeviceRows.implicitHeight
+                        clip: true
+                        boundsBehavior: Flickable.StopAtBounds
+                        interactive: contentHeight > height
 
-                        delegate: Rectangle {
+                        Column {
+                            id: bluetoothDeviceRows
+                            width: bluetoothDevicesFlickable.width
+                            spacing: 2
+
+                            Repeater {
+                                model: root.bluetoothDevices
+
+                                delegate: Rectangle {
                             required property var modelData
 
-                            Layout.fillWidth: true
+                            width: bluetoothDeviceRows.width
                             implicitHeight: 46
                             radius: 7
                             color: bluetoothDeviceMouse.containsMouse ? Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.16) : "transparent"
@@ -1285,8 +1465,14 @@ PanelWindow {
                                     }
 
                                     Text {
-                                        text: root.isBluetoothConnected(modelData.address) ? "Conectado" : (modelData.paired ? "Pareado" : "Disponível para parear")
-                                        color: root.isBluetoothConnected(modelData.address) ? Config.Theme.colHighlight : Config.Theme.colMuted
+                                        text: root.bluetoothBusyAddress === modelData.address
+                                            ? (root.bluetoothBusyAction === "pair" ? "Pareando…"
+                                               : root.bluetoothBusyAction === "trust" ? "Salvando pareamento…"
+                                               : root.bluetoothBusyAction === "connect" ? "Conectando…"
+                                               : root.bluetoothBusyAction === "disconnect" ? "Desconectando…" : "Removendo…")
+                                            : (root.isBluetoothConnected(modelData.address) ? "Conectado" : (modelData.paired ? "Pareado" : "Disponível para parear"))
+                                        color: root.isBluetoothConnected(modelData.address) || root.bluetoothBusyAddress === modelData.address
+                                            ? Config.Theme.colHighlight : Config.Theme.colMuted
 
                                         font {
                                             family: Config.Theme.fontFamily
@@ -1295,10 +1481,19 @@ PanelWindow {
 
                                     }
 
+                                    Text {
+                                        visible: root.bluetoothBatteryLabel(modelData.address) !== ""
+                                        text: "Bateria " + root.bluetoothBatteryLabel(modelData.address)
+                                        color: Config.Theme.colMuted
+                                        font.family: Config.Theme.fontFamily
+                                        font.pixelSize: 9
+                                    }
+
                                 }
 
                                 Text {
-                                    text: root.isBluetoothConnected(modelData.address) ? "link_off" : "link"
+                                    text: root.bluetoothBusyAddress === modelData.address ? "sync"
+                                        : (root.isBluetoothConnected(modelData.address) ? "link_off" : "link")
                                     color: Config.Theme.colMuted
 
                                     font {
@@ -1322,12 +1517,103 @@ PanelWindow {
                                     else if (modelData.paired)
                                         root.connectBluetooth(modelData.address);
                                     else
-                                        bluetoothPairProcess.exec(["bluetoothctl", "pair", modelData.address]);
+                                        root.pairBluetooth(modelData.address);
                                 }
                             }
 
-                        }
+                                Text {
+                                    id: bluetoothForgetIcon
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.rightMargin: 30
+                                    text: "delete_outline"
+                                    visible: modelData.paired && (bluetoothDeviceMouse.containsMouse || bluetoothForgetMouse.containsMouse)
+                                    color: bluetoothForgetMouse.containsMouse ? Config.Theme.colRed : Config.Theme.colMuted
+                                    font.family: "Material Symbols Rounded"
+                                    font.pixelSize: 17
+                                    z: 2
 
+                                    MouseArea {
+                                        id: bluetoothForgetMouse
+                                        anchors.fill: parent
+                                        anchors.margins: -6
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: root.forgetBluetooth(modelData.address)
+                                    }
+                                }
+
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        visible: root.pendingForgetAddress !== ""
+                        implicitHeight: visible ? forgetConfirmation.implicitHeight + 16 : 0
+                        radius: 7
+                        color: Qt.rgba(Config.Theme.colRed.r, Config.Theme.colRed.g, Config.Theme.colRed.b, 0.14)
+
+                        ColumnLayout {
+                            id: forgetConfirmation
+                            anchors.fill: parent
+                            anchors.margins: 8
+                            spacing: 6
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Esquecer “" + root.bluetoothName(root.pendingForgetAddress) + "”?"
+                                color: Config.Theme.colFg
+                                wrapMode: Text.Wrap
+                                font.family: Config.Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 8
+
+                                Item { Layout.fillWidth: true }
+
+                                Text {
+                                    text: "Cancelar"
+                                    color: Config.Theme.colMuted
+                                    font.family: Config.Theme.fontFamily
+                                    font.pixelSize: 10
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        anchors.margins: -5
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: root.pendingForgetAddress = ""
+                                    }
+                                }
+
+                                Text {
+                                    text: "Esquecer"
+                                    color: Config.Theme.colRed
+                                    font.family: Config.Theme.fontFamily
+                                    font.pixelSize: 10
+                                    font.bold: true
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        anchors.margins: -5
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: root.confirmBluetoothForget()
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        visible: root.bluetoothActionMessage !== ""
+                        text: root.bluetoothActionMessage
+                        color: Config.Theme.colRed
+                        wrapMode: Text.Wrap
+                        font.family: Config.Theme.fontFamily
+                        font.pixelSize: 10
                     }
 
                     /*

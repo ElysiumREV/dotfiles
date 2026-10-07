@@ -6,3 +6,5 @@ singleton SystemStats 1.0 SystemStats.qml
 singleton WallpaperManager 1.0 WallpaperManager.qml
 singleton Volume 1.0 Volume.qml
 singleton WindowControl 1.0 WindowControl.qml
+singleton BluetoothPairingAgent 1.0 BluetoothPairingAgent.qml
+singleton Notifications 1.0 Notifications.qml

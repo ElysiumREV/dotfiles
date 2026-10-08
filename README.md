@@ -19,4 +19,4 @@
 
 These dotfiles are free to use, modify, and share. Wallpapers may have different copyrights, i got all the wallpapers from wallhaven.cc — check before redistribution.
 
-My dotfiles are heavily inspired and by some very cool shell setup i've seen like Caelestia shell and End-4 shell, i find those two specially really beautiful and cool so i tried to make some features i've seen on them.
+My dotfiles are heavily inspired and by some very cool shell setup i've seen like the [Caelestia Shell](https://github.com/caelestia-dots/shell) and [end-4](https://github.com/end-4/dots-hyprland), i find those two specially really beautiful and cool so i tried to make some features i've seen on them.

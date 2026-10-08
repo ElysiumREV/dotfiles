@@ -212,7 +212,7 @@ PACMAN_PKGS=(
   zed
   bitwarden
   discord
-  telegram-desktop
+  telegram
   qbittorrent
   partitionmanager
   gimp
@@ -276,7 +276,7 @@ AUR_PKGS=(
   sunshine-bin
   nautilus-open-any-terminal
   nautilus-admin-gtk4
-  nautilus-checksums
+  nautilus-checksum-converter
   nautilus-image-converter
   davinci-resolve
 )
@@ -549,10 +549,10 @@ install_gpu_drivers() {
 }
 
 # ============================================================
-# SDDM
+# Ly (Display Manager)
 # ============================================================
 
-install_sddm_if_needed() {
+install_ly_if_needed() {
   local current_dm_service=""
 
   if [[ -L /etc/systemd/system/display-manager.service ]]; then
@@ -563,95 +563,23 @@ install_sddm_if_needed() {
     )
   fi
 
-  if [[ -n "$current_dm_service" &&
-    "$current_dm_service" != "sddm" ]]; then
-
-    info "Display manager atual: $current_dm_service"
-
-    warn "O script vai desabilitar e remover o display manager atual."
-
-    sudo systemctl disable \
-      "${current_dm_service}.service" || true
-
-    sudo pacman -Rns \
-      --noconfirm \
-      "$current_dm_service" || true
+  # Se houver um DM diferente do Ly, desabilita ele
+  if [[ -n "$current_dm_service" && "$current_dm_service" != "ly" ]]; then
+    info "Display manager atual detectado: $current_dm_service"
+    warn "Desabilitando o display manager atual ($current_dm_service)..."
+    sudo systemctl disable "${current_dm_service}.service" || true
   fi
 
-  info "Instalando SDDM..."
-
-  sudo pacman -S \
-    --noconfirm \
-    --needed \
-    sddm
-
-  sudo systemctl enable sddm
-
-  success "SDDM instalado e habilitado."
-}
-
-# ============================================================
-# SilentSDDM
-# ============================================================
-
-install_sddm_theme() {
-  local theme_dir="/usr/share/sddm/themes/silent"
-  local sddm_conf="/etc/sddm.conf"
-
-  if [[ -d "$theme_dir" ]] &&
-    grep -Pzq \
-      '\[Theme\]\nCurrent=silent' \
-      "$sddm_conf" 2>/dev/null; then
-
-    success "Tema SilentSDDM já está aplicado, pulando."
-    return
+  info "Instalando Ly..."
+  # Ly geralmente está no AUR (ly-git) ou repositórios específicos.
+  if ! paru -S --noconfirm --needed ly; then
+    die "Falha ao instalar o Ly. Verifique a conexão ou o repositório."
   fi
 
-  info "Instalando SilentSDDM..."
+  info "Habilitando Ly..."
+  sudo systemctl enable ly.service
 
-  local tmp
-  tmp=$(mktemp -d)
-
-  if ! git clone \
-    https://github.com/uiriansan/SilentSDDM.git \
-    "$tmp/SilentSDDM"; then
-
-    rm -rf "$tmp"
-
-    WARNINGS+=(
-      "Não foi possível clonar o SilentSDDM."
-    )
-
-    warn "Falha ao baixar SilentSDDM."
-    return
-  fi
-
-  if [[ -f "$tmp/SilentSDDM/install.sh" ]]; then
-
-    chmod +x "$tmp/SilentSDDM/install.sh"
-
-    (
-      cd "$tmp/SilentSDDM"
-      ./install.sh
-    ) || {
-      WARNINGS+=(
-        "SilentSDDM falhou durante a instalação."
-      )
-
-      warn "SilentSDDM falhou durante a instalação."
-    }
-
-    success "SilentSDDM processado."
-
-  else
-    warn "SilentSDDM install.sh não encontrado."
-
-    WARNINGS+=(
-      "SilentSDDM install.sh não encontrado."
-    )
-  fi
-
-  rm -rf "$tmp"
+  success "Troca de Display Manager concluída com sucesso, pode desinstalar o outro."
 }
 
 # ============================================================
@@ -828,9 +756,7 @@ install_dependencies() {
 
   install_gpu_drivers
 
-  install_sddm_if_needed
-
-  install_sddm_theme
+  install_ly_if_needed
 
   install_extra_packages
 

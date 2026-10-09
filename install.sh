@@ -104,6 +104,7 @@ PACMAN_PKGS=(
   pciutils
   unixodbc
   eza
+  plasma-workspace
 
   android-tools
   gvfs-mtp
@@ -275,6 +276,7 @@ AMD_PKGS=(
 # ------------------------------------------------------------
 
 AUR_PKGS=(
+  darkly-bin
   kde-material-you-colors
   hayase-desktop-bin
   stremio-enhanced-bin
@@ -689,7 +691,6 @@ Pode demorar bastante. [y/N]${RESET}"
 # FISH
 # ============================================================
 
-
 setup_fish() {
   info "Configurando Fish como shell padrão..."
 
@@ -730,7 +731,7 @@ setup_fish() {
     fish -c "fisher update"
     success "Plugins do Fisher sincronizados."
   fi
-}fi
+  }fi
 }
 
 # ============================================================

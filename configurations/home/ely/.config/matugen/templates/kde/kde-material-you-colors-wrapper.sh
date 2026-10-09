@@ -47,4 +47,5 @@ else
   esac
 fi
 
-kde-material-you-colors "$mode_flag" --color "$color" -sv "$sv_num"
+LOG="$XDG_STATE_HOME/kde-material-you-colors.log"
+setsid -f kde-material-you-colors "$mode_flag" --color "$color" -sv "$sv_num" >>"$LOG" 2>&1 </dev/null

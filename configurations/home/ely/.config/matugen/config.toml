@@ -9,8 +9,6 @@ quickshell = { input_path = "./templates/quickshell.json", output_path = '~/.loc
 
 steam = { input_path = './templates/steam.css', output_path = '~/.config/AdwSteamGtk/custom.css', post_hook =  'adwaita-steam-gtk -i' }
 
-mako = { input_path = './templates/mako', output_path = '~/.config/mako/mako-colors', post_hook = 'makoctl reload' }
-
 spotify = { input_path = './templates/spicetify.ini', output_path = '~/.config/spicetify/Themes/Sleek/color.ini', post_hook = 'pgrep -x spicetify > /dev/null || spicetify apply -n' }
 
 zed = { input_path = './templates/zed-colors.json', output_path = '~/.config/zed/themes/matugen.json' }

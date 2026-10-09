@@ -96,9 +96,9 @@ PACMAN_PKGS=(
   # Base / Utilities
   git
   base-devel
-  zsh
-  zsh-autosuggestions
-  zsh-syntax-highlighting
+  fish
+  fisher
+  starship
   vim
   neovim
   pciutils
@@ -144,8 +144,7 @@ PACMAN_PKGS=(
   matugen
 
   # File manager
-  nemo
-  nemo-fileroller
+  nautilus
   ffmpegthumbnailer
 
   # Audio
@@ -212,7 +211,7 @@ PACMAN_PKGS=(
   zed
   bitwarden
   discord
-  telegram
+  telegram-desktop
   qbittorrent
   partitionmanager
   gimp
@@ -270,7 +269,6 @@ AMD_PKGS=(
 # ------------------------------------------------------------
 
 AUR_PKGS=(
-  zsh-theme-powerlevel10k-git
   hayase-desktop-bin
   stremio-enhanced-bin
   sunshine-bin
@@ -577,7 +575,7 @@ install_ly_if_needed() {
   fi
 
   info "Habilitando Ly..."
-  sudo systemctl enable ly.service
+  sudo systemctl enable ly@tty1.service
 
   success "Troca de Display Manager concluída com sucesso, pode desinstalar o outro."
 }
@@ -608,38 +606,6 @@ copy_dotfiles() {
   else
     warn ".config não encontrado em:"
     warn "$DOTFILES_SOURCE"
-  fi
-
-  # ----------------------------------------------------------
-  # .zshrc
-  # ----------------------------------------------------------
-
-  if [[ -f "$DOTFILES_SOURCE/.zshrc" ]]; then
-
-    cp \
-      "$DOTFILES_SOURCE/.zshrc" \
-      "$HOME/.zshrc"
-
-    success ".zshrc copiado."
-
-  else
-    warn ".zshrc não encontrado."
-  fi
-
-  # ----------------------------------------------------------
-  # .p10k.zsh
-  # ----------------------------------------------------------
-
-  if [[ -f "$DOTFILES_SOURCE/.p10k.zsh" ]]; then
-
-    cp \
-      "$DOTFILES_SOURCE/.p10k.zsh" \
-      "$HOME/.p10k.zsh"
-
-    success ".p10k.zsh copiado."
-
-  else
-    warn ".p10k.zsh não encontrado."
   fi
 
   # ----------------------------------------------------------
@@ -713,31 +679,37 @@ Pode demorar bastante. [y/N]${RESET}"
 }
 
 # ============================================================
-# ZSH
+# FISH
 # ============================================================
 
-setup_zsh() {
-  info "Configurando Zsh como shell padrão..."
+setup_fish() {
+  info "Configurando Fish como shell padrão..."
 
-  local zsh_path
+  local fish_path
 
-  zsh_path=$(command -v zsh || true)
+  fish_path=$(command -v fish || true)
 
-  if [[ -z "$zsh_path" ]]; then
-    warn "zsh não foi encontrado."
+  if [[ -z "$fish_path" ]]; then
+    warn "fish não foi encontrado."
     return
   fi
 
-  if [[ "${SHELL:-}" != "$zsh_path" ]]; then
+  if [[ "${SHELL:-}" != "$fish_path" ]]; then
 
     sudo chsh \
-      -s "$zsh_path" \
+      -s "$fish_path" \
       "$(id -un)"
 
-    success "Zsh definido como shell padrão."
+    success "Fish definido como shell padrão."
 
   else
-    success "Zsh já é o shell padrão."
+    success "Fish já é o shell padrão."
+
+  if [[ -f "$HOME/.config/fish/fish_plugins" ]]; then
+    info "Sincronizando plugins do Fisher..."
+    fish -c "fisher install"
+    success "Plugins do Fisher instalados."
+  fi
   fi
 }
 
@@ -770,7 +742,7 @@ install_dependencies() {
 update_configuration() {
   copy_dotfiles
 
-  setup_zsh
+  setup_fish
 
   if command -v hyprctl >/dev/null 2>&1; then
     hyprctl reload 2>/dev/null || true

@@ -29,7 +29,7 @@ Singleton {
 
         const extension = wallpaper.path.split(/[?#]/)[0].split(".").pop().toLowerCase();
         const safeExtension = ["jpg", "jpeg", "png", "webp", "avif", "bmp"].includes(extension)
-            ? extension : "jpg";
+              ? extension : "jpg";
         const safeId = wallpaper.id.toString().replace(/[^a-zA-Z0-9_-]/g, "");
         if (!safeId)
             return;
@@ -39,19 +39,23 @@ Singleton {
         busy = true;
         status = "Baixando wallpaper…";
         downloadProcess.exec([
-            "sh", "-c",
-            "mkdir -p \"$2\" && exec curl -fL --retry 2 --connect-timeout 15 --max-time 180 --output \"$3\" \"$1\"",
-            "wallhaven-download", wallpaper.path, defaultDirectory, pendingPath
-        ]);
+                                 "sh", "-c",
+                                 "mkdir -p \"$2\" && exec curl -fL --retry 2 --connect-timeout 15 --max-time 180 --output \"$3\" \"$1\"",
+                                 "wallhaven-download", wallpaper.path, defaultDirectory, pendingPath
+                             ]);
     }
 
     function switchWallpaper() {
         status = "Aplicando wallpaper…";
         wallpaperProcess.exec([
-            "sh", "-c",
-            "if command -v swww >/dev/null 2>&1; then exec swww img \"$1\"; else exec awww img \"$1\"; fi",
-            "wallpaper-switch", pendingPath
-        ]);
+                                  "sh", "-c",
+                                  `if command -v swww >/dev/null 2>&1; then
+exec swww img "$1" --transition-type random --transition-fps 60
+else
+exec awww img "$1" --transition-type random --transition-fps 60
+fi`,
+                                  "wallpaper-switch", pendingPath
+                              ]);
     }
 
     function finish(success, message) {
@@ -79,10 +83,10 @@ Singleton {
                 return;
             }
             currentLinkProcess.exec([
-                "sh", "-c",
-                "mkdir -p \"$2\" && ln -sfn \"$1\" \"$2/.current-wallpaper.png\"",
-                "wallpaper-link", root.pendingPath, root.defaultDirectory
-            ]);
+                                        "sh", "-c",
+                                        "mkdir -p \"$2\" && ln -sfn \"$1\" \"$2/.current-wallpaper.png\"",
+                                        "wallpaper-link", root.pendingPath, root.defaultDirectory
+                                    ]);
         }
     }
 
@@ -94,8 +98,8 @@ Singleton {
                 return;
             }
             matugenProcess.exec([
-                "bash", Quickshell.env("HOME") + "/.config/scripts/updateWall.sh"
-            ]);
+                                    "bash", Quickshell.env("HOME") + "/.config/scripts/updateWall.sh"
+                                ]);
         }
     }
 
@@ -103,8 +107,8 @@ Singleton {
         id: matugenProcess
         onExited: (exitCode, exitStatus) => {
             root.finish(true, exitCode === 0
-                ? "Wallpaper e paleta atualizados."
-                : "Wallpaper trocado, mas a geração de cores pelo Matugen falhou.");
+                        ? "Wallpaper e paleta atualizados."
+                        : "Wallpaper trocado, mas a geração de cores pelo Matugen falhou.");
         }
     }
 }

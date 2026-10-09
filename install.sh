@@ -137,7 +137,6 @@ PACMAN_PKGS=(
   hyprpicker
   hyprpolkitagent
   hyprshutdown
-  mako
   cliphist
   wl-clipboard
   hyprshot
@@ -218,6 +217,8 @@ PACMAN_PKGS=(
 
   # GTK / Qt / Theming
   xdg-desktop-portal-hyprland
+  xdg-desktop-portal-gtk
+  xdg-desktop-portal-kde
   qt5ct
   qt6ct
   kvantum
@@ -225,6 +226,7 @@ PACMAN_PKGS=(
   adw-gtk-theme
   nwg-look
   papirus-icon-theme
+  breeze-plus
 
   # Fonts
   ttf-jetbrains-mono-nerd
@@ -234,6 +236,10 @@ PACMAN_PKGS=(
   noto-fonts-emoji
   noto-fonts-extra
   ttf-liberation
+  otf-space-grotesk
+  ttf-readex-pro
+  ttf-rubik-vf
+  ttf-twemoji
 
   # Remote desktop / streaming
   moonlight-qt

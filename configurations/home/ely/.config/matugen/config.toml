@@ -25,3 +25,6 @@ hyprland = { input_path = './templates/hyprland-colors.lua', output_path = '~/.c
 neovim = { input_path = "./templates/nvim-colors.json", output_path = "~/.config/matugen/themes/nvim-colors.json", post_hook = "pkill -SIGUSR1 nvim" }
 
 pywalfox = { input_path = "./templates/pywalfox-colors.json", output_path = "~/.cache/wal/colors.json", post_hook = "pywalfox update" }
+
+kde = { input_path = './templates/kde/color.txt', output_path = '~/.local/state/quickshell/generated/color.txt', post_hook = 'bash ~/.config/matugen/templates/kde/kde-material-you-colors-wrapper.sh' }
+

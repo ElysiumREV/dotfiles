@@ -13,9 +13,6 @@ hl.on("hyprland.start", function()
 
 	-- Panel / system tray / notifications
 	hl.exec_cmd("qs")
-	-- hl.exec_cmd("mako")
-	-- hl.exec_cmd("nm-applet")
-	-- hl.exec_cmd("blueman-applet")
 
 	-- Hyprland ecosystem
 	hl.exec_cmd("hyprsunset")
@@ -28,7 +25,6 @@ hl.on("hyprland.start", function()
 	-- hl.exec_cmd("discord --start-minimized")
 	-- hl.exec_cmd("vesktop --start-minimized")
 	-- hl.exec_cmd("steam -silent")
-	hl.exec_cmd("vicinae server")
 
 	hl.exec_cmd("udiskie")
 	-- hl.exec_cmd("easyeffects --gapplication-service")

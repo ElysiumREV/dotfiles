@@ -269,6 +269,7 @@ AMD_PKGS=(
 # ------------------------------------------------------------
 
 AUR_PKGS=(
+  kde-material-you-colors
   hayase-desktop-bin
   stremio-enhanced-bin
   sunshine-bin
@@ -682,35 +683,48 @@ Pode demorar bastante. [y/N]${RESET}"
 # FISH
 # ============================================================
 
+
 setup_fish() {
   info "Configurando Fish como shell padrão..."
 
-  local fish_path
+  local fish_path current_shell user_name
 
-  fish_path=$(command -v fish || true)
+  user_name="$(id -un)"
+  fish_path="$(command -v fish || true)"
 
-  if [[ -z "$fish_path" ]]; then
-    warn "fish não foi encontrado."
-    return
+  if [[ -z "$fish_path" || ! -x "$fish_path" ]]; then
+    warn "Fish não foi encontrado ou não é executável."
+    return 1
   fi
 
-  if [[ "${SHELL:-}" != "$fish_path" ]]; then
+  # Garante que o Fish esteja listado como shell válido.
+  if ! grep -Fxq "$fish_path" /etc/shells; then
+    info "Adicionando Fish a /etc/shells..."
+    echo "$fish_path" | sudo tee -a /etc/shells >/dev/null
+  fi
 
-    sudo chsh \
-      -s "$fish_path" \
-      "$(id -un)"
+  # Consulta o shell registrado no banco de usuários.
+  current_shell="$(getent passwd "$user_name" | cut -d: -f7)"
+
+  if [[ "$current_shell" != "$fish_path" ]]; then
+    info "Alterando shell padrão para Fish..."
+
+    if ! sudo usermod --shell "$fish_path" "$user_name"; then
+      die "Não foi possível definir o Fish como shell padrão."
+    fi
 
     success "Fish definido como shell padrão."
-
   else
     success "Fish já é o shell padrão."
+  fi
 
+  # Sincroniza os plugins do Fisher, se houver configuração.
   if [[ -f "$HOME/.config/fish/fish_plugins" ]]; then
     info "Sincronizando plugins do Fisher..."
-    fish -c "fisher install"
-    success "Plugins do Fisher instalados."
+    fish -c "fisher update"
+    success "Plugins do Fisher sincronizados."
   fi
-  fi
+}fi
 }
 
 # ============================================================

@@ -731,7 +731,6 @@ setup_fish() {
     fish -c "fisher update"
     success "Plugins do Fisher sincronizados."
   fi
-  }fi
 }
 
 # ============================================================

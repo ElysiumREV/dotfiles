@@ -7,6 +7,7 @@ SETUVAR _fisher_upgraded_to_4_4:\x1d
 SETUVAR _tide_left_items:os\x1epwd\x1egit\x1enewline\x1echaracter
 SETUVAR _tide_right_items:status\x1ecmd_duration\x1econtext\x1ejobs\x1enode\x1epython\x1erustc\x1ejava\x1ego
 SETUVAR fish_greeting:
+SETUVAR fish_user_paths:/home/ely/\x2espicetify\x1e/home/ely/\x2elocal/bin
 SETUVAR tide_aws_bg_color:FF9900
 SETUVAR tide_aws_color:232F3E
 SETUVAR tide_aws_icon:\uf270

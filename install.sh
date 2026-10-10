@@ -144,7 +144,19 @@ PACMAN_PKGS=(
   matugen
 
   # File manager
-  nautilus
+  dolphin
+  ark
+  ffmpegthumbs
+  kdegraphics-thumbnailers
+  kio-admin
+  kde-cli-tools
+  purpose
+  kimageformats
+  qt6-imageformats
+  unrar
+  zip
+  unzip
+  7zip
   ffmpegthumbnailer
 
   # Audio

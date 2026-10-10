@@ -1,6 +1,6 @@
 [Default Applications]
-inode/directory=org.gnome.Nautilus.desktop
-application/x-gnome-saved-search=org.gnome.Nautilus.desktop
+inode/directory=org.kde.dolphin
+application/x-gnome-saved-search=org.kde.dolphin
 video/mp4=mpv.desktop
 video/x-matroska=mpv.desktop
 video/webm=mpv.desktop
@@ -35,6 +35,10 @@ x-scheme-handler/deadlock-modmanager=deadlock-modmanager-handler.desktop
 x-scheme-handler/dlmm=deadlock-modmanager-handler.desktop
 application/xml=featherpad.desktop
 x-scheme-handler/antigravity=antigravity.desktop
+application/zip=org.kde.ark.desktop
+application/x-7z-compressed=org.kde.ark.desktop
+application/vnd.rar=org.kde.ark.desktop
+application/x-tar=org.kde.ark.desktop
 
 [Added Associations]
 application/x-msdownload=wine.desktop;

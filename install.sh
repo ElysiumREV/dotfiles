@@ -227,7 +227,6 @@ PACMAN_PKGS=(
   adw-gtk-theme
   nwg-look
   papirus-icon-theme
-  breeze-plus
 
   # Fonts
   ttf-jetbrains-mono-nerd
@@ -237,16 +236,13 @@ PACMAN_PKGS=(
   noto-fonts-emoji
   noto-fonts-extra
   ttf-liberation
-  otf-space-grotesk
-  ttf-readex-pro
-  ttf-rubik-vf
-  ttf-twemoji
+  #otf-space-grotesk
+  #ttf-readex-pro
+  #ttf-rubik-vf
+  #ttf-twemoji
 
   # Remote desktop / streaming
   moonlight-qt
-
-  # AI / dev tools
-  opencode
 )
 
 # ------------------------------------------------------------
@@ -276,15 +272,13 @@ AMD_PKGS=(
 # ------------------------------------------------------------
 
 AUR_PKGS=(
+  opencode-beta
+  breeze-plus
   darkly-bin
   kde-material-you-colors
   hayase-desktop-bin
   stremio-enhanced-bin
   sunshine-bin
-  nautilus-open-any-terminal
-  nautilus-admin-gtk4
-  nautilus-checksum-converter
-  nautilus-image-converter
   davinci-resolve
 )
 

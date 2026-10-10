@@ -165,10 +165,15 @@ PanelWindow {
     }
 
     function storePage(query, page, data, responseLastPage, resolution) {
+        const key = cacheKey(query, page, resolution);
         const nextCache = {};
-        for (const key in pageCache)
-            nextCache[key] = pageCache[key];
-        nextCache[cacheKey(query, page, resolution)] = {
+        const keys = Object.keys(pageCache).filter(k => k !== key);
+        const maxPages = 8;
+        const startIndex = keys.length >= maxPages ? (keys.length - maxPages + 1) : 0;
+        for (let i = startIndex; i < keys.length; i++)
+            nextCache[keys[i]] = pageCache[keys[i]];
+
+        nextCache[key] = {
             data: data,
             currentPage: page,
             lastPage: responseLastPage,
@@ -589,6 +594,8 @@ PanelWindow {
                             Image {
                                 anchors.fill: parent
                                 source: (modelData.thumbs && modelData.thumbs.large) || ""
+                                sourceSize.width: 480
+                                sourceSize.height: 360
                                 asynchronous: true
                                 cache: true
                                 fillMode: Image.PreserveAspectCrop

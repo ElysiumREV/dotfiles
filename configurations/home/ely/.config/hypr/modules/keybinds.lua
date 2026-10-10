@@ -3,8 +3,7 @@
 --------------------
 
 local terminal = "kitty"
-local fileManager = "nautilus --new-window"
-local menu = "vicinae open"
+local fileManager = "dolphin"
 local browser = "firefox"
 local mainMod = "SUPER"
 

@@ -34,8 +34,20 @@ Singleton {
                 unread: !centerVisible,
                 active: true
             };
-            history = [record].concat(history.filter(item => item.id !== record.id))
-                .slice(0, historyLimit);
+            const nextHistory = [record].concat(history.filter(item => item.id !== record.id));
+            if (nextHistory.length > historyLimit) {
+                const evicted = nextHistory.slice(historyLimit);
+                for (const item of evicted) {
+                    if (item.notification) {
+                        item.notification.tracked = false;
+                        if (item.active)
+                            item.notification.dismiss();
+                    }
+                }
+                history = nextHistory.slice(0, historyLimit);
+            } else {
+                history = nextHistory;
+            }
         }
 
         if (!doNotDisturb) {
@@ -61,9 +73,18 @@ Singleton {
     function dismiss(id) {
         const notification = findActive(id);
         removePopup(id);
-        history = history.filter(item => item.id !== id);
-        if (notification)
+        history = history.filter(item => {
+            if (item.id === id) {
+                if (item.notification)
+                    item.notification.tracked = false;
+                return false;
+            }
+            return true;
+        });
+        if (notification) {
+            notification.tracked = false;
             notification.dismiss();
+        }
     }
 
     function archiveFromPopup(id) {
@@ -91,11 +112,17 @@ Singleton {
     }
 
     function handleClosed(id) {
+        const notification = findActive(id);
+        if (notification)
+            notification.tracked = false;
+
         activeNotifications = activeNotifications.filter(item => item.id !== id);
         removePopup(id);
         history = history.map(item => {
             if (item.id !== id)
                 return item;
+            if (item.notification)
+                item.notification.tracked = false;
             return {
                 id: item.id,
                 appName: item.appName,
@@ -115,9 +142,15 @@ Singleton {
     function clearHistory() {
         const active = activeNotifications.slice();
         popupNotifications = [];
+        for (const item of history) {
+            if (item.notification)
+                item.notification.tracked = false;
+        }
         history = [];
-        for (const notification of active)
+        for (const notification of active) {
+            notification.tracked = false;
             notification.dismiss();
+        }
     }
 
     function markAllRead() {
@@ -174,8 +207,10 @@ Singleton {
         delegate: Connections {
             target: modelData
             function onClosed(reason) {
-                if (target)
+                if (target) {
+                    target.tracked = false;
                     root.handleClosed(target.id);
+                }
             }
         }
     }

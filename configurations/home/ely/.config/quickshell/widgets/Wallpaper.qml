@@ -56,6 +56,7 @@ PanelWindow {
     function closePicker() {
         Services.WindowControl.wallpaperVisible = false;
         Services.WindowControl.wallpaperMonitor = null;
+        wallpapers = [];
     }
 
     function selectIndex(index) {
@@ -217,6 +218,7 @@ PanelWindow {
             Qt.callLater(() => wallpaperGrid.forceActiveFocus());
         } else {
             searchText = "";
+            wallpapers = [];
         }
     }
 
@@ -417,6 +419,8 @@ PanelWindow {
                             Image {
                                 anchors.fill: parent
                                 source: "file://" + modelData
+                                sourceSize.width: 480
+                                sourceSize.height: 360
                                 asynchronous: true
                                 cache: true
                                 fillMode: Image.PreserveAspectCrop

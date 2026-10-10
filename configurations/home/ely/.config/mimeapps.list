@@ -34,7 +34,9 @@ x-scheme-handler/deadlock-mod-manager=deadlock-modmanager-handler.desktop
 x-scheme-handler/deadlock-modmanager=deadlock-modmanager-handler.desktop
 x-scheme-handler/dlmm=deadlock-modmanager-handler.desktop
 application/xml=featherpad.desktop
+x-scheme-handler/antigravity=antigravity.desktop
 
 [Added Associations]
 application/x-msdownload=wine.desktop;
 application/xml=featherpad.desktop;
+x-scheme-handler/antigravity=antigravity.desktop;

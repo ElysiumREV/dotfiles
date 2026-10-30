@@ -49,4 +49,3 @@ x-scheme-handler/https=firefox.desktop
 x-scheme-handler/jetbrains=jetbrainsd.desktop
 x-scheme-handler/stremio=stremio-enhanced.desktop
 x-scheme-handler/unknown=firefox.desktop
-x-scheme-handler/fluxer=app.fluxer.FluxerDesktop.desktop

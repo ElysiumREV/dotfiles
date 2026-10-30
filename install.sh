@@ -5,18 +5,18 @@ set -e
 # ============================================================
 # Dotfiles Installer
 #
-# Supported:
+# Suportado:
 #   - Arch Linux
-#   - CachyOS (and other Arch-based distros)
+#   - CachyOS (e outras distros baseadas em Arch)
 #
-# Uses:
+# Usa:
 #   - pacman
 #   - paru/AUR
 #   - multilib
 # ============================================================
 
 # ------------------------------------------------------------
-# Colors
+# Cores
 # ------------------------------------------------------------
 
 RED='\033[0;31m'
@@ -48,7 +48,7 @@ die() {
 }
 
 # ------------------------------------------------------------
-# Basic checks
+# Verificações básicas
 # ------------------------------------------------------------
 
 [[ $EUID -eq 0 ]] && die \
@@ -63,7 +63,7 @@ GPU_VENDOR="unknown"
 PACMAN_DB_SYNCED=0
 
 # ------------------------------------------------------------
-# Distribution check
+# Verificação da distribuição
 # ------------------------------------------------------------
 
 check_distro() {
@@ -74,9 +74,7 @@ check_distro() {
   . /etc/os-release
 
   case "$ID" in
-  arch | cachyos)
-    ;;
-
+  arch | cachyos) ;;
   *)
     if [[ "${ID_LIKE:-}" != *arch* ]]; then
       die "Distribuição não suportada: ${PRETTY_NAME:-$ID}"
@@ -90,31 +88,40 @@ check_distro() {
 }
 
 # ============================================================
-# ARCH PACKAGES
+# PACOTES (pacman)
+#
+# Organizados por função. PACMAN_PKGS = o que as configs
+# precisam para funcionar. PACMAN_APPS = apps do dia a dia
+# que entram na instalação padrão.
 # ============================================================
 
-PACMAN_PKGS=(
-  # Base para usar os dotfiles
+PKGS_BASE=(
   git
   base-devel
+  curl
+  pciutils
   flatpak
+  xdg-user-dirs
+  gvfs
+  gvfs-mtp
+  gnome-keyring
   fish
   starship
   neovim
+  vim
   kitty
-  firefox
-  dolphin
-  xdg-user-dirs
-  gvfs
-  gnome-keyring
-  curl
-  pciutils
-
-  # Utilitários para o uso diário
   fastfetch
   btop
+  eza
+  zip
+  unzip
+  unrar
+  7zip
+  python
+)
 
-  # Sessão Hyprland e componentes usados pela configuração
+# Sessão Hyprland e componentes chamados pelas configs
+PKGS_SESSION=(
   hyprland
   quickshell
   hypridle
@@ -130,79 +137,143 @@ PACMAN_PKGS=(
   grim
   imagemagick
   wl-clipboard
+  cliphist
+  hyprshot
   playerctl
+)
+
+# Serviços de sistema que o Quickshell consulta
+PKGS_SYSTEM=(
+  networkmanager
+  wpa_supplicant
+  network-manager-applet
   bluez
   bluez-utils
-  networkmanager
+  blueman
   upower
+  power-profiles-daemon
+  udisks2
+  ufw
+  cups
+  cups-pk-helper
+  system-config-printer
+  android-tools
+  unixodbc
+)
 
-  # Áudio e integração Wayland
+# Áudio. noise-suppression-for-voice fornece o librnnoise_ladspa.so
+# exigido por pipewire.conf.d/99-input-denoising.conf
+PKGS_AUDIO=(
   pipewire
   pipewire-pulse
   pipewire-alsa
   wireplumber
   rtkit
+  gst-plugin-pipewire
+  gst-plugins-base-libs
+  pavucontrol
+  noise-suppression-for-voice
+)
+
+# Portais, Wayland para Qt e tema. O hyprland-portals.conf usa
+# hyprland + gtk (padrão) e kde (FileChooser), então os três
+# portais precisam estar instalados.
+PKGS_THEME=(
   xdg-desktop-portal-hyprland
   xdg-desktop-portal-gtk
+  xdg-desktop-portal-kde
+  qt5-wayland
+  qt6-wayland
+  qt5ct
+  qt6ct
+  kvantum
+  kvantum-qt5
+  adw-gtk-theme
+  nwg-look
+  papirus-icon-theme
+)
 
-  # Fontes básicas para a interface
+PKGS_FONTS=(
   ttf-jetbrains-mono-nerd
   ttf-material-symbols-variable
   noto-fonts
   noto-fonts-emoji
+  noto-fonts-cjk
+  noto-fonts-extra
+  ttf-liberation
 )
 
-# Aplicativos e recursos extras; ficam fora da instalação padrão.
-OPTIONAL_SYSTEM_PKGS=(
-  vim eza unixodbc android-tools gvfs-mtp wpa_supplicant ufw
-  cups cups-pk-helper system-config-printer power-profiles-daemon udisks2
-  cliphist hyprshot network-manager-applet blueman
-  ark ffmpegthumbs kdegraphics-thumbnailers kio-admin kde-cli-tools purpose
-  kimageformats qt6-imageformats unrar zip unzip 7zip ffmpegthumbnailer
+# Dolphin e integração (thumbnails, arquivos compactados, etc.)
+PKGS_FILES=(
+  dolphin
+  dolphin-plugins
+  ark
+  ffmpegthumbs
+  ffmpegthumbnailer
+  kdegraphics-thumbnailers
+  kio-admin
+  kde-cli-tools
+  purpose
+  kimageformats
+  qt6-imageformats
 )
 
-OPTIONAL_MEDIA_PKGS=(
-  easyeffects noise-suppression-for-voice gst-plugin-pipewire gst-plugins-base-libs
-  pavucontrol mpd mpv vlc imv
+PACMAN_PKGS=(
+  "${PKGS_BASE[@]}"
+  "${PKGS_SESSION[@]}"
+  "${PKGS_SYSTEM[@]}"
+  "${PKGS_AUDIO[@]}"
+  "${PKGS_THEME[@]}"
+  "${PKGS_FONTS[@]}"
+  "${PKGS_FILES[@]}"
 )
 
-OPTIONAL_STEAM_PKGS=(
-  steam lib32-alsa-plugins lib32-libva lib32-libjpeg-turbo lib32-gtk3
+# Aplicativos do dia a dia (instalação padrão)
+PACMAN_APPS=(
+  firefox
+  kate
+  zed
+  qbittorrent
+  bitwarden
+  partitionmanager
+  discord
+  telegram-desktop
+  mpd
+  mpv
+  vlc
+  imv
 )
 
-OPTIONAL_GAMING_TOOLS_PKGS=(
-  gamescope mangohud lib32-mangohud umu-launcher protontricks winetricks lutris goverlay
-)
-
-OPTIONAL_GAMING_LIBS_PKGS=(
-  ocl-icd vulkan-tools glfw openal libva giflib mpg123 alsa-plugins lib32-ocl-icd
-)
-
-OPTIONAL_STREAMING_PKGS=(
-  moonlight-qt
-)
-
-OPTIONAL_APPS_PKGS=(
-  featherpad kate obsidian zed qbittorrent
-)
-
-OPTIONAL_COMMUNICATION_PKGS=(
-  bitwarden discord telegram-desktop
-)
-
-OPTIONAL_CREATIVE_PKGS=(
-  gimp partitionmanager spotify-launcher
-)
-
-OPTIONAL_THEMING_PKGS=(
-  xdg-desktop-portal-kde qt5ct qt6ct kvantum kvantum-qt5 adw-gtk-theme nwg-look
-  papirus-icon-theme noto-fonts-cjk noto-fonts-extra ttf-liberation
+# Grupo opcional (pergunta antes de instalar)
+OPTIONAL_GAMING_PKGS=(
+  steam
+  gamescope
+  mangohud
+  lib32-mangohud
+  umu-launcher
+  protontricks
+  winetricks
+  lutris
+  goverlay
+  ocl-icd
+  lib32-ocl-icd
+  vulkan-tools
+  glfw
+  openal
+  libva
+  giflib
+  mpg123
+  alsa-plugins
+  lib32-alsa-plugins
+  lib32-libva
+  lib32-libjpeg-turbo
+  lib32-gtk3
 )
 
 OPTIONAL_SELECTED_PKGS=()
 
 # ------------------------------------------------------------
-# AMD graphics stack
+# Stack gráfico AMD
 # ------------------------------------------------------------
 
 AMD_PKGS=(
@@ -216,19 +287,11 @@ AMD_PKGS=(
 # ------------------------------------------------------------
 
 AUR_PKGS=(
-  opencode-beta
   breeze-plus
   darkly-bin
   kde-material-you-colors
-  spicetify-cli
-)
-
-# ------------------------------------------------------------
-# Heavy packages
-# ------------------------------------------------------------
-
-HEAVY_PKGS=(
-  "ladspa"
+  spotifast-bin
+  zapfast-bin
 )
 
 # ============================================================
@@ -310,16 +373,24 @@ install_paru() {
   success "paru instalado."
 }
 
+sync_system_once() {
+  info "Atualizando o sistema e sincronizando os repositórios uma vez..."
+  sudo pacman -Syu --noconfirm
+  PACMAN_DB_SYNCED=1
+}
+
 install_arch_system_packages() {
   if [[ "$PACMAN_DB_SYNCED" != "1" ]]; then
     die "As bases do Pacman ainda não foram sincronizadas com atualização completa."
   fi
 
-  validate_pacman_packages "${PACMAN_PKGS[@]}"
+  local all_pkgs=("${PACMAN_PKGS[@]}" "${PACMAN_APPS[@]}")
+
+  validate_pacman_packages "${all_pkgs[@]}"
 
   info "Instalando pacotes Arch..."
 
-  sudo pacman -S --noconfirm --needed "${PACMAN_PKGS[@]}"
+  sudo pacman -S --noconfirm --needed "${all_pkgs[@]}"
 
   success "Pacotes Arch instalados."
 }
@@ -329,6 +400,8 @@ install_optional_group() {
   local group_variable="$2"
   local -n group_packages="$group_variable"
   local response
+
+  [[ ${#group_packages[@]} -eq 0 ]] && return 0
 
   echo
   echo -e "${YELLOW}${BOLD}${group_name}:${RESET}"
@@ -343,16 +416,7 @@ install_optional_group() {
 }
 
 install_optional_arch_packages() {
-  install_optional_group "Ferramentas e integração" OPTIONAL_SYSTEM_PKGS
-  install_optional_group "Áudio e mídia" OPTIONAL_MEDIA_PKGS
-  install_optional_group "Steam e bibliotecas 32-bit" OPTIONAL_STEAM_PKGS
-  install_optional_group "Ferramentas de jogos" OPTIONAL_GAMING_TOOLS_PKGS
-  install_optional_group "Bibliotecas e ferramentas gráficas" OPTIONAL_GAMING_LIBS_PKGS
-  install_optional_group "Streaming remoto" OPTIONAL_STREAMING_PKGS
-  install_optional_group "Aplicativos" OPTIONAL_APPS_PKGS
-  install_optional_group "Comunicação" OPTIONAL_COMMUNICATION_PKGS
-  install_optional_group "Criação e utilitários gráficos" OPTIONAL_CREATIVE_PKGS
-  install_optional_group "Temas e personalização" OPTIONAL_THEMING_PKGS
+  install_optional_group "Jogos (Steam, Proton, ferramentas)" OPTIONAL_GAMING_PKGS
 
   if [[ ${#OPTIONAL_SELECTED_PKGS[@]} -eq 0 ]]; then
     return
@@ -363,11 +427,9 @@ install_optional_arch_packages() {
   success "Grupos opcionais instalados."
 }
 
-sync_system_once() {
-  info "Atualizando o sistema e sincronizando os repositórios uma vez..."
-  sudo pacman -Syu --noconfirm
-  PACMAN_DB_SYNCED=1
-}
+# ============================================================
+# FLATPAK E SERVIÇOS
+# ============================================================
 
 configure_flatpak() {
   info "Configurando Flathub para o usuário atual..."
@@ -414,10 +476,14 @@ ensure_essential_services() {
   ensure_system_service NetworkManager.service
   ensure_system_service bluetooth.service
   ensure_system_service upower.service
+  ensure_system_service cups.socket
 
   ensure_user_service pipewire.socket
   ensure_user_service pipewire-pulse.socket
   ensure_user_service wireplumber.service
+
+  # ufw é instalado mas não é ativado automaticamente
+  # (mexe no firewall). Para ativar: sudo systemctl enable --now ufw && sudo ufw enable
 }
 
 # ============================================================
@@ -465,7 +531,7 @@ install_extra_packages() {
 }
 
 # ============================================================
-# GPU DETECTION
+# GPU
 # ============================================================
 
 detect_gpu() {
@@ -496,55 +562,46 @@ detect_gpu() {
   echo
 
   # AMD tem prioridade quando o sistema também possui uma GPU NVIDIA.
-
   if echo "$gpu_info" | grep -qiE 'AMD|ATI'; then
     GPU_VENDOR="amd"
-
   elif echo "$gpu_info" | grep -qi 'NVIDIA'; then
     GPU_VENDOR="nvidia"
-
   else
     GPU_VENDOR="unknown"
   fi
 
   case "$GPU_VENDOR" in
+  amd) success "GPU AMD detectada." ;;
+  nvidia) success "GPU NVIDIA detectada." ;;
+  *) warn "Fabricante da GPU não identificado." ;;
+  esac
+}
+
+# Acrescenta ao grupo de jogos as libs 32-bit do driver detectado.
+add_gpu_lib32_to_gaming() {
+  case "$GPU_VENDOR" in
   amd)
-    success "GPU AMD detectada."
+    OPTIONAL_GAMING_PKGS+=(lib32-mesa lib32-vulkan-radeon)
     ;;
-
   nvidia)
-    success "GPU NVIDIA detectada."
-    ;;
-
-  *)
-    warn "Fabricante da GPU não identificado."
+    OPTIONAL_GAMING_PKGS+=(lib32-nvidia-utils)
     ;;
   esac
 }
 
-# ============================================================
-# GPU DRIVERS
-# ============================================================
-
 install_gpu_drivers() {
   case "$GPU_VENDOR" in
-
   amd)
     info "Instalando stack gráfico AMD..."
-
-    sudo pacman -S \
-      --noconfirm \
-      --needed \
-      "${AMD_PKGS[@]}"
-
+    sudo pacman -S --noconfirm --needed "${AMD_PKGS[@]}"
     success "Stack gráfico AMD instalado."
     ;;
 
   nvidia)
     info "GPU NVIDIA detectada."
-
     warn "Drivers NVIDIA não serão instalados automaticamente."
     warn "Configure o driver NVIDIA conforme sua necessidade."
+    WARNINGS+=("GPU NVIDIA: instale e configure o driver manualmente.")
     ;;
 
   *)
@@ -573,20 +630,23 @@ install_ly_if_needed() {
   if [[ -n "$current_dm_service" && "$current_dm_service" != "ly" ]]; then
     info "Display manager atual detectado: $current_dm_service"
     warn "Desabilitando o display manager atual ($current_dm_service) para os próximos boots..."
-    # Não use --now nem pare o serviço: o usuário pode estar nessa sessão.
+    # Sem --now: o usuário pode estar nessa sessão.
     sudo systemctl disable "${current_dm_service}.service" || true
   fi
 
   info "Instalando Ly..."
-  # Ly geralmente está no AUR (ly-git) ou repositórios específicos.
-  if ! paru -S --noconfirm --needed ly; then
-    die "Falha ao instalar o Ly. Verifique a conexão ou o repositório."
+  # Tenta o repositório oficial primeiro; cai para o AUR se necessário.
+  if ! sudo pacman -S --noconfirm --needed ly 2>/dev/null; then
+    install_paru
+    if ! paru -S --noconfirm --needed ly; then
+      die "Falha ao instalar o Ly. Verifique a conexão ou o repositório."
+    fi
   fi
 
   info "Habilitando Ly..."
   sudo systemctl enable ly@tty1.service
 
-  success "Troca de Display Manager concluída com sucesso, pode desinstalar o outro."
+  success "Troca de Display Manager concluída, pode desinstalar o outro."
 }
 
 # ============================================================
@@ -620,9 +680,27 @@ backup_dotfile_conflicts() {
     fi
   done < <(find "$source_root" \( -type f -o -type l \) -print0)
 
-  if (( conflict_count > 0 )); then
+  if ((conflict_count > 0)); then
     success "$conflict_count arquivo(s) salvo(s) em $backup_root antes da cópia."
   fi
+}
+
+# Substitui /home/ely pelo $HOME real nos arquivos copiados
+# (quickshell/settings.json, gtk-3.0/bookmarks, etc.).
+fix_hardcoded_paths() {
+  local source_config="$1"
+  local file relative
+
+  [[ "$HOME" == "/home/ely" ]] && return 0
+
+  info "Ajustando caminhos /home/ely para $HOME..."
+
+  while IFS= read -r -d '' file; do
+    relative="${file#"$source_config"/}"
+    sed -i "s|/home/ely|$HOME|g" "$HOME/.config/$relative"
+  done < <(grep -rlIZ '/home/ely' "$source_config" || true)
+
+  success "Caminhos ajustados."
 }
 
 copy_dotfiles() {
@@ -630,96 +708,64 @@ copy_dotfiles() {
 
   local DOTFILES_SOURCE="$DOTFILES_DIR/configurations/home/ely"
 
-  # ----------------------------------------------------------
   # .config
-  # ----------------------------------------------------------
-
   if [[ -d "$DOTFILES_SOURCE/.config" ]]; then
-
     mkdir -p "$HOME/.config"
     backup_dotfile_conflicts "$DOTFILES_SOURCE/.config" "$HOME/.config"
 
-    cp -r \
-      "$DOTFILES_SOURCE/.config/." \
-      "$HOME/.config/"
+    cp -r "$DOTFILES_SOURCE/.config/." "$HOME/.config/"
+    fix_hardcoded_paths "$DOTFILES_SOURCE/.config"
 
     success ".config copiado para $HOME."
-
   else
-    warn ".config não encontrado em:"
-    warn "$DOTFILES_SOURCE"
+    warn ".config não encontrado em: $DOTFILES_SOURCE"
   fi
 
-  # ----------------------------------------------------------
   # Pictures
-  # ----------------------------------------------------------
-
   if [[ -d "$DOTFILES_SOURCE/Pictures" ]]; then
-
     mkdir -p "$HOME/Pictures"
     backup_dotfile_conflicts "$DOTFILES_SOURCE/Pictures" "$HOME/Pictures"
 
-    cp -r \
-      "$DOTFILES_SOURCE/Pictures/." \
-      "$HOME/Pictures/"
+    cp -r "$DOTFILES_SOURCE/Pictures/." "$HOME/Pictures/"
 
     success "Pictures copiado."
-
   else
     warn "Pictures não encontrado."
   fi
 }
 
-# ============================================================
-# HEAVY PACKAGES
-# ============================================================
+# Cria o .current-wallpaper.png esperado pelo updateWall.sh e roda o
+# matugen uma vez, para o primeiro boot já ter as cores geradas.
+seed_wallpaper() {
+  local wall_dir="$HOME/Pictures/Wallpapers"
+  local current="$wall_dir/.current-wallpaper.png"
+  local seed="$wall_dir/wallhaven-pomle9.jpg"
 
-install_heavy_pkgs() {
-  if [[ ${#HEAVY_PKGS[@]} -eq 0 ]]; then
-    return
+  if [[ -f "$current" ]]; then
+    success "Wallpaper atual já existe."
+    return 0
   fi
 
-  echo
-  echo -e "${YELLOW}${BOLD}Pacotes pesados:${RESET}"
-
-  for pkg in "${HEAVY_PKGS[@]}"; do
-    echo -e "  ${CYAN}•${RESET} $pkg"
-  done
-
-  echo
-  echo -e \
-    "${BOLD}Deseja instalar esses pacotes agora?
-Pode demorar bastante. [y/N]${RESET}"
-
-  read -r response
-
-  if [[ "${response,,}" != "y" ]]; then
-
-    WARNINGS+=(
-      "Pacotes pesados não instalados. Rode: paru -S ${HEAVY_PKGS[*]}"
-    )
-
-    warn "Pacotes pesados ignorados."
-    return
+  if [[ ! -f "$seed" ]]; then
+    warn "Wallpaper inicial não encontrado: $seed"
+    return 0
   fi
 
-  install_paru
-  info "Instalando pacotes pesados..."
+  if ! command -v magick &>/dev/null; then
+    warn "magick não encontrado; não foi possível gerar o wallpaper inicial."
+    return 0
+  fi
 
-  for pkg in "${HEAVY_PKGS[@]}"; do
+  info "Gerando wallpaper inicial e cores do matugen..."
+  magick "$seed" "$current"
 
-    if ! paru -S --needed "$pkg"; then
-
-      WARNINGS+=(
-        "Pacote pesado '$pkg' falhou na compilação."
-      )
-
-      warn "$pkg falhou, continuando..."
-
+  if command -v matugen &>/dev/null; then
+    if matugen image "$current" --mode dark --source-color-index 0; then
+      success "Cores geradas pelo matugen."
     else
-      success "$pkg instalado."
+      WARNINGS+=("matugen terminou com erro; algum post_hook pode ter falhado (pywalfox, steam, spicetify...).")
     fi
-  done
+  fi
 }
 
 # ============================================================
@@ -745,7 +791,6 @@ setup_fish() {
     echo "$fish_path" | sudo tee -a /etc/shells >/dev/null
   fi
 
-  # Consulta o shell registrado no banco de usuários.
   current_shell="$(getent passwd "$user_name" | cut -d: -f7)"
 
   if [[ "$current_shell" != "$fish_path" ]]; then
@@ -787,7 +832,7 @@ setup_fish() {
 }
 
 # ============================================================
-# Installation flow
+# Fluxo de instalação
 # ============================================================
 
 install_dependencies() {
@@ -799,14 +844,7 @@ install_dependencies() {
 
   install_paru
   detect_gpu
-  case "$GPU_VENDOR" in
-    amd)
-      OPTIONAL_STEAM_PKGS+=(lib32-mesa lib32-vulkan-radeon)
-      ;;
-    nvidia)
-      OPTIONAL_STEAM_PKGS+=(lib32-nvidia-utils)
-      ;;
-  esac
+  add_gpu_lib32_to_gaming
 
   install_optional_arch_packages
 
@@ -818,16 +856,11 @@ install_dependencies() {
   install_ly_if_needed
 
   install_extra_packages
-
-  install_heavy_pkgs
 }
-
-# ============================================================
-# Configuration
-# ============================================================
 
 update_configuration() {
   copy_dotfiles
+  seed_wallpaper
 
   setup_fish
 
@@ -836,13 +869,8 @@ update_configuration() {
   fi
 }
 
-# ============================================================
-# Full installation
-# ============================================================
-
 full_install() {
   install_dependencies
-
   update_configuration
 }
 
@@ -851,7 +879,6 @@ full_install() {
 # ============================================================
 
 main() {
-
   check_distro
 
   echo
@@ -866,37 +893,17 @@ main() {
   read -rp "Escolha uma opção: " option
 
   case "$option" in
-
-  1)
-    full_install
-    ;;
-
-  2)
-    install_dependencies
-    ;;
-
-  3)
-    update_configuration
-    ;;
-
-  0)
-    exit 0
-    ;;
-
-  *)
-    die "Opção inválida."
-    ;;
+  1) full_install ;;
+  2) install_dependencies ;;
+  3) update_configuration ;;
+  0) exit 0 ;;
+  *) die "Opção inválida." ;;
   esac
 
   echo
   success "Concluído."
 
-  # ----------------------------------------------------------
-  # Warnings
-  # ----------------------------------------------------------
-
   if [[ ${#WARNINGS[@]} -gt 0 ]]; then
-
     echo
     warn "Pendências:"
 

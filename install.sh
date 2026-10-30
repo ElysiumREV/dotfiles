@@ -118,6 +118,7 @@ PKGS_BASE=(
   unrar
   7zip
   python
+  python-pipx
 )
 
 # Sessão Hyprland e componentes chamados pelas configs
@@ -140,6 +141,7 @@ PKGS_SESSION=(
   cliphist
   hyprshot
   playerctl
+  libnotify
 )
 
 # Serviços de sistema que o Quickshell consulta
@@ -191,6 +193,8 @@ PKGS_THEME=(
   adw-gtk-theme
   nwg-look
   papirus-icon-theme
+  dconf
+  gsettings-desktop-schemas
 )
 
 PKGS_FONTS=(
@@ -218,6 +222,17 @@ PKGS_FILES=(
   qt6-imageformats
 )
 
+# Ferramentas de desenvolvimento esperadas pelo Neovim (LazyVim, Telescope,
+# Treesitter e Mason). git, curl, unzip e base-devel já vêm de PKGS_BASE.
+PKGS_DEV=(
+  ripgrep
+  fd
+  lazygit
+  tree-sitter-cli
+  nodejs
+  npm
+)
+
 PACMAN_PKGS=(
   "${PKGS_BASE[@]}"
   "${PKGS_SESSION[@]}"
@@ -226,6 +241,7 @@ PACMAN_PKGS=(
   "${PKGS_THEME[@]}"
   "${PKGS_FONTS[@]}"
   "${PKGS_FILES[@]}"
+  "${PKGS_DEV[@]}"
 )
 
 # Aplicativos do dia a dia (instalação padrão)
@@ -531,6 +547,55 @@ install_extra_packages() {
 }
 
 # ============================================================
+# PYWALFOX (tema do Firefox via matugen)
+#
+# Instalação recomendada pelo projeto: pipx + `pywalfox install`.
+# O add-on do Firefox precisa ser instalado manualmente.
+# ============================================================
+
+install_pywalfox() {
+  info "Instalando Pywalfox com pipx..."
+
+  local pywalfox_bin="$HOME/.local/bin/pywalfox"
+
+  if ! command -v pipx &>/dev/null; then
+    warn "pipx não encontrado; Pywalfox ignorado."
+    WARNINGS+=("Pywalfox não instalado (pipx ausente). Rode: pipx install pywalfox && pywalfox install")
+    return 0
+  fi
+
+  if pipx list --short 2>/dev/null | awk '{print $1}' | grep -qx pywalfox; then
+    success "Pywalfox já está instalado."
+  elif ! pipx install pywalfox; then
+    warn "Falha ao instalar o Pywalfox com pipx."
+    WARNINGS+=("Falha ao instalar o Pywalfox. Rode: pipx install pywalfox && pywalfox install")
+    return 0
+  fi
+
+  if [[ ! -x "$pywalfox_bin" ]]; then
+    warn "$pywalfox_bin não encontrado após a instalação."
+    WARNINGS+=("Pywalfox: executável não encontrado em $pywalfox_bin.")
+    return 0
+  fi
+
+  # O Firefox chama o host nativo como `pywalfox`, pelo PATH. A sessão do
+  # Hyprland normalmente não inclui ~/.local/bin, então expomos o comando
+  # em /usr/local/bin (que está sempre no PATH).
+  if ! sudo ln -sf "$pywalfox_bin" /usr/local/bin/pywalfox; then
+    WARNINGS+=("Não foi possível criar /usr/local/bin/pywalfox; o Firefox pode não achar o host nativo.")
+  fi
+
+  if "$pywalfox_bin" install; then
+    success "Host nativo do Pywalfox registrado."
+  else
+    warn "Falha ao registrar o host nativo do Pywalfox."
+    WARNINGS+=("Pywalfox: rode manualmente: pywalfox install")
+  fi
+
+  WARNINGS+=("Pywalfox: instale o add-on no Firefox (https://addons.mozilla.org/firefox/addon/pywalfox/) e reinicie o navegador.")
+}
+
+# ============================================================
 # GPU
 # ============================================================
 
@@ -763,7 +828,7 @@ seed_wallpaper() {
     if matugen image "$current" --mode dark --source-color-index 0; then
       success "Cores geradas pelo matugen."
     else
-      WARNINGS+=("matugen terminou com erro; algum post_hook pode ter falhado (pywalfox, steam, spicetify...).")
+      WARNINGS+=("matugen terminou com erro; algum post_hook pode ter falhado (kitty, gtk, nvim, pywalfox, kde-material-you-colors, spotifast...).")
     fi
   fi
 }
@@ -804,31 +869,6 @@ setup_fish() {
   else
     success "Fish já é o shell padrão."
   fi
-
-  # Sincroniza os plugins do Fisher, se houver configuração.
-  if [[ -f "$HOME/.config/fish/fish_plugins" ]]; then
-    if ! fish -c 'type -q fisher'; then
-      info "Instalando Fisher..."
-      local fisher_script
-      fisher_script="$(mktemp)"
-      if ! curl --fail --location --silent --show-error \
-        --output "$fisher_script" \
-        https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish; then
-        rm -f "$fisher_script"
-        die "Não foi possível baixar o instalador do Fisher."
-      fi
-
-      if ! fish -c "source '$fisher_script'; fisher install jorgebucaran/fisher"; then
-        rm -f "$fisher_script"
-        die "Não foi possível instalar o Fisher."
-      fi
-      rm -f "$fisher_script"
-    fi
-
-    info "Sincronizando plugins do Fisher..."
-    fish -c "fisher update"
-    success "Plugins do Fisher sincronizados."
-  fi
 }
 
 # ============================================================
@@ -856,6 +896,8 @@ install_dependencies() {
   install_ly_if_needed
 
   install_extra_packages
+
+  install_pywalfox
 }
 
 update_configuration() {

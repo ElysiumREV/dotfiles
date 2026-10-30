@@ -6,11 +6,8 @@
 <ul>
 <li> Hyprland – Wayland compositor
 <li> Quickshell – Status bar with some additional features as well
-<li> Vicinae - Application Launcher and some other stuff too
-<li> Mako – Notification daemon
 <li> Kitty – Terminal emulator with custom color schemes
 <li> Neovim – Configured with lazy.nvim and plugins
-<li> Fastfetch – System info
 </ul>
 
 ### License

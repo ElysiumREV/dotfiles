@@ -1,0 +1,4 @@
+Bar 1.0 Bar.qml
+singleton Theme 1.0 Theme.qml
+singleton Colors 1.0 Colors.qml
+singleton Preferences 1.0 Preferences.qml

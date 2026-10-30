@@ -1,0 +1,19 @@
+{
+    "bar": {
+        "showDate": true,
+        "showDeviceIndicators": true,
+        "showFocusedApp": true,
+        "showMedia": true,
+        "showSystemStatus": true,
+        "showTray": true
+    },
+    "launcher": {
+        "prioritizeUsage": true
+    },
+    "wallpaper": {
+        "directory": "/home/ely/Pictures/Wallpapers"
+    },
+    "notifications": {
+        "defaultTimeoutSeconds": 3
+    }
+}

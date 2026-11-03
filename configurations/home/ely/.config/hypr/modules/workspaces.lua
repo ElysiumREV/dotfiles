@@ -103,6 +103,15 @@ hl.window_rule({
 	float = true,
 })
 
+-- EpicGamesLauncher
+hl.window_rule({
+	name = "Epic",
+	match = {
+		class = "EpicGamesLauncher",
+	},
+	workspace = 9,
+})
+
 -- Jogos → workspace 10, fullscreen, sem borda
 hl.window_rule({
 	name = "games",
@@ -167,8 +176,8 @@ hl.window_rule({
 		class = "^Bitwarden$",
 	},
 	no_screen_share = true,
-  center = true,
-  float = true,
+	center = true,
+	float = true,
 })
 
 hl.window_rule({

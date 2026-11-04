@@ -1,0 +1,13 @@
+[Desktop Entry]
+# X-Generated-By=fluxer-desktop
+Type=Application
+Name=Fluxer
+Comment=Fluxer
+Exec="/home/ely/Programs/Fluxer-2026.1026.24218-linux-x86_64.appimage" --autostart
+TryExec=/home/ely/Programs/Fluxer-2026.1026.24218-linux-x86_64.appimage
+Terminal=false
+Categories=Network;InstantMessaging;
+StartupWMClass=app.fluxer.FluxerDesktop
+SingleMainWindow=true
+X-GNOME-Autostart-enabled=true
+StartupNotify=false

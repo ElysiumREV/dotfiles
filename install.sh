@@ -119,6 +119,9 @@ PKGS_BASE=(
   7zip
   python
   python-pipx
+  fuse3
+  fuse2
+  uwsm
 )
 
 # Sessão Hyprland e componentes chamados pelas configs

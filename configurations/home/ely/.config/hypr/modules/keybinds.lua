@@ -15,7 +15,7 @@ hl.bind(
 )
 hl.bind(mainMod .. " + return", hl.dsp.exec_cmd(terminal), { description = "Apps: Abrir terminal" })
 hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.window.close(), { description = "Janelas: Fechar janela" })
-hl.bind(mainMod .. " + SHIFT + ESCAPE", hl.dsp.exit(), { description = "Sistema: Sair do Hyprland" })
+hl.bind(mainMod .. " + SHIFT + ESCAPE", hl.dsp.exec_cmd("uwsm stop"), { description = "Sistema: Sair do Hyprland" })
 hl.bind(
 	mainMod .. " + M",
 	hl.dsp.exec_cmd("qs ipc call shell toggleLogout"),

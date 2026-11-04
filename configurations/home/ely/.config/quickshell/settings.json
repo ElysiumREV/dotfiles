@@ -10,10 +10,10 @@
     "launcher": {
         "prioritizeUsage": true
     },
+    "notifications": {
+        "defaultTimeoutSeconds": 4
+    },
     "wallpaper": {
         "directory": "/home/ely/Pictures/Wallpapers"
-    },
-    "notifications": {
-        "defaultTimeoutSeconds": 3
     }
 }

@@ -1,0 +1,3 @@
+# Hyprland cursor
+export HYPRCURSOR_SIZE=24
+export HYPRCURSOR_THEME=XCursor-Pro-Dark-Hyprcursor

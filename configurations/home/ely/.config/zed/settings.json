@@ -28,12 +28,16 @@
   "git_panel": {
     "dock": "left"
   },
-  "icon_theme": "Material Icon Theme",
+  "icon_theme": {
+    "mode": "dark",
+    "light": "Material Icon Theme",
+    "dark": "Material Icon Theme"
+  },
   "ui_font_size": 16,
   "buffer_font_size": 15,
   "theme": {
     "mode": "dark",
     "light": "One Light",
-    "dark": "Matugen Dark",
+    "dark": "One Dark",
   },
 }

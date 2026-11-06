@@ -694,21 +694,23 @@ install_ly_if_needed() {
     )
   fi
 
-  # Se houver um DM diferente do Ly, desabilita ele
-  if [[ -n "$current_dm_service" && "$current_dm_service" != "ly" ]]; then
-    info "Display manager atual detectado: $current_dm_service"
-    warn "Desabilitando o display manager atual ($current_dm_service) para os próximos boots..."
-    # Sem --now: o usuário pode estar nessa sessão.
-    sudo systemctl disable "${current_dm_service}.service" || true
-  fi
-
+  # Instala o Ly antes de mexer no DM atual: se a instalação falhar,
+  # o sistema continua com o login que já funcionava.
   info "Instalando Ly..."
   # Tenta o repositório oficial primeiro; cai para o AUR se necessário.
   if ! sudo pacman -S --noconfirm --needed ly 2>/dev/null; then
     install_paru
     if ! paru -S --noconfirm --needed ly; then
-      die "Falha ao instalar o Ly. Verifique a conexão ou o repositório."
+      die "Falha ao instalar o Ly. Nenhuma alteração foi feita no display manager atual."
     fi
+  fi
+
+  # Só depois do Ly instalado desabilita o DM anterior.
+  if [[ -n "$current_dm_service" && "$current_dm_service" != "ly" ]]; then
+    info "Display manager atual detectado: $current_dm_service"
+    warn "Desabilitando o display manager atual ($current_dm_service) para os próximos boots..."
+    # Sem --now: o usuário pode estar nessa sessão.
+    sudo systemctl disable "${current_dm_service}.service" || true
   fi
 
   info "Habilitando Ly..."

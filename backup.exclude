@@ -1,0 +1,10 @@
+# Arquivos gerados pelo matugen (caminhos relativos ao $HOME).
+# O backup.sh restaura estes arquivos a partir do último commit, para que
+# trocar o wallpaper não gere ruído no git. Use ./backup.sh --all para
+# atualizá-los como nova baseline.
+.config/kitty/themes/Matugen.conf
+.config/gtk-3.0/colors.css
+.config/gtk-4.0/colors.css
+.config/hypr/modules/colors.lua
+.config/zed/themes/matugen.json
+.config/matugen/themes/nvim-colors.json

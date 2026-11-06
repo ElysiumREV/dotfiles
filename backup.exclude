@@ -8,3 +8,6 @@
 .config/hypr/modules/colors.lua
 .config/zed/themes/matugen.json
 .config/matugen/themes/nvim-colors.json
+.config/kitty/current-theme.conf
+.config/kdeglobals
+.config/hypr/hyprlock-colors.conf

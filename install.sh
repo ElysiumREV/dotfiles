@@ -298,7 +298,6 @@ OPTIONAL_SELECTED_PKGS=()
 AMD_PKGS=(
   mesa
   vulkan-radeon
-  libva-mesa-driver
 )
 
 # ------------------------------------------------------------
@@ -306,6 +305,7 @@ AMD_PKGS=(
 # ------------------------------------------------------------
 
 AUR_PKGS=(
+  aur-scanner
   breeze-plus
   darkly-bin
   kde-material-you-colors
@@ -791,6 +791,18 @@ copy_dotfiles() {
     warn ".config não encontrado em: $DOTFILES_SOURCE"
   fi
 
+  # Temas de cursor (XCursor-Pro-Dark e a versão hyprcursor)
+  if [[ -d "$DOTFILES_SOURCE/.local/share/icons" ]]; then
+    mkdir -p "$HOME/.local/share/icons"
+    backup_dotfile_conflicts "$DOTFILES_SOURCE/.local/share/icons" "$HOME/.local/share/icons"
+
+    cp -r "$DOTFILES_SOURCE/.local/share/icons/." "$HOME/.local/share/icons/"
+
+    success "Temas de cursor copiados."
+  else
+    warn "Temas de cursor não encontrados em: $DOTFILES_SOURCE/.local/share/icons"
+  fi
+
   # Pictures
   if [[ -d "$DOTFILES_SOURCE/Pictures" ]]; then
     mkdir -p "$HOME/Pictures"
@@ -804,12 +816,14 @@ copy_dotfiles() {
   fi
 }
 
-# Cria o .current-wallpaper.png esperado pelo updateWall.sh e roda o
-# matugen uma vez, para o primeiro boot já ter as cores geradas.
+# Gera as cores pela primeira vez com o wallpaper inicial, para o primeiro
+# boot já ter o tema. O apply_colors.sh do Quickshell cria o
+# .current-wallpaper.png, roda o matugen e dispara os hooks (kitty, gtk, kde...).
 seed_wallpaper() {
   local wall_dir="$HOME/Pictures/Wallpapers"
   local current="$wall_dir/.current-wallpaper.png"
   local seed="$wall_dir/wallhaven-pomle9.jpg"
+  local apply_colors="$HOME/.config/quickshell/scripts/apply_colors.sh"
 
   if [[ -f "$current" ]]; then
     success "Wallpaper atual já existe."
@@ -821,20 +835,17 @@ seed_wallpaper() {
     return 0
   fi
 
-  if ! command -v magick &>/dev/null; then
-    warn "magick não encontrado; não foi possível gerar o wallpaper inicial."
+  if [[ ! -x "$apply_colors" ]]; then
+    warn "apply_colors.sh não encontrado em $apply_colors."
+    WARNINGS+=("Cores iniciais não geradas. Escolha um wallpaper pelo Quickshell (SUPER+W).")
     return 0
   fi
 
-  info "Gerando wallpaper inicial e cores do matugen..."
-  magick "$seed" "$current"
-
-  if command -v matugen &>/dev/null; then
-    if matugen image "$current" --mode dark --source-color-index 0; then
-      success "Cores geradas pelo matugen."
-    else
-      WARNINGS+=("matugen terminou com erro; algum post_hook pode ter falhado (kitty, gtk, nvim, pywalfox, kde-material-you-colors, spotifast...).")
-    fi
+  info "Gerando cores iniciais com o wallpaper padrão..."
+  if "$apply_colors" "$seed"; then
+    success "Cores geradas."
+  else
+    WARNINGS+=("apply_colors.sh terminou com erro; confira se o matugen está instalado.")
   fi
 }
 

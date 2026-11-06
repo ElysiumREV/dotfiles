@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# Gera a paleta Matugen a partir de um wallpaper e propaga para os aplicativos.
+# O config.toml do Matugen só gera os arquivos; todos os hooks ficam aqui.
+# Só o Matugen é obrigatório; cada integração é opcional e, se faltar ou
+# falhar, apenas registra um aviso sem interromper as demais.
 set -u
 
 # Configurações de caminhos
@@ -7,85 +11,95 @@ XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 DEFAULT_WALLPAPER_DIR="$HOME/Pictures/Wallpapers"
 KDE_CONFIG="$XDG_CONFIG_HOME/kde-material-you-colors/config.conf"
 KDE_WRAPPER="$XDG_CONFIG_HOME/matugen/templates/kde/kde-material-you-colors-wrapper.sh"
+GTK_RELOAD="$XDG_CONFIG_HOME/matugen/post-hook-scripts/gtk-themes-reload.sh"
 COLORS_JSON="$XDG_STATE_HOME/quickshell/generated/colors.json"
+MODE="${QS_COLOR_MODE:-dark}"
 
-echo "[Colors] Iniciando processo de atualização de cores..."
+log()  { echo "[Colors] $*"; }
+warn() { echo "[Aviso] $*" >&2; }
+fail() { echo "[Erro] $*" >&2; exit 1; }
 
-# 1. Lidar com o Link Simbólico
+# Executa um comando opcional; falhas viram aviso e nunca abortam o script.
+optional() {
+    local label="$1"
+    shift
+    "$@" >/dev/null 2>&1 || warn "$label falhou ou não está disponível."
+}
+
+log "Iniciando processo de atualização de cores..."
+
+# 1. Link simbólico do wallpaper atual
 WALLPAPER_PATH="${1:-}"
 if [ -z "$WALLPAPER_PATH" ] || [ ! -f "$WALLPAPER_PATH" ]; then
-    echo "[Erro] Nenhum caminho de wallpaper fornecido."
-    exit 1
+    fail "Nenhum caminho de wallpaper válido fornecido."
 fi
 
-echo "[Colors] Atualizando link simbólico do wallpaper..."
-if ! mkdir -p "$DEFAULT_WALLPAPER_DIR" || \
-   ! ln -sfn "$WALLPAPER_PATH" "$DEFAULT_WALLPAPER_DIR/.current-wallpaper.png"; then
-    echo "[Erro] Não foi possível atualizar o link simbólico do wallpaper."
-    exit 1
-fi
-
-# 2. Gerar cores com Matugen
 WALLPAPER_LINK="$DEFAULT_WALLPAPER_DIR/.current-wallpaper.png"
 
-echo "[Colors] Gerando paleta com Matugen..."
-if ! command -v matugen >/dev/null 2>&1 || \
-   ! matugen image "$WALLPAPER_LINK" --mode dark --source-color-index 0; then
-    echo "[Erro] Matugen falhou ao gerar cores."
-    exit 1
+log "Atualizando link simbólico do wallpaper..."
+if ! mkdir -p "$DEFAULT_WALLPAPER_DIR" || ! ln -sfn "$WALLPAPER_PATH" "$WALLPAPER_LINK"; then
+    fail "Não foi possível atualizar o link simbólico do wallpaper."
 fi
 
-# Forçar recarga do Quickshell
+# 2. Paleta Matugen (único passo obrigatório)
+command -v matugen >/dev/null 2>&1 || fail "Matugen não está instalado."
+
+log "Gerando paleta com Matugen ($MODE)..."
+matugen image "$WALLPAPER_LINK" --mode "$MODE" --source-color-index 0 \
+    || fail "Matugen falhou ao gerar cores."
+
+# Força o Quickshell a recarregar as cores
 [ -f "$COLORS_JSON" ] && touch "$COLORS_JSON"
-[ -f "$XDG_STATE_HOME/quickshell/user/generated/colors.json" ] && touch "$XDG_STATE_HOME/quickshell/user/generated/colors.json"
 
-# 3. Sincronizar Tema do Kitty (CORREÇÃO AQUI)
-if [ -f "$XDG_CONFIG_HOME/kitty/themes/Matugen.conf" ]; then
-    echo "[Colors] Sincronizando tema do Kitty..."
-    cp "$XDG_CONFIG_HOME/kitty/themes/Matugen.conf" "$XDG_CONFIG_HOME/kitty/current-theme.conf"
+# 3. Tema do Kitty
+KITTY_THEME="$XDG_CONFIG_HOME/kitty/themes/Matugen.conf"
+if [ -f "$KITTY_THEME" ]; then
+    log "Sincronizando tema do Kitty..."
+    optional "Cópia do tema do Kitty" cp "$KITTY_THEME" "$XDG_CONFIG_HOME/kitty/current-theme.conf"
 fi
 
-# 4. Determinar a variante de esquema do KDE
-SCHEME_VARIANT=$(grep 'scheme_variant' "$KDE_CONFIG" | awk -F= '{print $2}' | xargs)
-if [ -z "$SCHEME_VARIANT" ]; then
-    SCHEME_VARIANT="scheme-tonal-spot"
-fi
-echo "[Colors] Variante KDE detectada: $SCHEME_VARIANT"
-
-# 5. Aplicar ao KDE via Wrapper
+# 4. KDE/Qt via kde-material-you-colors (opcional)
 if [ -f "$KDE_WRAPPER" ]; then
-    echo "[Colors] Aplicando cores ao KDE/Qt..."
-    bash "$KDE_WRAPPER" --scheme-variant "$SCHEME_VARIANT"
+    SCHEME_VARIANT=""
+    if [ -f "$KDE_CONFIG" ]; then
+        SCHEME_VARIANT=$(grep 'scheme_variant' "$KDE_CONFIG" | head -n 1 | awk -F= '{print $2}' | xargs)
+    else
+        warn "Config do kde-material-you-colors não encontrada: $KDE_CONFIG"
+    fi
+    SCHEME_VARIANT="${SCHEME_VARIANT:-scheme-tonal-spot}"
+
+    log "Aplicando cores ao KDE/Qt (variante: $SCHEME_VARIANT)..."
+    bash "$KDE_WRAPPER" --scheme-variant "$SCHEME_VARIANT" \
+        || warn "Wrapper do KDE terminou com erro."
 else
-    echo "[Erro] Wrapper do kde-material-you-colors não encontrado em $KDE_WRAPPER"
+    warn "Wrapper do kde-material-you-colors não encontrado; pulando KDE/Qt."
 fi
 
-# 6. Post-Hooks Unificados
-echo "[Colors] Atualizando aplicativos..."
+# 5. Recarga dos aplicativos
+log "Atualizando aplicativos..."
 
-# Kitty reload
-if command -v kitty >/dev/null; then
-    # Usamos o comando de recarga do kitty
-    kitty @ set-colors --all Matugen 2>/dev/null || kitty +kitten themes --reload-in=all Matugen &
+if command -v kitty >/dev/null 2>&1; then
+    kitty @ set-colors --all "$KITTY_THEME" >/dev/null 2>&1 \
+        || optional "Recarga do Kitty" kitty +kitten themes --reload-in=all Matugen &
 fi
 
-# GTK
-if [ -f "$XDG_CONFIG_HOME/matugen/post-hook-scripts/gtk-themes-reload.sh" ]; then
-    sh "$XDG_CONFIG_HOME/matugen/post-hook-scripts/gtk-themes-reload.sh" dark &
+if [ -f "$GTK_RELOAD" ]; then
+    optional "Recarga do GTK" sh "$GTK_RELOAD" "$MODE" &
 fi
 
-# Mako
-if command -v makoctl >/dev/null; then
-    makoctl reload &
+# Neovim recarrega o tema ao receber SIGUSR1; -x evita casar outros processos.
+if command -v pkill >/dev/null 2>&1; then
+    pkill -SIGUSR1 -x nvim >/dev/null 2>&1 || true
 fi
 
-# Neovim
-pkill -SIGUSR1 nvim &
-
-# Pywalfox
-if command -v pywalfox >/dev/null; then
-    pywalfox update &
+if command -v pywalfox >/dev/null 2>&1; then
+    optional "Atualização do Pywalfox" pywalfox update &
 fi
 
-echo "[Colors] Processo concluído com sucesso!"
+if command -v spotifast >/dev/null 2>&1; then
+    optional "Recarga de temas do Spotifast" spotifast reload-themes &
+fi
+
+wait
+log "Processo concluído."
 exit 0

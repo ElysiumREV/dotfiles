@@ -1,9 +1,12 @@
 [config]
-[templates]
-kitty = { input_path = "./templates/kitty-colors.conf", output_path = '~/.config/kitty/themes/Matugen.conf', post_hook = "kitty +kitten themes --reload-in=all Matugen" }
 
-gtk3 = { input_path = "./templates/gtk-colors.css", output_path = "~/.config/gtk-3.0/colors.css", post_hook = 'sh ~/.config/matugen/post-hook-scripts/gtk-themes-reload.sh {{mode}}' }
-gtk4 = { input_path = "./templates/gtk-colors.css", output_path = "~/.config/gtk-4.0/colors.css", post_hook = 'sh ~/.config/matugen/post-hook-scripts/gtk-themes-reload.sh {{mode}}' }
+# O matugen só gera as cores. Hooks (kitty, gtk, nvim, kde, pywalfox...)
+# ficam em ~/.config/quickshell/scripts/apply_colors.sh.
+[templates]
+kitty = { input_path = "./templates/kitty-colors.conf", output_path = '~/.config/kitty/themes/Matugen.conf' }
+
+gtk3 = { input_path = "./templates/gtk-colors.css", output_path = "~/.config/gtk-3.0/colors.css" }
+gtk4 = { input_path = "./templates/gtk-colors.css", output_path = "~/.config/gtk-4.0/colors.css" }
 
 quickshell = { input_path = "./templates/quickshell.json", output_path = '~/.local/state/quickshell/generated/colors.json' }
 
@@ -15,14 +18,15 @@ vscode-json = { input_path = './templates/vscode-colors.json', output_path = '~/
 vesktop = { input_path = './templates/midnight-discord.css', output_path = '~/.config/Vencord/themes/midnight-discord.css' }
 discord = { input_path = './templates/discord-native.css', output_path = '~/.config/Vencord/themes/matugen-native.css' }
 
+hyprlock = { input_path = './templates/hyprlock-colors.conf', output_path = '~/.config/hypr/hyprlock-colors.conf' }
 hyprland = { input_path = './templates/hyprland-colors.lua', output_path = '~/.config/hypr/modules/colors.lua' }
 
-neovim = { input_path = "./templates/nvim-colors.json", output_path = "~/.config/matugen/themes/nvim-colors.json", post_hook = "pkill -SIGUSR1 nvim" }
+neovim = { input_path = "./templates/nvim-colors.json", output_path = "~/.config/matugen/themes/nvim-colors.json" }
 
-pywalfox = { input_path = "./templates/pywalfox-colors.json", output_path = "~/.cache/wal/colors.json", post_hook = "pywalfox update" }
+pywalfox = { input_path = "./templates/pywalfox-colors.json", output_path = "~/.cache/wal/colors.json" }
 
-kde = { input_path = './templates/kde/color.txt', output_path = '~/.local/state/quickshell/generated/color.txt', post_hook = 'bash ~/.config/matugen/templates/kde/kde-material-you-colors-wrapper.sh' }
+kde = { input_path = './templates/kde/color.txt', output_path = '~/.local/state/quickshell/generated/color.txt' }
 
-spotifast = { input_path = './templates/spotifast.json', output_path = '~/.config/spotifast/themes/matugen.json', post_hook = 'spotifast reload-themes || true' }
+spotifast = { input_path = './templates/spotifast.json', output_path = '~/.config/spotifast/themes/matugen.json' }
 zapfast = { input_path = './templates/zapfast.json', output_path = '~/.config/zapfast/themes/matugen.json' }
 

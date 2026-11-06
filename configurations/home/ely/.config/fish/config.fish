@@ -1,6 +1,12 @@
 if status is-interactive
-    # Commands to run in interactive sessions can go here
+    # Starship
     starship init fish | source
+
+    # Eza aliases
+    alias ls='eza --icons=auto'
+    alias ll='eza -l --icons=auto'
+    alias la='eza -la --icons=auto'
+    alias lt='eza --tree --icons=auto'
 end
 
 source /usr/share/aur-scan/integration.fish

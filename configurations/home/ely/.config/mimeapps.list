@@ -1,14 +1,14 @@
 [Added Associations]
 application/pdf=firefox.desktop;
 application/x-msdownload=wine.desktop;
-application/xml=featherpad.desktop;
+application/xml=org.kde.kate.desktop;
 application/zip=org.kde.ark.desktop;
 x-scheme-handler/antigravity=antigravity.desktop;
 
 [Default Applications]
 application/pdf=firefox.desktop;
 application/x-msdownload=wine.desktop
-application/xml=featherpad.desktop
+application/xml=org.kde.kate.desktop
 application/zip=org.kde.ark.desktop;
 audio/flac=mpv.desktop
 audio/mp4=mpv.desktop
@@ -26,9 +26,9 @@ image/webp=imv.desktop
 image/x-icon=imv.desktop
 inode/directory=org.kde.dolphin.desktop
 text/html=firefox.desktop
-text/markdown=featherpad.desktop
-text/plain=featherpad.desktop
-text/x-readme=featherpad.desktop
+text/markdown=org.kde.kate.desktop
+text/plain=org.kde.kate.desktop
+text/x-readme=org.kde.kate.desktop
 video/mp4=mpv.desktop
 video/mpeg=mpv.desktop
 video/ogg=mpv.desktop

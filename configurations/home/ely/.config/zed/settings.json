@@ -7,8 +7,11 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "terminal": {
+    "font_size": 13.0
+  },
   "cli_default_open_behavior": "new_window",
-  "disable_ai": true,
+  "disable_ai": false,
   "proxy": "",
   "tab_size": 2,
   "project_panel": {

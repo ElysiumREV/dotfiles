@@ -13,10 +13,6 @@ Item {
 
     property var corner: RoundCorner.CornerEnum.TopLeft
 
-    property alias leftVisualMargin: shape.anchors.leftMargin
-    property alias topVisualMargin: shape.anchors.topMargin
-    property alias rightVisualMargin: shape.anchors.rightMargin
-    property alias bottomVisualMargin: shape.anchors.bottomMargin
 
     property int implicitSize: 25
     property color color: "#000000"

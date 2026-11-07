@@ -5,11 +5,15 @@ import ".." as Config
 Button {
     id: root
 
+    // Qt only activates buttons with Space; make Enter behave like a click too.
+    Keys.onReturnPressed: event => { root.clicked(); event.accepted = true; }
+    Keys.onEnterPressed: event => { root.clicked(); event.accepted = true; }
+
     property string iconName: ""
     property bool selected: false
     property bool prominent: false
     property bool filled: false
-    property int iconSize: 19
+    property int iconSize: Config.Theme.iconSizeSm
     property int buttonRadius: Config.Theme.radiusControl
     property real iconRotation: 0
     property color idleIconColor: Config.Theme.colTextSec
@@ -62,12 +66,9 @@ Button {
         color: root.prominent && (root.hovered || root.activeFocus)
             ? Config.Theme.colHighlight
             : (root.prominent && root.filled
-                ? Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                          Config.Theme.colTextSec.b, 0.12)
+                ? Config.Theme.alpha(Config.Theme.colTextSec, 0.12)
                 : ((root.selected || root.hovered || root.activeFocus)
-                ? Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
-                          Config.Theme.colHighlight.b,
-                          root.selected ? Config.Theme.stateSelectedOpacity : Config.Theme.stateHoverOpacity)
+                ? Config.Theme.alpha(Config.Theme.colHighlight, root.selected ? Config.Theme.stateSelectedOpacity : Config.Theme.stateHoverOpacity)
                 : "transparent"))
         border.width: root.activeFocus ? 1 : 0
         border.color: Config.Theme.colHighlight

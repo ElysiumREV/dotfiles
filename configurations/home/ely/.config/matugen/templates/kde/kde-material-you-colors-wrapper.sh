@@ -4,7 +4,12 @@ XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 
 color=$(tr -d '\n' <"$XDG_STATE_HOME/quickshell/generated/color.txt")
 
-current_mode=$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | tr -d "'")
+# QS_COLOR_MODE (set by apply_colors.sh) wins over the gsettings preference.
+if [[ -n "${QS_COLOR_MODE:-}" ]]; then
+  current_mode="prefer-${QS_COLOR_MODE}"
+else
+  current_mode=$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | tr -d "'")
+fi
 if [[ "$current_mode" == "prefer-dark" ]]; then
   mode_flag="-d"
 else

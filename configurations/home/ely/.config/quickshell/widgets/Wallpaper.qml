@@ -256,8 +256,7 @@ PanelWindow {
             radius: 26
             color: Config.Theme.colBg
             border.width: 1
-            border.color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                                  Config.Theme.colTextSec.b, 0.28)
+            border.color: Config.Theme.alpha(Config.Theme.colTextSec, 0.28)
             opacity: root.requestedVisible ? 1 : 0
             scale: root.requestedVisible ? 1 : 0.96
 
@@ -277,8 +276,7 @@ PanelWindow {
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 20
-                spacing: 12
-
+                spacing: Config.Theme.spaceMd
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 10
@@ -286,7 +284,7 @@ PanelWindow {
                     Text {
                         text: "wallpaper"
                         font.family: "Material Symbols Rounded"
-                        font.pixelSize: 25
+                        font.pixelSize: Config.Theme.iconSizeXl
                         color: Config.Theme.colHighlight
                     }
                     ColumnLayout {
@@ -318,7 +316,7 @@ PanelWindow {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 8
+                    spacing: Config.Theme.spaceSm
                     Widgets.ThemedTextField {
                         id: directoryField
                         Layout.fillWidth: true
@@ -373,13 +371,13 @@ PanelWindow {
                         required property int index
                         width: wallpaperGrid.cellWidth - 10
                         height: wallpaperGrid.cellHeight - 10
-                        radius: 10
+                        radius: Config.Theme.radiusCard
                         clip: true
                         color: Config.Theme.colOsdBg
 
                         ClippingRectangle {
                             anchors.fill: parent
-                            radius: 10
+                            radius: Config.Theme.radiusCard
                             color: Config.Theme.colOsdBg
 
                             Image {
@@ -402,7 +400,7 @@ PanelWindow {
                                 Text {
                                     anchors.fill: parent
                                     anchors.leftMargin: 9
-                                    anchors.rightMargin: 8
+                                    anchors.rightMargin: Config.Theme.spaceSm
                                     verticalAlignment: Text.AlignVCenter
                                     text: modelData.split("/").pop()
                                     color: "white"
@@ -416,7 +414,7 @@ PanelWindow {
                         Rectangle {
                             anchors.fill: parent
                             z: 2
-                            radius: 10
+                            radius: Config.Theme.radiusCard
                             color: "transparent"
                             border.width: index === root.selectedIndex
                                 ? 3 : (modelData === root.currentWallpaper ? 1 : 0)

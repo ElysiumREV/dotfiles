@@ -6,6 +6,10 @@ import ".." as Config
 Button {
     id: root
 
+    // Qt only activates buttons with Space; make Enter behave like a click too.
+    Keys.onReturnPressed: event => { root.clicked(); event.accepted = true; }
+    Keys.onEnterPressed: event => { root.clicked(); event.accepted = true; }
+
     required property string label
     required property string iconName
     property bool emphasized: false
@@ -25,7 +29,7 @@ Button {
             color: root.emphasized || root.hovered || root.activeFocus
                 ? Config.Theme.colOnHighlightContainer : Config.Theme.colFg
             font.family: "Material Symbols Rounded"
-            font.pixelSize: 17
+            font.pixelSize: Config.Theme.iconSizeSm
         }
 
         Text {

@@ -49,7 +49,7 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             text: media.playing ? "pause" : "music_note"
             font.family: "Material Symbols Rounded"
-            font.pixelSize: 18
+            font.pixelSize: Config.Theme.iconSizeSm
             color: media.playing ? Config.Theme.colGreen : Config.Theme.colMuted
             verticalAlignment: Text.AlignVCenter
         }
@@ -91,7 +91,7 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             text: "music_note"
             font.family: "Material Symbols Rounded"
-            font.pixelSize: 18
+            font.pixelSize: Config.Theme.iconSizeSm
             color: {
                 if (isHovered) return Config.Theme.colBlue
                 if (media.playing) return Config.Theme.colGreen

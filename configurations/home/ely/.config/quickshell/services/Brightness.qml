@@ -55,17 +55,13 @@ Singleton {
         if (!supported)
             return
 
-        /*
-         * Keeps the value always between 0 and 1.
-         */
+        // Keeps the value always between 0 and 1.
         value = Math.max(
             0,
             Math.min(1, value)
         )
 
-        /*
-         * The UI is updated immediately.
-         */
+        // The UI is updated immediately.
         brightness = value
 
         // Ignores hardware reads started before the user's change.
@@ -76,9 +72,7 @@ Singleton {
         const valuePercentNumber =
             Math.floor(value * 100)
 
-        /*
-         * Avoids leaving the screen completely black.
-         */
+        // Avoids leaving the screen completely black.
         const valuePercent =
             valuePercentNumber <= 0
             ? "1"
@@ -106,9 +100,7 @@ Singleton {
         )
     }
 
-    /*
-     * Detects the available backlight.
-     */
+    // Detects the available backlight.
     Process {
         id: detectBacklightProcess
 
@@ -153,9 +145,7 @@ Singleton {
         }
     }
 
-    /*
-     * Finds the maximum value.
-     */
+    // Finds the maximum value.
     Process {
         id: maxBrightnessProcess
 
@@ -179,9 +169,7 @@ Singleton {
         }
     }
 
-    /*
-     * Reads the current hardware value.
-     */
+    // Reads the current hardware value.
     Process {
         id: brightnessReadProcess
 
@@ -206,15 +194,8 @@ Singleton {
         }
     }
 
-    /*
-     * Process used to change the brightness.
-     *
-     * IMPORTANT:
-     * we use exec() instead of running = true.
-     *
-     * This lets consecutive calls during the
-     * slider drag actually run.
-     */
+    // Process used to change the brightness. It uses exec() instead of
+    // running = true so consecutive calls during a slider drag actually run.
     Process {
         id: setBrightnessProcess
     }

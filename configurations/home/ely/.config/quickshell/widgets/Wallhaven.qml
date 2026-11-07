@@ -507,8 +507,7 @@ PanelWindow {
             radius: 26
             color: Config.Theme.colBg
             border.width: 1
-            border.color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                                  Config.Theme.colTextSec.b, 0.28)
+            border.color: Config.Theme.alpha(Config.Theme.colTextSec, 0.28)
             opacity: root.requestedVisible ? 1 : 0
             scale: root.requestedVisible ? 1 : 0.96
 
@@ -528,8 +527,7 @@ PanelWindow {
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 20
-                spacing: 12
-
+                spacing: Config.Theme.spaceMd
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.rightMargin: 44
@@ -537,7 +535,7 @@ PanelWindow {
                     Text {
                         text: "travel_explore"
                         font.family: "Material Symbols Rounded"
-                        font.pixelSize: 25
+                        font.pixelSize: Config.Theme.iconSizeXl
                         color: Config.Theme.colHighlight
                     }
                     ColumnLayout {
@@ -561,7 +559,7 @@ PanelWindow {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 8
+                    spacing: Config.Theme.spaceSm
                     Widgets.ThemedTextField {
                         id: searchField
                         Layout.fillWidth: true
@@ -608,13 +606,13 @@ PanelWindow {
                         required property int index
                         width: resultsGrid.cellWidth - 10
                         height: resultsGrid.cellHeight - 10
-                        radius: 10
+                        radius: Config.Theme.radiusCard
                         clip: true
                         color: Config.Theme.colOsdBg
 
                         ClippingRectangle {
                             anchors.fill: parent
-                            radius: 10
+                            radius: Config.Theme.radiusCard
                             color: Config.Theme.colOsdBg
                             Image {
                                 anchors.fill: parent
@@ -636,7 +634,7 @@ PanelWindow {
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.leftMargin: 9
-                                    anchors.rightMargin: 8
+                                    anchors.rightMargin: Config.Theme.spaceSm
                                     spacing: 2
                                     Text {
                                         width: parent.width
@@ -661,7 +659,7 @@ PanelWindow {
                         Rectangle {
                             anchors.fill: parent
                             z: 2
-                            radius: 10
+                            radius: Config.Theme.radiusCard
                             color: "transparent"
                             border.width: index === root.selectedIndex ? 3 : 0
                             border.color: Config.Theme.colHighlight
@@ -670,6 +668,7 @@ PanelWindow {
                         MouseArea {
                             anchors.fill: parent
                             hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
                             enabled: !Services.WallpaperManager.busy
                             onEntered: root.selectIndex(index)
                             onClicked: {

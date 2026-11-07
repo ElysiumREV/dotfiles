@@ -70,7 +70,6 @@ Item {
     }
 
     Component.onCompleted: {
-        Services.PowerProfiles.updateActiveProfile();
         readHardwareStats();
     }
 
@@ -127,7 +126,7 @@ Item {
                 text: root.batteryPresent ? "battery_full" : "battery_alert"
                 color: root.batteryPresent ? root.levelColor : Config.Theme.colMuted
                 font.family: "Material Symbols Rounded"
-                font.pixelSize: 30
+                font.pixelSize: Config.Theme.iconSizeHero
             }
 
             ColumnLayout {
@@ -277,13 +276,13 @@ Item {
                         onClicked: Services.PowerProfiles.setProfile(modelData)
 
                         contentItem: RowLayout {
-                            spacing: 4
+                            spacing: Config.Theme.spaceXs
                             Text {
                                 text: Services.PowerProfiles.getProfileIcon(modelData)
                                 color: profileButton.selected
                                     ? Config.Theme.colOnHighlightContainer : Config.Theme.colTextSec
                                 font.family: "Material Symbols Rounded"
-                                font.pixelSize: 16
+                                font.pixelSize: Config.Theme.iconSizeXs
                             }
                             Text {
                                 visible: !root.compactWidth

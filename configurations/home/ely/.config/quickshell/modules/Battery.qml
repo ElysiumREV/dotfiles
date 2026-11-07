@@ -43,8 +43,7 @@ Item {
         visible: root.batteryPresent
         anchors.centerIn: parent
         height: parent.height
-        spacing: 4
-
+        spacing: Config.Theme.spaceXs
         Text {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.isCharging && root.batteryLevel < 100
@@ -69,7 +68,7 @@ Item {
             height: 26
             anchors.verticalCenter: parent.verticalCenter
             diameter: 26
-            iconSize: 16
+            iconSize: Config.Theme.iconSizeXs
             iconName: "battery_android_full"
             progress: root.percentage
             ringColor: root.isCharging ? Config.Theme.colGreen
@@ -86,7 +85,7 @@ Item {
         text: "computer"
         color: root.groupHighlighted ? Config.Theme.colOnHighlightContainer : Config.Theme.colMuted
         font.family: "Material Symbols Rounded"
-        font.pixelSize: 18
+        font.pixelSize: Config.Theme.iconSizeSm
         verticalAlignment: Text.AlignVCenter
     }
 

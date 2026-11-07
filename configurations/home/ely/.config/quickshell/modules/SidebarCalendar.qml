@@ -50,11 +50,11 @@ Item {
 
                 Widgets.IconButton {
                     iconName: "expand_less"
-                    iconSize: 20
+                    iconSize: Config.Theme.iconSizeMd
                     buttonRadius: 8
                     iconRotation: root.collapsed ? 180 : 0
-                    implicitWidth: 28
-                    implicitHeight: 28
+                    implicitWidth: Config.Theme.controlMinSize
+                    implicitHeight: Config.Theme.controlMinSize
                     Accessible.name: root.collapsed ? "Show calendar" : "Collapse calendar"
                     onClicked: root.collapseToggled(!root.collapsed)
                 }
@@ -116,10 +116,10 @@ Item {
 
                     Widgets.IconButton {
                         iconName: "chevron_left"
-                        iconSize: 19
+                        iconSize: Config.Theme.iconSizeSm
                         buttonRadius: 8
-                        implicitWidth: 28
-                        implicitHeight: 28
+                        implicitWidth: Config.Theme.controlMinSize
+                        implicitHeight: Config.Theme.controlMinSize
                         Accessible.name: "Previous month"
                         onClicked: root.viewedMonth = new Date(
                             root.viewedMonth.getFullYear(), root.viewedMonth.getMonth() - 1, 1
@@ -128,10 +128,10 @@ Item {
 
                     Widgets.IconButton {
                         iconName: "chevron_right"
-                        iconSize: 19
+                        iconSize: Config.Theme.iconSizeSm
                         buttonRadius: 8
-                        implicitWidth: 28
-                        implicitHeight: 28
+                        implicitWidth: Config.Theme.controlMinSize
+                        implicitHeight: Config.Theme.controlMinSize
                         Accessible.name: "Next month"
                         onClicked: root.viewedMonth = new Date(
                             root.viewedMonth.getFullYear(), root.viewedMonth.getMonth() + 1, 1

@@ -4,11 +4,20 @@
 
 ### Features
 <ul>
-<li> Hyprland – Wayland compositor
-<li> Quickshell – Status bar with some additional features as well
+<li> Hyprland – Wayland compositor (Lua config), with hypridle, hyprlock and uwsm
+<li> Quickshell – bar, launcher, notifications, quick-settings panel (Wi-Fi, Bluetooth, mixer, battery), clipboard history, screenshots, screen recording (gpu-screen-recorder), wallpaper picker and Wallhaven search
+<li> Matugen – Material 3 colors generated from the wallpaper and applied to Quickshell, Hyprland, hyprlock, GTK/Qt, Kitty, Neovim, Zed and more
 <li> Kitty – Terminal emulator with custom color schemes
 <li> Neovim – Configured with lazy.nvim and plugins
 </ul>
+
+### How it works
+
+- `configurations/` mirrors the files listed in `backup.conf` (paths relative to `$HOME`). Run `./backup.sh` to copy the current system files into it; generated files (see `backup.exclude`) keep their last committed version unless you pass `--all`.
+- `install.sh` (Arch/CachyOS) and `install_fedora.sh` (Fedora, secondary) install the packages and copy `configurations/` into `$HOME`.
+- Changing the wallpaper in Quickshell (`SUPER+W`) runs `~/.config/quickshell/scripts/apply_colors.sh`: Matugen only generates the color files, and that script reloads every application.
+- The Quickshell UI, logs and code comments are in English. Its design notes live in `configurations/home/ely/.config/quickshell/DIARIO_DO_QUICKSHELL.md` (Portuguese).
+- After changing the Quickshell config, run `~/.config/quickshell/scripts/smoke-test.sh` inside the session: it opens every panel and fails if the log shows QML errors.
 
 ### License
 

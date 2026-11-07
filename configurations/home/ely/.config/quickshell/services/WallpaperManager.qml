@@ -26,6 +26,29 @@ Singleton {
         switchWallpaper();
     }
 
+    // Regenerates the palette for the current wallpaper (used when the color mode changes).
+    function reapplyColors() {
+        if (busy)
+            return;
+        pendingPath = defaultDirectory + "/.current-wallpaper.png";
+        failureMessage = "Could not apply the color mode.";
+        busy = true;
+        status = "Applying colors…";
+        applyColorsProcess.exec([
+                                    "bash",
+                                    Quickshell.env("HOME") + "/.config/quickshell/scripts/apply_colors.sh",
+                                    pendingPath,
+                                    Config.Preferences.theme.mode
+                                ]);
+    }
+
+    function setColorMode(mode) {
+        if (busy || (mode !== "dark" && mode !== "light"))
+            return;
+        Config.Preferences.theme.mode = mode;
+        reapplyColors();
+    }
+
     function downloadAndApply(wallpaper) {
         if (busy || !wallpaper?.id || !wallpaper?.path)
             return;
@@ -88,7 +111,8 @@ fi`,
             applyColorsProcess.exec([
                                     "bash",
                                     Quickshell.env("HOME") + "/.config/quickshell/scripts/apply_colors.sh",
-                                    root.pendingPath
+                                    root.pendingPath,
+                                    Config.Preferences.theme.mode
                                 ]);
         }
     }

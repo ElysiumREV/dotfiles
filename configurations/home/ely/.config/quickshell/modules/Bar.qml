@@ -14,27 +14,17 @@ Variants {
 
     delegate: Component {
         Item {
-            /*
-             * =========================================================
-             * SCREEN BOTTOM CORNERS
-             * =========================================================
-             *
-             * This is a separate window because the bar's PanelWindow
-             * only covers the top region of the screen.
-             *
-             * It is transparent and only holds the two RoundCorner items.
-             */
+            // Screen bottom corners
+            // This is a separate window because the bar's PanelWindow
+            // only covers the top region of the screen.
+            // It is transparent and only holds the two RoundCorner items.
 
             required property var modelData
             readonly property int adaptiveLayout: modelData.width <= Config.Theme.barMinimalWidthThreshold
                 ? 2
                 : (modelData.width <= Config.Theme.barCompactWidthThreshold ? 1 : 0)
 
-            /*
-             * =========================================================
-             * TOP BAR
-             * =========================================================
-             */
+            // Top bar
             PanelWindow {
                 id: root
 
@@ -76,17 +66,13 @@ Variants {
 
                 }
 
-                /*
-                 * =====================================================
-                 * BAR SURFACE
-                 * =====================================================
-                 */
+                // Bar surface
                 Rectangle {
                     id: barSurface
 
                     height: Config.Theme.barHeight
                     radius: Config.Theme.barRadius
-                    color: Qt.rgba(Config.Theme.colBg.r, Config.Theme.colBg.g, Config.Theme.colBg.b)
+                    color: Config.Theme.colBg
                     clip: true
 
                     anchors {
@@ -155,11 +141,7 @@ Variants {
                             font.pixelSize: Config.Theme.fontSizeSmall
                         }
 
-                        /*
-                         * =================================================
-                         * MENUS SOB DEMANDA
-                         * =================================================
-                         */
+                        // On-demand menus
                         LazyLoader {
                             activeAsync: launcherPopupState.active
 
@@ -217,17 +199,27 @@ Variants {
                             onActiveChanged: if (active && item) item.openMenu()
                         }
 
-                        /*
-                         * =================================================
-                         * RIGHT MODULES
-                         * =================================================
-                         */
+                        // Right modules
                         Row {
                             id: rightModulesRow
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             height: Config.Theme.barHeight
                             spacing: Config.Theme.moduleSpacing
+
+                            QsModules.ModuleGroup {
+                                id: recordingGroup
+                                contentWidth: recordingIndicator.implicitWidth
+                                visible: Services.ScreenRecorder.recording
+                                interactive: true
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                QsModules.RecordingIndicator {
+                                    id: recordingIndicator
+                                    anchors.centerIn: parent
+                                    groupHighlighted: recordingGroup.highlighted
+                                }
+                            }
 
                             QsModules.Tray {
                                 anchors.verticalCenter: parent.verticalCenter
@@ -332,7 +324,7 @@ Variants {
                                                 : (networkIndicator.connectedWifi
                                                     ? Config.Theme.colHighlight : Config.Theme.colMuted)
                                             font.family: "Material Symbols Rounded"
-                                            font.pixelSize: 18
+                                            font.pixelSize: Config.Theme.iconSizeSm
                                         }
 
                                         MouseArea {
@@ -362,7 +354,7 @@ Variants {
                                                 : (bluetoothIndicator.connectedDevice
                                                     ? Config.Theme.colHighlight : Config.Theme.colMuted)
                                             font.family: "Material Symbols Rounded"
-                                            font.pixelSize: 18
+                                            font.pixelSize: Config.Theme.iconSizeSm
                                         }
 
                                         Text {
@@ -374,7 +366,7 @@ Variants {
                                             color: deviceGroup.highlighted ? Config.Theme.colOnHighlightContainer
                                                 : Config.Theme.colHighlight
                                             font.family: "Material Symbols Rounded"
-                                            font.pixelSize: 18
+                                            font.pixelSize: Config.Theme.iconSizeSm
                                             Accessible.ignored: true
                                         }
 
@@ -390,11 +382,7 @@ Variants {
 
                         }
 
-                        /*
-                         * =================================================
-                         * WORKSPACES
-                         * =================================================
-                         */
+                        // Workspaces
                         QsModules.ModuleGroup {
                             id: workspaceGroup
 
@@ -428,11 +416,7 @@ Variants {
                             }
                         }
 
-                        /*
-                         * =================================================
-                         * MEDIA
-                         * =================================================
-                         */
+                        // MEDIA
                         QsModules.ModuleGroup {
                             id: mediaGroup
                             visible: Config.Preferences.bar.showMedia && adaptiveLayout === 0
@@ -452,11 +436,7 @@ Variants {
 
                         }
 
-                        /*
-                         * =================================================
-                         * SYSTEM STATUS
-                         * =================================================
-                         */
+                        // System status
                         QsModules.ModuleGroup {
                             id: systemStatusGroup
                             visible: Config.Preferences.bar.showSystemStatus
@@ -480,11 +460,7 @@ Variants {
 
                 }
 
-                /*
-                 * =========================================================
-                 * BAR CORNERS
-                 * =========================================================
-                 */
+                // Bar corners
                 QsModules.RoundCorner {
                     id: topLeftCorner
 
@@ -513,9 +489,7 @@ Variants {
 
                 }
 
-                /*
-                 * Bar mask.
-                 */
+                // Bar mask.
                 mask: Region {
                     item: barMask
                 }

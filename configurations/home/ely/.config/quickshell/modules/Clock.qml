@@ -30,8 +30,7 @@ Item {
     RowLayout {
         id: clockRow
         anchors.centerIn: parent
-        spacing: 4
-
+        spacing: Config.Theme.spaceXs
         Text {
             Layout.alignment: Qt.AlignVCenter
             text: root.formattedTime

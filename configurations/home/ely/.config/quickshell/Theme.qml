@@ -37,8 +37,14 @@ Singleton {
     property color colSurfaceRaised: Colors.md3.surface_container_high
     property color colBorderSubtle: Colors.md3.outline_variant
 
+    // Returns `color` with the given opacity (keeps bindings reactive to theme changes).
+    function alpha(color, opacity) {
+        return Qt.rgba(color.r, color.g, color.b, opacity);
+    }
+
     // Fontes
     property string fontFamily: "JetBrainsMono Nerd Font"
+    property int fontSizeCaption: 11
     property int fontSizeSmall: 12
     property int fontSize: 14
     property int fontSizeLarge: 18
@@ -48,9 +54,19 @@ Singleton {
     property int spaceSm: 8
     property int spaceMd: 12
     property int spaceLg: 16
+    property int radiusSmall: 6
     property int radiusControl: 8
     property int radiusCard: 12
     property int radiusPanel: 16
+    // Material Symbols icon sizes.
+    property int iconSizeXs: 16
+    property int iconSizeSm: 18
+    property int iconSizeMd: 20
+    property int iconSizeLg: 22
+    property int iconSizeXl: 24
+    property int iconSizeHero: 32
+    // Minimum size of clickable controls (icon buttons, toggles).
+    property int controlMinSize: 32
     property real stateHoverOpacity: 0.10
     property real stateSelectedOpacity: 0.18
 
@@ -60,17 +76,11 @@ Singleton {
     readonly property int motionDefault: 350
     readonly property int motionEnter: 400
     readonly property int motionExit: 200
-    readonly property int motionResize: 300
-    readonly property int motionSlow: 500
     readonly property list<real> curveSpatialFast: [0.42, 1.67, 0.21, 0.90, 1, 1]
     readonly property list<real> curveSpatialDefault: [0.38, 1.21, 0.22, 1.00, 1, 1]
     readonly property list<real> curveEffects: [0.34, 0.80, 0.34, 1.00, 1, 1]
     readonly property list<real> curveEnter: [0.05, 0.70, 0.10, 1.00, 1, 1]
     readonly property list<real> curveExit: [0.30, 0.00, 0.80, 0.15, 1, 1]
-
-    // Compatibility for the shared motion components.
-    readonly property int durPopupIn: motionEnter
-    readonly property int durPopupOut: motionExit
 
     // Bar and modules
     property int barInset: 0
@@ -85,16 +95,10 @@ Singleton {
     property int moduleInnerSpacing: 4
     property int moduleTightSpacing: 3
     property int mediaMaxWidth: 350
-    property int separatorWidth: 1
-    property int separatorHeight: 16
-    property int separatorRadius: 1
 
     // Module groups
     property int moduleGroupHeight: 32
     property int moduleGroupRadius: 12
-
-    // Battery
-    property int batteryTextSize: 11
 
     // Tray
     property int trayItemSize: 18
@@ -110,11 +114,4 @@ Singleton {
     property int osdBarHeight: 8
     property int osdBarRadius: 4
     property int osdBorderWidth: 1
-    property int osdAnimationDuration: 180
-
-    // Logout
-    property real wlogoutGridScale: 0.75
-    property real wlogoutIconScale: 0.25
-    property int wlogoutTextSize: 20
-    property int wlogoutBorderWidth: 1
 }

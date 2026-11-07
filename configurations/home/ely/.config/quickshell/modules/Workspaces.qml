@@ -185,7 +185,7 @@
                              : Config.Theme.colDisabled
                       font {
                           family: Config.Theme.fontFamily
-                          pixelSize: 12
+                          pixelSize: Config.Theme.fontSizeSmall
                           bold: true
                       }
 

@@ -34,6 +34,16 @@ ShellRoot {
         function toggleShortcutHub(): void {
             Services.Notifications.toggleCenter(Hyprland.focusedMonitor, "shortcuts");
         }
+        function toggleVolumeMixer(): void {
+            Services.Notifications.toggleCenter(Hyprland.focusedMonitor, "volume");
+        }
+        function toggleScreenRecording(): void {
+            Services.ScreenRecorder.toggle();
+        }
+        function toggleColorMode(): void {
+            Services.WallpaperManager.setColorMode(
+                Config.Preferences.theme.mode === "light" ? "dark" : "light");
+        }
         function toggleDoNotDisturb(): void {
             Services.Notifications.doNotDisturb = !Services.Notifications.doNotDisturb;
         }

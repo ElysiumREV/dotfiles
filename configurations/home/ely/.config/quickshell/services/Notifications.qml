@@ -19,7 +19,6 @@ Singleton {
     property string centerRequestedTab: "notifications"
     property bool centerCalendarCollapsed: false
     property var closingIds: ({})
-    readonly property int unreadCount: history.filter(item => item.unread).length
     readonly property var historyGroups: {
         const groups = [];
         for (const item of history) {
@@ -59,7 +58,7 @@ Singleton {
             const record = {
                 id: notification.id,
                 appName: notification.appName || notification.desktopEntry || "Notification",
-                appIcon: notification.appIcon || "",
+                appIcon: iconNameOf(notification),
                 summary: boundedText(notification.summary, summaryCharacterLimit),
                 body: boundedText(notification.body, bodyCharacterLimit),
                 urgency: notification.urgency,
@@ -216,6 +215,48 @@ Singleton {
                 active: item.active
             };
         });
+    }
+
+    // Quickshell exposes both the app_icon parameter and the image-path hint as
+    // `image` = "image://icon/<name or path>", so a plain app icon would look like an
+    // attached picture. These helpers tell them apart: icon names and files stored in
+    // icon directories are app icons; other files and image-data are real images.
+    function embeddedImage(notification) {
+        const image = String(notification.image ?? "");
+        return image.startsWith("image://icon/") ? image.slice("image://icon/".length) : null;
+    }
+
+    function isIconPath(path) {
+        return /\/(icons|pixmaps)\//.test(path);
+    }
+
+    function iconNameOf(notification) {
+        if (notification.appIcon)
+            return notification.appIcon;
+        const embedded = embeddedImage(notification);
+        if (embedded === null)
+            return "";
+        return !embedded.startsWith("/") || isIconPath(embedded) ? embedded : "";
+    }
+
+    // Resolves the icon name to something loadable; "" when the theme has no such icon
+    // (the image provider would otherwise return a blank image).
+    function iconSourceOf(notification) {
+        const name = iconNameOf(notification);
+        if (name === "")
+            return "";
+        if (name.startsWith("/"))
+            return "file://" + name;
+        if (name.includes(":"))
+            return name;
+        return Quickshell.iconPath(name, true);
+    }
+
+    function attachmentOf(notification) {
+        const embedded = embeddedImage(notification);
+        if (embedded === null)
+            return String(notification.image ?? "");
+        return embedded.startsWith("/") && !isIconPath(embedded) ? "file://" + embedded : "";
     }
 
     function toggleCenter(monitor, tab) {

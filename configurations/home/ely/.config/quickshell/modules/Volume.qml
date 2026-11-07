@@ -58,7 +58,7 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             text: root.icon
             font.family: "Material Symbols Rounded"
-            font.pixelSize: 18
+            font.pixelSize: Config.Theme.iconSizeSm
             verticalAlignment: Text.AlignVCenter
 
             color: {

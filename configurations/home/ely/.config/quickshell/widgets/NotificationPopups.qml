@@ -56,15 +56,14 @@ Scope {
             contentWidth: width
             contentHeight: popupColumn.implicitHeight
             boundsBehavior: Flickable.StopAtBounds
-            ScrollBar.vertical: Widgets.ThemeScrollBar {
-                policy: ScrollBar.AsNeeded
-            }
+            // Popups are transient and limited to a few cards; no visible scrollbar
+            // (the wheel still scrolls if a tiny screen clips the stack).
+            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
 
             Column {
                 id: popupColumn
                 width: popupScroll.width
-                spacing: 8
-
+                spacing: Config.Theme.spaceSm
             Repeater {
                 model: Services.Notifications.doNotDisturb
                     ? [] : Services.Notifications.popupNotifications.slice(0, 5)
@@ -73,20 +72,22 @@ Scope {
                     id: card
                     required property var modelData
 
-                    property bool isAvatar: modelData.appIcon === "" && modelData.image !== "" && modelData.body === ""
+                    readonly property string iconName: Services.Notifications.iconNameOf(modelData)
+                    readonly property string iconSource: Services.Notifications.iconSourceOf(modelData)
+                    readonly property string attachment: Services.Notifications.attachmentOf(modelData)
+                    property bool isAvatar: card.iconName === "" && card.attachment !== "" && modelData.body === ""
                     readonly property int timeoutMs: modelData.expireTimeout === 0 ? 0
                         : modelData.expireTimeout < 0
                             ? Math.max(1, Math.min(10, Config.Preferences.notifications.defaultTimeoutSeconds)) * 1000
                             : Math.max(1, Math.round(modelData.expireTimeout))
                         width: popupColumn.width
                     implicitHeight: cardContent.implicitHeight + 24
-                    radius: 12
+                    radius: Config.Theme.radiusCard
                     color: Config.Theme.colBg
                     border.width: 1
                     border.color: modelData.urgency === NotificationUrgency.Critical
                         ? Config.Theme.colRed
-                        : Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                                  Config.Theme.colTextSec.b, 0.25)
+                        : Config.Theme.alpha(Config.Theme.colTextSec, 0.25)
 
                     Timer {
                         interval: card.timeoutMs
@@ -100,7 +101,7 @@ Scope {
                     ColumnLayout {
                         id: cardContent
                         anchors.fill: parent
-                        anchors.margins: 12
+                        anchors.margins: Config.Theme.spaceMd
                         spacing: 7
 
                         RowLayout {
@@ -111,29 +112,26 @@ Scope {
                                 id: previewContainer
                                 Layout.preferredWidth: 30
                                 Layout.preferredHeight: 30
-                                radius: 8
-                                color: Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
-                                               Config.Theme.colHighlight.b, 0.14)
+                                radius: Config.Theme.radiusControl
+                                color: Config.Theme.alpha(Config.Theme.colHighlight, 0.14)
                                 // Show tiny icon only when we have a real appIcon or an avatar image.
-                                visible: modelData.appIcon !== "" || isAvatar
+                                visible: card.iconName !== "" || isAvatar
 
                                 IconImage {
                                     anchors.centerIn: parent
                                     implicitSize: 19
-                                    source: modelData.appIcon !== ""
-                                        ? (modelData.appIcon.includes(":") || modelData.appIcon.includes("/")
-                                           ? modelData.appIcon : "image://icon/" + modelData.appIcon) : (isAvatar ? modelData.image : "")
+                                    source: card.iconSource !== "" ? card.iconSource : (isAvatar ? card.attachment : "")
                                     asynchronous: true
                                 }
 
                                 Text {
                                     anchors.centerIn: parent
-                                    // Show generic placeholder only when no appIcon and not an avatar.
-                                    visible: modelData.appIcon === "" && !isAvatar
+                                    // Placeholder when the app icon cannot be resolved and there is no avatar.
+                                    visible: card.iconSource === "" && !isAvatar
                                     text: "notifications"
                                     color: Config.Theme.colHighlight
                                     font.family: "Material Symbols Rounded"
-                                    font.pixelSize: 18
+                                    font.pixelSize: Config.Theme.iconSizeSm
                                 }
                             }
 
@@ -146,7 +144,7 @@ Scope {
                                     text: modelData.appName || "Notification"
                                     color: Config.Theme.colTextSec
                                     font.family: Config.Theme.fontFamily
-                                    font.pixelSize: 10
+                                    font.pixelSize: Config.Theme.fontSizeCaption
                                     elide: Text.ElideRight
                                 }
 
@@ -164,10 +162,10 @@ Scope {
 
                             Widgets.IconButton {
                                 iconName: "close"
-                                iconSize: 17
+                                iconSize: Config.Theme.iconSizeSm
                                 buttonRadius: 7
-                                implicitWidth: 28
-                                implicitHeight: 28
+                                implicitWidth: Config.Theme.controlMinSize
+                                implicitHeight: Config.Theme.controlMinSize
                                 Accessible.name: "Dismiss notification from " + (modelData.appName || "Notification")
                                 onClicked: Services.Notifications.dismiss(modelData.id)
                             }
@@ -189,15 +187,14 @@ Scope {
                         Rectangle {
                             Layout.fillWidth: true
                             Layout.preferredHeight: visible ? 132 : 0
-                            visible: modelData.image !== "" && !isAvatar
-                            radius: 8
+                            visible: card.attachment !== "" && !isAvatar
+                            radius: Config.Theme.radiusControl
                             clip: true
-                            color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                                           Config.Theme.colTextSec.b, 0.08)
+                            color: Config.Theme.alpha(Config.Theme.colTextSec, 0.08)
 
                             Image {
                                 anchors.fill: parent
-                                source: modelData.image
+                                source: card.attachment
                                 sourceSize.width: 672
                                 sourceSize.height: 264
                                 asynchronous: true
@@ -228,14 +225,8 @@ Scope {
                                     cornerRadius: 7
                                     idleTextColor: Config.Theme.colFg
                                     hoverTextColor: Config.Theme.colFg
-                                    idleBackgroundColor: Qt.rgba(
-                                        Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                                        Config.Theme.colTextSec.b, 0.12
-                                    )
-                                    hoverBackgroundColor: Qt.rgba(
-                                        Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
-                                        Config.Theme.colHighlight.b, 0.22
-                                    )
+                                    idleBackgroundColor: Config.Theme.alpha(Config.Theme.colTextSec, 0.12)
+                                    hoverBackgroundColor: Config.Theme.alpha(Config.Theme.colHighlight, 0.22)
                                     onClicked: modelData.invoke()
                                 }
                             }

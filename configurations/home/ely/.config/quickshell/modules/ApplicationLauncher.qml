@@ -232,8 +232,7 @@ PanelWindow {
             opacity: root.requestedVisible ? 1 : 0
             scale: root.requestedVisible ? 1 : 0.96
             border.width: 1
-            border.color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                                  Config.Theme.colTextSec.b, 0.28)
+            border.color: Config.Theme.alpha(Config.Theme.colTextSec, 0.28)
 
             Behavior on opacity {
                 NumberAnimation { duration: Config.Theme.motionEnter; easing.type: Easing.OutCubic }
@@ -260,7 +259,7 @@ PanelWindow {
                     Text {
                         text: "apps"
                         font.family: "Material Symbols Rounded"
-                        font.pixelSize: 24
+                        font.pixelSize: Config.Theme.iconSizeXl
                         color: Config.Theme.colHighlight
                     }
                     Text {
@@ -282,9 +281,8 @@ PanelWindow {
                 Rectangle {
                     Layout.fillWidth: true
                     height: 48
-                    radius: 11
-                    color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                                   Config.Theme.colTextSec.b, 0.10)
+                    radius: Config.Theme.radiusCard
+                    color: Config.Theme.alpha(Config.Theme.colTextSec, 0.10)
                     border.width: searchField.activeFocus ? 1 : 0
                     border.color: Config.Theme.colHighlight
 
@@ -297,7 +295,7 @@ PanelWindow {
                         Text {
                             text: "search"
                             font.family: "Material Symbols Rounded"
-                            font.pixelSize: 20
+                            font.pixelSize: Config.Theme.iconSizeMd
                             color: Config.Theme.colTextSec
                         }
                         Widgets.ThemedTextField {
@@ -354,7 +352,7 @@ PanelWindow {
                     clip: true
                     model: root.filteredApplications
                     currentIndex: root.selectedIndex
-                    spacing: 4
+                    spacing: Config.Theme.spaceXs
                     ScrollBar.vertical: Widgets.ThemeScrollBar { }
 
                     delegate: Rectangle {
@@ -362,21 +360,18 @@ PanelWindow {
                         required property int index
                         width: appList.width
                         height: 56
-                        radius: 10
+                        radius: Config.Theme.radiusCard
                         color: index === root.selectedIndex
-                               ? Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
-                                         Config.Theme.colHighlight.b, 0.16)
+                               ? Config.Theme.alpha(Config.Theme.colHighlight, 0.16)
                                : rowMouse.containsMouse
-                                 ? Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                                           Config.Theme.colTextSec.b, 0.08)
+                                 ? Config.Theme.alpha(Config.Theme.colTextSec, 0.08)
                                  : "transparent"
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 12
+                            anchors.leftMargin: Config.Theme.spaceMd
                             anchors.rightMargin: 14
-                            spacing: 12
-
+                            spacing: Config.Theme.spaceMd
                             IconImage {
                                 implicitSize: 32
                                 source: modelData.icon ? "image://icon/" + modelData.icon : ""
@@ -405,7 +400,7 @@ PanelWindow {
                             Text {
                                 text: "arrow_forward"
                                 font.family: "Material Symbols Rounded"
-                                font.pixelSize: 18
+                                font.pixelSize: Config.Theme.iconSizeSm
                                 color: Config.Theme.colTextSec
                         visible: index === root.selectedIndex
                             }

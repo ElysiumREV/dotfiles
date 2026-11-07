@@ -11,3 +11,6 @@ singleton Notifications 1.0 Notifications.qml
 singleton ClipboardHistory 1.0 ClipboardHistory.qml
 singleton GlobalFocusGrab 1.0 GlobalFocusGrab.qml
 singleton PrivacyIndicators 1.0 PrivacyIndicators.qml
+singleton BluetoothControl 1.0 BluetoothControl.qml
+singleton WifiControl 1.0 WifiControl.qml
+singleton ScreenRecorder 1.0 ScreenRecorder.qml

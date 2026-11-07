@@ -39,7 +39,7 @@ Item {
             return Config.Theme.colFg;
         }
         font.family: "Material Symbols Rounded"
-        font.pixelSize: 18
+        font.pixelSize: Config.Theme.iconSizeSm
     }
 
     MouseArea {

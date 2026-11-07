@@ -143,6 +143,7 @@ PKGS_SESSION=(
   wl-clipboard
   cliphist
   hyprshot
+  gpu-screen-recorder
   playerctl
   libnotify
 )

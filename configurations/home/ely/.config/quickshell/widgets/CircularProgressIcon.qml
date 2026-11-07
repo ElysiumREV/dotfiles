@@ -8,7 +8,7 @@ Item {
     property real progress: 0
     property color ringColor: Config.Theme.colHighlight
     property color iconColor: Config.Theme.colFg
-    property int iconSize: 16
+    property int iconSize: Config.Theme.iconSizeXs
     property int diameter: 20
 
     implicitWidth: diameter

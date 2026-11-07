@@ -15,17 +15,17 @@
   "on_primary": "{{colors.on_primary.default.hex}}",
   "primary_container": "{{colors.primary_container.default.hex}}",
   "on_primary_container": "{{colors.on_primary_container.default.hex}}",
-  "primary_fixed_dim": "{{colors.primary_fixed_dim.default.hex}}",
+  "primary_fixed_dim": "<* if {{ is_dark_mode }} *>{{colors.primary_fixed_dim.default.hex}}<* else *>{{colors.on_primary_fixed_variant.default.hex}}<* endif *>",
   "inverse_primary": "{{colors.inverse_primary.default.hex | lighten: 20.0 }}",
 
   "secondary": "{{colors.secondary.default.hex}}",
   "secondary_container": "{{colors.secondary_container.default.hex}}",
   "on_secondary_container": "{{colors.on_secondary_container.default.hex}}",
-  "secondary_fixed_dim": "{{colors.secondary_fixed_dim.default.hex}}",
+  "secondary_fixed_dim": "<* if {{ is_dark_mode }} *>{{colors.secondary_fixed_dim.default.hex}}<* else *>{{colors.on_secondary_fixed_variant.default.hex}}<* endif *>",
 
   "tertiary": "{{colors.tertiary.default.hex}}",
   "tertiary_container": "{{colors.tertiary_container.default.hex}}",
-  "tertiary_fixed_dim": "{{colors.tertiary_fixed_dim.default.hex}}",
+  "tertiary_fixed_dim": "<* if {{ is_dark_mode }} *>{{colors.tertiary_fixed_dim.default.hex}}<* else *>{{colors.on_tertiary_fixed_variant.default.hex}}<* endif *>",
 
   "error": "{{colors.error.default.hex}}",
   "error_container": "{{colors.error_container.default.hex}}",

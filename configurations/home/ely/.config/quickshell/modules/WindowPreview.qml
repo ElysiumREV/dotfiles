@@ -60,8 +60,7 @@ PanelWindow {
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 10
-            spacing: 8
-
+            spacing: Config.Theme.spaceSm
             Text {
                 Layout.fillWidth: true
                 text: root.sourceToplevel?.title || "Workspace window"

@@ -5,6 +5,10 @@ import ".." as Config
 Button {
     id: root
 
+    // Qt only activates buttons with Space; make Enter behave like a click too.
+    Keys.onReturnPressed: event => { root.clicked(); event.accepted = true; }
+    Keys.onEnterPressed: event => { root.clicked(); event.accepted = true; }
+
     property int labelFontSize: Config.Theme.fontSizeSmall
     property int cornerRadius: Config.Theme.radiusControl
     property int contentHorizontalPadding: 10

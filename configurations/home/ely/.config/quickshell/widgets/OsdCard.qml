@@ -25,7 +25,7 @@ Rectangle {
             Layout.preferredWidth: 48
             Layout.preferredHeight: 48
             Layout.alignment: Qt.AlignVCenter
-            radius: 16
+            radius: Config.Theme.radiusPanel
             color: root.muted ? Config.Colors.md3.surface_container_highest
                               : Config.Colors.md3.primary_container
 
@@ -41,12 +41,10 @@ Rectangle {
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 8
-
+            spacing: Config.Theme.spaceSm
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 8
-
+                spacing: Config.Theme.spaceSm
                 Text {
                     Layout.fillWidth: true
                     text: root.title

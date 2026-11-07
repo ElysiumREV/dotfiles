@@ -13,6 +13,15 @@
     "notifications": {
         "defaultTimeoutSeconds": 4
     },
+    "recorder": {
+        "captureMode": "screen",
+        "directory": "",
+        "microphone": "rnnoise_output",
+        "systemAudio": true
+    },
+    "theme": {
+        "mode": "dark"
+    },
     "wallpaper": {
         "directory": "/home/ely/Pictures/Wallpapers"
     }

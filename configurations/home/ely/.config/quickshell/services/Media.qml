@@ -15,7 +15,6 @@ Singleton {
     readonly property string title: activePlayer?.trackTitle ?? ""
     readonly property string artist: activePlayer?.trackArtist ?? ""
     readonly property string album: activePlayer?.trackAlbum ?? ""
-    readonly property string albumArtist: activePlayer?.trackAlbumArtist ?? ""
     readonly property string artUrl: activePlayer?.trackArtUrl ?? ""
     readonly property bool volumeSupported: activePlayer?.volumeSupported ?? false
     readonly property int volume: volumeSupported ? Math.round((activePlayer?.volume ?? 0) * 100) : 0
@@ -117,11 +116,6 @@ Singleton {
     function previous() {
         if (activePlayer?.canGoPrevious)
             activePlayer.previous()
-    }
-
-    function raisePlayer() {
-        if (activePlayer?.canRaise)
-            activePlayer.raise()
     }
 
     function setVolume(value) {

@@ -31,14 +31,14 @@ Item {
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: 8
+            spacing: Config.Theme.spaceSm
             visible: root.showHeader
 
             Text {
                 text: "notifications"
                 color: Config.Theme.colHighlight
                 font.family: "Material Symbols Rounded"
-                font.pixelSize: 22
+                font.pixelSize: Config.Theme.iconSizeLg
             }
 
             Text {
@@ -67,8 +67,7 @@ Item {
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: 8
-
+            spacing: Config.Theme.spaceSm
             Text {
                 Layout.fillWidth: true
                 text: notificationService.doNotDisturb ? "Do Not Disturb on" : "Recent alerts"
@@ -85,10 +84,7 @@ Item {
                 labelAlignment: Text.AlignRight
                 idleTextColor: Config.Theme.colMuted
                 hoverTextColor: Config.Theme.colHighlight
-                hoverBackgroundColor: Qt.rgba(
-                    Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
-                    Config.Theme.colHighlight.b, 0.12
-                )
+                hoverBackgroundColor: Config.Theme.alpha(Config.Theme.colHighlight, 0.12)
                 cornerRadius: 6
                 onClicked: notificationService.clearHistory()
             }
@@ -97,8 +93,7 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             implicitHeight: 1
-            color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                           Config.Theme.colTextSec.b, 0.2)
+            color: Config.Theme.alpha(Config.Theme.colTextSec, 0.2)
         }
 
         Item {
@@ -184,8 +179,7 @@ Item {
                     Column {
                         id: groupColumn
                         width: parent.width
-                        spacing: 4
-
+                        spacing: Config.Theme.spaceXs
                         Button {
                             id: groupButton
                             width: parent.width
@@ -201,11 +195,7 @@ Item {
                                 IconImage {
                                     Layout.preferredWidth: 19
                                     Layout.preferredHeight: 19
-                                    source: groupDelegate.modelData.appIcon !== ""
-                                        ? (groupDelegate.modelData.appIcon.includes(":")
-                                            || groupDelegate.modelData.appIcon.includes("/")
-                                            ? groupDelegate.modelData.appIcon
-                                            : "image://icon/" + groupDelegate.modelData.appIcon) : ""
+                                    source: Services.Notifications.iconSourceOf({ appIcon: groupDelegate.modelData.appIcon })
                                     asynchronous: true
                                     visible: status === Image.Ready
                                 }
@@ -215,7 +205,7 @@ Item {
                                     text: groupDelegate.modelData.appName
                                     color: Config.Theme.colTextSec
                                     font.family: Config.Theme.fontFamily
-                                    font.pixelSize: 10
+                                    font.pixelSize: Config.Theme.fontSizeCaption
                                     elide: Text.ElideRight
                                 }
 
@@ -224,7 +214,7 @@ Item {
                                         ? String(groupDelegate.modelData.notifications.length) : ""
                                     color: Config.Theme.colMuted
                                     font.family: Config.Theme.fontFamily
-                                    font.pixelSize: 9
+                                    font.pixelSize: Config.Theme.fontSizeCaption
                                 }
 
                                 Text {
@@ -232,14 +222,13 @@ Item {
                                     color: groupButton.activeFocus || groupButton.hovered
                                         ? Config.Theme.colHighlight : Config.Theme.colMuted
                                     font.family: "Material Symbols Rounded"
-                                    font.pixelSize: 17
+                                    font.pixelSize: Config.Theme.iconSizeSm
                                 }
                             }
                             background: Rectangle {
-                                radius: 7
+                                radius: Config.Theme.radiusControl
                                 color: groupButton.activeFocus || groupButton.hovered
-                                    ? Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
-                                              Config.Theme.colHighlight.b, 0.10) : "transparent"
+                                    ? Config.Theme.alpha(Config.Theme.colHighlight, 0.10) : "transparent"
                             }
                         }
 
@@ -268,9 +257,7 @@ Item {
                                     IconImage {
                                         Layout.alignment: Qt.AlignTop
                                         implicitSize: 23
-                                        source: modelData.appIcon !== ""
-                                            ? (modelData.appIcon.includes(":") || modelData.appIcon.includes("/")
-                                                ? modelData.appIcon : "image://icon/" + modelData.appIcon) : ""
+                                        source: Services.Notifications.iconSourceOf({ appIcon: modelData.appIcon })
                                         asynchronous: true
                                         visible: status === Image.Ready
                                     }
@@ -304,12 +291,12 @@ Item {
                                                 text: new Date(modelData.timestamp).toLocaleTimeString(Qt.locale(), "HH:mm")
                                                 color: Config.Theme.colMuted
                                                 font.family: Config.Theme.fontFamily
-                                                font.pixelSize: 9
+                                                font.pixelSize: Config.Theme.fontSizeCaption
                                             }
 
                                             Widgets.IconButton {
                                                 iconName: "close"
-                                                iconSize: 16
+                                                iconSize: Config.Theme.iconSizeXs
                                                 buttonRadius: 6
                                                 implicitWidth: 23
                                                 implicitHeight: 23
@@ -364,14 +351,8 @@ Item {
                                                     cornerRadius: 6
                                                     idleTextColor: Config.Theme.colFg
                                                     hoverTextColor: Config.Theme.colFg
-                                                    idleBackgroundColor: Qt.rgba(
-                                                        Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                                                        Config.Theme.colTextSec.b, 0.12
-                                                    )
-                                                    hoverBackgroundColor: Qt.rgba(
-                                                        Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
-                                                        Config.Theme.colHighlight.b, 0.2
-                                                    )
+                                                    idleBackgroundColor: Config.Theme.alpha(Config.Theme.colTextSec, 0.12)
+                                                    hoverBackgroundColor: Config.Theme.alpha(Config.Theme.colHighlight, 0.2)
                                                     onClicked: modelData.invoke()
                                                 }
                                             }

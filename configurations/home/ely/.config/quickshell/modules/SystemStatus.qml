@@ -43,6 +43,16 @@ Item {
         }
     }
 
+    Rectangle {
+        anchors.centerIn: parent
+        width: rowLayout.implicitWidth + 8
+        height: Config.Theme.moduleHeight - 4
+        radius: height / 2
+        color: "transparent"
+        border.width: root.activeFocus ? 1 : 0
+        border.color: Config.Theme.colHighlight
+    }
+
     RowLayout {
         id: rowLayout
         anchors.verticalCenter: parent.verticalCenter
@@ -53,7 +63,7 @@ Item {
 
             Widgets.CircularProgressIcon {
                 diameter: 26
-                iconSize: 16
+                iconSize: Config.Theme.iconSizeXs
                 iconName: "planner_review"
                 progress: Services.SystemStats.cpuUsage / 100
                 ringColor: Config.Theme.colHighlight
@@ -73,7 +83,7 @@ Item {
 
             Widgets.CircularProgressIcon {
                 diameter: 26
-                iconSize: 16
+                iconSize: Config.Theme.iconSizeXs
                 iconName: "memory"
                 progress: Services.SystemStats.memoryUsage / 100
                 ringColor: Config.Theme.colHighlight

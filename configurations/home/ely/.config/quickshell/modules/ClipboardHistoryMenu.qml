@@ -97,8 +97,7 @@ PanelWindow {
             radius: 26
             color: Config.Theme.colBg
             border.width: 1
-            border.color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                                  Config.Theme.colTextSec.b, 0.28)
+            border.color: Config.Theme.alpha(Config.Theme.colTextSec, 0.28)
             opacity: root.requestedVisible ? 1 : 0
             scale: root.requestedVisible ? 1 : 0.96
 
@@ -127,7 +126,7 @@ PanelWindow {
                         text: "content_paste"
                         color: Config.Theme.colHighlight
                         font.family: "Material Symbols Rounded"
-                        font.pixelSize: 24
+                        font.pixelSize: Config.Theme.iconSizeXl
                     }
                     Text {
                         Layout.fillWidth: true
@@ -157,7 +156,7 @@ PanelWindow {
                     Widgets.IconButton {
                         id: closeButton
                         iconName: "close"
-                        iconSize: 20
+                        iconSize: Config.Theme.iconSizeMd
                         activeFocusOnTab: true
                         Keys.onEscapePressed: root.closeMenu()
                         onClicked: root.closeMenu()
@@ -239,12 +238,10 @@ PanelWindow {
                             }
                         }
                         background: Rectangle {
-                            radius: 9
+                            radius: Config.Theme.radiusControl
                             color: itemDelegate.highlighted || itemDelegate.hovered || itemDelegate.activeFocus
-                                ? Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
-                                          Config.Theme.colHighlight.b, 0.13)
-                                : Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                                          Config.Theme.colTextSec.b, 0.08)
+                                ? Config.Theme.alpha(Config.Theme.colHighlight, 0.13)
+                                : Config.Theme.alpha(Config.Theme.colTextSec, 0.08)
                             border.width: itemDelegate.activeFocus ? 1 : 0
                             border.color: Config.Theme.colHighlight
                         }

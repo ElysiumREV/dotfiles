@@ -72,9 +72,9 @@ PanelWindow {
         opacity: root.enterProgress
         transform: Translate { y: (1 - root.enterProgress) * -10 }
         color: Config.Theme.colBg
-        radius: 12
+        radius: Config.Theme.radiusCard
         border.width: 1
-        border.color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.25)
+        border.color: Config.Theme.alpha(Config.Theme.colTextSec, 0.25)
 
         ColumnLayout {
             anchors.fill: parent
@@ -98,7 +98,7 @@ PanelWindow {
                     text: "close"
                     color: closeMouse.containsMouse ? Config.Theme.colHighlight : Config.Theme.colTextSec
                     font.family: "Material Symbols Rounded"
-                    font.pixelSize: 19
+                    font.pixelSize: Config.Theme.iconSizeSm
 
                     MouseArea {
                         id: closeMouse
@@ -119,16 +119,16 @@ PanelWindow {
                 Rectangle {
                     Layout.preferredWidth: root.compactLayout ? 60 : 80
                     Layout.preferredHeight: root.compactLayout ? 60 : 80
-                    radius: 8
+                    radius: Config.Theme.radiusControl
                     clip: true
-                    color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.12)
+                    color: Config.Theme.alpha(Config.Theme.colTextSec, 0.12)
 
                     Text {
                         anchors.centerIn: parent
                         text: "music_note"
                         color: Config.Theme.colTextSec
                         font.family: "Material Symbols Rounded"
-                        font.pixelSize: 34
+                        font.pixelSize: Config.Theme.iconSizeHero
                         visible: cover.status !== Image.Ready
                     }
 
@@ -146,8 +146,7 @@ PanelWindow {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4
-
+                    spacing: Config.Theme.spaceXs
                     Text {
                         Layout.fillWidth: true
                         text: root.media.title || "Nothing playing"
@@ -221,7 +220,7 @@ PanelWindow {
         color: emphasized
             ? Config.Theme.colHighlight
             : (controlMouse.containsMouse && available
-                ? Qt.rgba(Config.Theme.colFg.r, Config.Theme.colFg.g, Config.Theme.colFg.b, 0.12)
+                ? Config.Theme.alpha(Config.Theme.colFg, 0.12)
                 : "transparent")
         opacity: available ? 1 : 0.38
 

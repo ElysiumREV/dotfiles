@@ -201,7 +201,7 @@ Scope {
         previousToplevel = null;
         if (!toplevel || active)
             return;
-        toplevel.activate();
+        toplevel.wayland?.activate();
     }
 
     Timer {
@@ -255,6 +255,7 @@ Scope {
                         && Hyprland.monitorFor(screenDelegate.modelData) === root.targetMonitor
 
                     PanelWindow {
+                        id: cheatsheetWindow
                         screen: screenDelegate.modelData
                         color: "transparent"
                         focusable: true
@@ -275,7 +276,7 @@ Scope {
                         Component.onCompleted: Qt.callLater(() => searchField.forceActiveFocus())
 
                         Widgets.FocusDismissBehavior {
-                            window: screenLoader.item
+                            window: cheatsheetWindow
                             dismissAction: () => root.close()
                         }
 
@@ -306,8 +307,7 @@ Scope {
                         ColumnLayout {
                             anchors.fill: parent
                             anchors.margins: 20
-                            spacing: 12
-
+                            spacing: Config.Theme.spaceMd
                             RowLayout {
                                 Layout.fillWidth: true
 
@@ -376,7 +376,7 @@ Scope {
                                 ListView {
                                     id: shortcutList
                                     anchors.fill: parent
-                                    anchors.margins: 8
+                                    anchors.margins: Config.Theme.spaceSm
                                     clip: true
                                     spacing: 2
                                     model: root.filteredBindings
@@ -397,7 +397,7 @@ Scope {
                                             visible: parent.categoryHeader
                                             anchors.left: parent.left
                                             anchors.top: parent.top
-                                            anchors.leftMargin: 8
+                                            anchors.leftMargin: Config.Theme.spaceSm
                                             text: modelData.category
                                             color: Config.Theme.colHighlight
                                             font.family: Config.Theme.fontFamily
@@ -420,9 +420,8 @@ Scope {
                                             RowLayout {
                                                 anchors.fill: parent
                                                 anchors.leftMargin: 10
-                                                anchors.rightMargin: 12
-                                                spacing: 12
-
+                                                anchors.rightMargin: Config.Theme.spaceMd
+                                                spacing: Config.Theme.spaceMd
                                                 Text {
                                                     Layout.minimumWidth: 0
                                                     Layout.preferredWidth: Math.min(250, shortcutList.width * 0.42)

@@ -9,7 +9,7 @@ if status is-interactive
     alias lt='eza --tree --icons=auto'
 end
 
-source /usr/share/aur-scan/integration.fish
+test -f /usr/share/aur-scan/integration.fish; and source /usr/share/aur-scan/integration.fish
 
 # Added by LM Studio CLI (lms)
 set -gx PATH $PATH /home/ely/.lmstudio/bin

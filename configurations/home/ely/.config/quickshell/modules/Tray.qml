@@ -55,7 +55,7 @@ Item {
                     width: parent.width + Config.Theme.trayHoverPadding
                     height: parent.height + Config.Theme.trayHoverPadding
                     radius: Config.Theme.trayHoverRadius
-                    color: hovered ? Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.18) : "transparent"
+                    color: hovered ? Config.Theme.alpha(Config.Theme.colTextSec, 0.18) : "transparent"
                 }
 
                 Loader {

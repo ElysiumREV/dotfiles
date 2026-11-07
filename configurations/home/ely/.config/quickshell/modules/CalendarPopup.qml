@@ -104,14 +104,9 @@ PanelWindow {
         opacity: root.enterProgress
         transform: Translate { y: (1 - root.enterProgress) * -10 }
         color: Config.Theme.colBg
-        radius: 12
+        radius: Config.Theme.radiusCard
         border.width: 1
-        border.color: Qt.rgba(
-            Config.Theme.colTextSec.r,
-            Config.Theme.colTextSec.g,
-            Config.Theme.colTextSec.b,
-            0.25
-        )
+        border.color: Config.Theme.alpha(Config.Theme.colTextSec, 0.25)
 
         ColumnLayout {
             anchors.fill: parent
@@ -124,7 +119,7 @@ PanelWindow {
                 Text {
                     text: "calendar_month"
                     font.family: "Material Symbols Rounded"
-                    font.pixelSize: 21
+                    font.pixelSize: Config.Theme.iconSizeMd
                     color: Config.Theme.colHighlight
                 }
 
@@ -158,12 +153,7 @@ PanelWindow {
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 1
-                color: Qt.rgba(
-                    Config.Theme.colTextSec.r,
-                    Config.Theme.colTextSec.g,
-                    Config.Theme.colTextSec.b,
-                    0.25
-                )
+                color: Config.Theme.alpha(Config.Theme.colTextSec, 0.25)
             }
 
             RowLayout {
@@ -172,7 +162,7 @@ PanelWindow {
                 Text {
                     text: "chevron_left"
                     font.family: "Material Symbols Rounded"
-                    font.pixelSize: 22
+                    font.pixelSize: Config.Theme.iconSizeLg
                     color: previousMonthMouse.containsMouse
                            ? Config.Theme.colHighlight : Config.Theme.colFg
 
@@ -201,7 +191,7 @@ PanelWindow {
                 Text {
                     text: "chevron_right"
                     font.family: "Material Symbols Rounded"
-                    font.pixelSize: 22
+                    font.pixelSize: Config.Theme.iconSizeLg
                     color: nextMonthMouse.containsMouse
                            ? Config.Theme.colHighlight : Config.Theme.colFg
 

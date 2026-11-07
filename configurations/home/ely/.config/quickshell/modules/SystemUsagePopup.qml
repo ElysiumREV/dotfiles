@@ -81,14 +81,9 @@ PanelWindow {
         opacity: root.enterProgress
         transform: Translate { y: (1 - root.enterProgress) * -10 }
         color: Config.Theme.colBg
-        radius: 12
+        radius: Config.Theme.radiusCard
         border.width: 1
-        border.color: Qt.rgba(
-            Config.Theme.colTextSec.r,
-            Config.Theme.colTextSec.g,
-            Config.Theme.colTextSec.b,
-            0.25
-        )
+        border.color: Config.Theme.alpha(Config.Theme.colTextSec, 0.25)
 
         Text {
             anchors {
@@ -99,7 +94,7 @@ PanelWindow {
             }
             text: "close"
             font.family: "Material Symbols Rounded"
-            font.pixelSize: 20
+            font.pixelSize: Config.Theme.iconSizeMd
             color: closeMouse.containsMouse ? Config.Theme.colHighlight : Config.Theme.colTextSec
             z: 10
 
@@ -116,10 +111,10 @@ PanelWindow {
         ScrollView {
             id: usageScroll
             anchors.fill: parent
-            anchors.leftMargin: 16
-            anchors.rightMargin: 16
+            anchors.leftMargin: Config.Theme.spaceLg
+            anchors.rightMargin: Config.Theme.spaceLg
             anchors.topMargin: 44
-            anchors.bottomMargin: 16
+            anchors.bottomMargin: Config.Theme.spaceLg
             clip: true
             contentWidth: availableWidth
             ScrollBar.vertical: Widgets.ThemeScrollBar {
@@ -138,7 +133,7 @@ PanelWindow {
                 Text {
                     text: "monitoring"
                     font.family: "Material Symbols Rounded"
-                    font.pixelSize: 23
+                    font.pixelSize: Config.Theme.iconSizeLg
                     color: Config.Theme.colHighlight
                 }
 
@@ -164,15 +159,14 @@ PanelWindow {
 
             }
 
-            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.25) }
+            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Config.Theme.alpha(Config.Theme.colTextSec, 0.25) }
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 8
-
+                spacing: Config.Theme.spaceSm
                 RowLayout {
                     Layout.fillWidth: true
-                    Text { text: "developer_board"; font.family: "Material Symbols Rounded"; font.pixelSize: 19; color: Config.Theme.colHighlight }
+                    Text { text: "developer_board"; font.family: "Material Symbols Rounded"; font.pixelSize: Config.Theme.iconSizeSm; color: Config.Theme.colHighlight }
                     Text { Layout.fillWidth: true; text: "Processor"; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize; font.bold: true }
                     Text { text: Services.SystemStats.cpuUsage + "%"; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize; font.bold: true }
                 }
@@ -195,8 +189,8 @@ PanelWindow {
                             required property var modelData
                             Layout.fillWidth: true
                             implicitHeight: 45
-                            radius: 7
-                            color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.08)
+                            radius: Config.Theme.radiusControl
+                            color: Config.Theme.alpha(Config.Theme.colTextSec, 0.08)
 
                             ColumnLayout {
                                 anchors.fill: parent
@@ -228,7 +222,7 @@ PanelWindow {
                 }
             }
 
-            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.25) }
+            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Config.Theme.alpha(Config.Theme.colTextSec, 0.25) }
 
             UsageSection {
                 Layout.fillWidth: true
@@ -267,7 +261,7 @@ PanelWindow {
         implicitWidth: 100
         implicitHeight: 7
         radius: height / 2
-        color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.16)
+        color: Config.Theme.alpha(Config.Theme.colTextSec, 0.16)
 
         Rectangle {
             width: parent.width * Math.max(0, Math.min(100, usageBar.value)) / 100
@@ -287,7 +281,7 @@ PanelWindow {
 
         RowLayout {
             Layout.fillWidth: true
-            Text { text: parent.parent.icon; font.family: "Material Symbols Rounded"; font.pixelSize: 19; color: Config.Theme.colHighlight }
+            Text { text: parent.parent.icon; font.family: "Material Symbols Rounded"; font.pixelSize: Config.Theme.iconSizeSm; color: Config.Theme.colHighlight }
             Text { Layout.fillWidth: true; text: parent.parent.title; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize; font.bold: true }
             Text { text: parent.parent.percent + "%"; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize; font.bold: true }
         }

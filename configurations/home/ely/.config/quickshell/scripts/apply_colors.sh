@@ -13,7 +13,8 @@ KDE_CONFIG="$XDG_CONFIG_HOME/kde-material-you-colors/config.conf"
 KDE_WRAPPER="$XDG_CONFIG_HOME/matugen/templates/kde/kde-material-you-colors-wrapper.sh"
 GTK_RELOAD="$XDG_CONFIG_HOME/matugen/post-hook-scripts/gtk-themes-reload.sh"
 COLORS_JSON="$XDG_STATE_HOME/quickshell/generated/colors.json"
-MODE="${QS_COLOR_MODE:-dark}"
+# Usage: apply_colors.sh <wallpaper> [dark|light]   (default: dark, or $QS_COLOR_MODE)
+MODE="${2:-${QS_COLOR_MODE:-dark}}"
 
 log()  { echo "[Colors] $*"; }
 warn() { echo "[Warning] $*" >&2; }
@@ -26,7 +27,12 @@ optional() {
     "$@" >/dev/null 2>&1 || warn "$label failed or is unavailable."
 }
 
-log "Starting color update..."
+case "$MODE" in
+    dark|light) ;;
+    *) warn "Unknown color mode '$MODE'; using dark."; MODE=dark ;;
+esac
+
+log "Starting color update ($MODE)..."
 
 # 1. Symlink to the current wallpaper
 WALLPAPER_PATH="${1:-}"
@@ -35,6 +41,8 @@ if [ -z "$WALLPAPER_PATH" ] || [ ! -f "$WALLPAPER_PATH" ]; then
 fi
 
 WALLPAPER_LINK="$DEFAULT_WALLPAPER_DIR/.current-wallpaper.png"
+# Resolve symlinks so passing the current-wallpaper link itself (mode switch) never makes it point at itself.
+WALLPAPER_PATH="$(readlink -f -- "$WALLPAPER_PATH")"
 
 log "Updating wallpaper symlink..."
 if ! mkdir -p "$DEFAULT_WALLPAPER_DIR" || ! ln -sfn "$WALLPAPER_PATH" "$WALLPAPER_LINK"; then
@@ -58,7 +66,13 @@ if [ -f "$KITTY_THEME" ]; then
     optional "Copying the Kitty theme" cp "$KITTY_THEME" "$XDG_CONFIG_HOME/kitty/current-theme.conf"
 fi
 
-# 4. KDE/Qt via kde-material-you-colors (optional)
+# 4. GTK color-scheme preference. This must happen before the KDE wrapper, which
+# reads it to pick the dark/light variant (running it after lags one switch behind).
+if [ -f "$GTK_RELOAD" ]; then
+    optional "GTK reload" sh "$GTK_RELOAD" "$MODE"
+fi
+
+# 5. KDE/Qt via kde-material-you-colors (optional)
 if [ -f "$KDE_WRAPPER" ]; then
     SCHEME_VARIANT=""
     if [ -f "$KDE_CONFIG" ]; then
@@ -69,22 +83,18 @@ if [ -f "$KDE_WRAPPER" ]; then
     SCHEME_VARIANT="${SCHEME_VARIANT:-scheme-tonal-spot}"
 
     log "Applying colors to KDE/Qt (variant: $SCHEME_VARIANT)..."
-    bash "$KDE_WRAPPER" --scheme-variant "$SCHEME_VARIANT" \
+    QS_COLOR_MODE="$MODE" bash "$KDE_WRAPPER" --scheme-variant "$SCHEME_VARIANT" \
         || warn "KDE wrapper exited with an error."
 else
     warn "kde-material-you-colors wrapper not found; skipping KDE/Qt."
 fi
 
-# 5. Reloading applications
+# 6. Reloading applications
 log "Updating applications..."
 
 if command -v kitty >/dev/null 2>&1; then
     kitty @ set-colors --all "$KITTY_THEME" >/dev/null 2>&1 \
         || optional "Kitty reload" kitty +kitten themes --reload-in=all Matugen &
-fi
-
-if [ -f "$GTK_RELOAD" ]; then
-    optional "GTK reload" sh "$GTK_RELOAD" "$MODE" &
 fi
 
 # Neovim reloads its theme on SIGUSR1; -x avoids matching other processes.
@@ -93,7 +103,8 @@ if command -v pkill >/dev/null 2>&1; then
 fi
 
 if command -v pywalfox >/dev/null 2>&1; then
-    optional "Pywalfox update" pywalfox update &
+    # Pywalfox keeps its own dark/light setting, so Firefox stays dark unless told otherwise.
+    ( optional "Pywalfox mode" pywalfox "$MODE"; optional "Pywalfox update" pywalfox update ) &
 fi
 
 if command -v spotifast >/dev/null 2>&1; then

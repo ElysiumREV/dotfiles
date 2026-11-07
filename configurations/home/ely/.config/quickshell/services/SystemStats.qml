@@ -3,6 +3,7 @@ pragma Singleton
 import Quickshell
 import Quickshell.Io
 import QtQuick
+import ".." as Config
 
 Singleton {
     id: root
@@ -118,7 +119,8 @@ Singleton {
 
     Timer {
         interval: root.detailedViewActive ? 2000 : 15000
-        running: true
+        // Only sample while something displays the numbers.
+        running: Config.Preferences.bar.showSystemStatus || root.detailedViewActive
         repeat: true
         triggeredOnStart: true
         onTriggered: {

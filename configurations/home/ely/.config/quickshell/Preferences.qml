@@ -10,6 +10,8 @@ Singleton {
     property alias launcher: settingsAdapter.launcher
     property alias wallpaper: settingsAdapter.wallpaper
     property alias notifications: settingsAdapter.notifications
+    property alias theme: settingsAdapter.theme
+    property alias recorder: settingsAdapter.recorder
 
     FileView {
         id: settingsFile
@@ -44,6 +46,21 @@ Singleton {
 
             property JsonObject notifications: JsonObject {
                 property int defaultTimeoutSeconds: 3
+            }
+
+            property JsonObject recorder: JsonObject {
+                // "screen" records the focused monitor; "window" asks the portal picker.
+                property string captureMode: "screen"
+                // "" = no microphone, "default_input" or a PipeWire source name.
+                property string microphone: ""
+                property bool systemAudio: true
+                // Empty = ~/Videos
+                property string directory: ""
+            }
+
+            property JsonObject theme: JsonObject {
+                // "dark" (default) or "light"; applied by scripts/apply_colors.sh
+                property string mode: "dark"
             }
         }
     }

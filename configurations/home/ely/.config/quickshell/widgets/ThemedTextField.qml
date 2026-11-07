@@ -19,8 +19,7 @@ TextField {
     background: Rectangle {
         visible: !root.flat
         radius: root.fieldRadius
-        color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g,
-                       Config.Theme.colTextSec.b, root.fillOpacity)
+        color: Config.Theme.alpha(Config.Theme.colTextSec, root.fillOpacity)
         border.width: root.activeFocus ? 1 : 0
         border.color: Config.Theme.colHighlight
     }

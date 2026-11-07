@@ -7,7 +7,7 @@ import "../services" as Services
 Variants {
     id: root
 
-    // Defaults keep this component usable as a standalone configuration too.
+    // Defaults are overridden by the theme colors passed from shell.qml.
     property color backgroundColor: "#141218"
     property color buttonColor: "#211f26"
     property color buttonHoverColor: "#4f378b"
@@ -18,16 +18,12 @@ Variants {
     property real iconScale: 0.34
     property int textSize: 16
     property int borderWidth: 1
-    property bool standalone: true
 
     default property list<LogoutButton> buttons
     model: Quickshell.screens
 
     function dismiss() {
-        if (standalone)
-            Qt.quit()
-        else
-            Services.WindowControl.logoutVisible = false
+        Services.WindowControl.logoutVisible = false
     }
 
     delegate: Component {
@@ -36,7 +32,7 @@ Variants {
 
             required property var modelData
             screen: modelData
-            visible: root.standalone || Services.WindowControl.logoutVisible
+            visible: Services.WindowControl.logoutVisible
             focusable: visible
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
@@ -98,7 +94,7 @@ Variants {
 
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter
-                        text: "Sessão"
+                        text: "Session"
                         color: root.textColor
                         font.family: "JetBrainsMono Nerd Font"
                         font.pixelSize: 30
@@ -106,7 +102,7 @@ Variants {
                     }
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter
-                        text: "Use as setas para navegar · Enter para selecionar · Esc para cancelar"
+                        text: "Use the arrow keys to navigate · Enter to select · Esc to cancel"
                         color: root.textColor
                         opacity: 0.72
                         font.family: "JetBrainsMono Nerd Font"

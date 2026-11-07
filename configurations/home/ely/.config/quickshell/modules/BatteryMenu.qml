@@ -23,7 +23,7 @@ PanelWindow {
     property string batteryCapacity: "—"
     property string batteryHealth: "—"
     property string batteryChangeRate: "—"
-    property string batteryStatusLabel: "Sem bateria"
+    property string batteryStatusLabel: "No battery"
     property real batteryPercentage: 0
     property bool batteryPresent: false
     readonly property string batteryIconName: batteryPresent
@@ -50,22 +50,22 @@ PanelWindow {
     }
     readonly property string estimatedTime: formatDuration(estimatedTimeSeconds)
 
-    // --- Lógica de Bateria Fraca/Crítica do seu módulo ---
+    // --- Low/critical battery logic from the Battery module ---
     readonly property bool isPluggedIn: isCharging || isFullyCharged
     readonly property bool isLow: BatteryRules.isLow(batteryPercentage, isPluggedIn)
     readonly property bool isCritical: BatteryRules.isCritical(batteryPercentage, isPluggedIn)
 
     readonly property var chargingPhrases: [
-        "Injetando elétrons",
-        "Armazenando energia",
-        "Puxando watts",
-        "Enchendo o tanque"
+        "Injecting electrons",
+        "Storing energy",
+        "Pulling watts",
+        "Filling the tank"
     ]
     readonly property var dischargingPhrases: [
-        "Consumindo bateria",
-        "Gastando energia",
-        "Drenando watts",
-        "Usando reservas"
+        "Draining the battery",
+        "Burning energy",
+        "Draining watts",
+        "Using reserves"
     ]
     readonly property var activePhrases: isFullyCharged ? [] : (isCharging ? chargingPhrases : (isDischarging ? dischargingPhrases : []))
     readonly property bool rotatingPhrases: activePhrases.length > 0
@@ -172,17 +172,17 @@ PanelWindow {
             switch (b.state) {
                 case UPowerDeviceState.Charging:
                 case UPowerDeviceState.PendingCharge:
-                    batteryStatusLabel = "Carregando";
+                    batteryStatusLabel = "Charging";
                     break;
                 case UPowerDeviceState.Discharging:
                 case UPowerDeviceState.PendingDischarge:
-                    batteryStatusLabel = "Descarregando";
+                    batteryStatusLabel = "Discharging";
                     break;
                 case UPowerDeviceState.FullyCharged:
-                    batteryStatusLabel = "Totalmente Carregado";
+                    batteryStatusLabel = "Fully Charged";
                     break;
                 case UPowerDeviceState.Empty:
-                    batteryStatusLabel = "Bateria Vazia";
+                    batteryStatusLabel = "Battery Empty";
                     break;
                 default:
                     batteryStatusLabel = UPowerDeviceState.toString(b.state);
@@ -195,7 +195,7 @@ PanelWindow {
             batteryCapacity = "—";
             batteryHealth = "—";
             batteryChangeRate = "—";
-            batteryStatusLabel = "Sem bateria";
+            batteryStatusLabel = "No battery";
             batteryPercentage = 0;
             chargeCycles = -1;
             chargeCyclesLoaded = false;
@@ -324,7 +324,7 @@ PanelWindow {
 
             Text {
                 text: root.batteryIconName
-                // A cor agora respeita crítico/low igualzinho ao módulo
+                // The color now follows critical/low exactly like the module
                 color: root.isCharging ? Config.Theme.colGreen : (root.isCritical ? Config.Theme.colBatteryCritical : (root.isLow ? Config.Theme.colYellow : Config.Theme.colHighlight))
                 font { family: "Material Symbols Rounded"; pixelSize: 42 }
                 anchors.verticalCenter: parent.verticalCenter
@@ -337,14 +337,14 @@ PanelWindow {
                 width: parent.width - 42 - 16 - 80 - 16 // Calculate remaining space
 
                 Text {
-                    text: "Bateria"
+                    text: "Battery"
                     color: Config.Theme.colFg
                     font { family: Config.Theme.fontFamily; pixelSize: 18; bold: true }
                 }
 
                 Text {
                     id: heroStatus
-                    text: (root.isFullyCharged ? "CARGA COMPLETA" :
+                    text: (root.isFullyCharged ? "FULLY CHARGED" :
                           (root.rotatingPhrases ? root.activePhrases[root.phraseIndex % root.activePhrases.length] : root.batteryStatusLabel)).toUpperCase()
                     color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.8)
                     font { family: Config.Theme.fontFamily; pixelSize: 10; bold: true; letterSpacing: 1.2 }
@@ -383,7 +383,7 @@ PanelWindow {
                 anchors.verticalCenter: barTrack.verticalCenter
                 height: barTrack.height
                 radius: barTrack.radius
-                // A cor da barra também acompanha a cor do ícone
+                // The bar color also follows the icon color
                 color: root.isCharging ? Config.Theme.colGreen : (root.isCritical ? Config.Theme.colBatteryCritical : (root.isLow ? Config.Theme.colYellow : Config.Theme.colHighlight))
                 width: Math.max(barTrack.height, barTrack.width * (root.batteryPercentage / 100))
 
@@ -410,18 +410,18 @@ PanelWindow {
                 width: (parent.width - 16) / 2
                 spacing: 10
 
-                InfoPair { label: "Saúde"; value: root.batteryHealth }
-                InfoPair { label: "Ciclos"; value: root.chargeCycles >= 0 ? String(root.chargeCycles) : "—" }
-                InfoPair { label: "Capacidade"; value: root.batteryCapacity + " Wh" }
+                InfoPair { label: "Health"; value: root.batteryHealth }
+                InfoPair { label: "Cycles"; value: root.chargeCycles >= 0 ? String(root.chargeCycles) : "—" }
+                InfoPair { label: "Capacity"; value: root.batteryCapacity + " Wh" }
             }
 
             Column {
                 width: (parent.width - 16) / 2
                 spacing: 10
 
-                InfoPair { label: "Potência"; value: root.batteryChangeRate }
+                InfoPair { label: "Power"; value: root.batteryChangeRate }
                 InfoPair {
-                    label: root.isCharging ? "Até carga completa" : "Autonomia estimada"
+                    label: root.isCharging ? "Time to full" : "Estimated time left"
                     value: root.estimatedTime
                 }
             }
@@ -441,7 +441,7 @@ PanelWindow {
             spacing: 12
 
             Text {
-                text: "PERFIL DE ENERGIA"
+                text: "POWER PROFILE"
                 color: Qt.rgba(Config.Theme.colTextSec.r, Config.Theme.colTextSec.g, Config.Theme.colTextSec.b, 0.8)
                 font { family: Config.Theme.fontFamily; pixelSize: 10; bold: true; letterSpacing: 1.2 }
             }

@@ -131,7 +131,7 @@ PanelWindow {
                     }
                     Text {
                         Layout.fillWidth: true
-                        text: "Histórico da área de transferência"
+                        text: "Clipboard history"
                         color: Config.Theme.colFg
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSizeLarge
@@ -139,7 +139,7 @@ PanelWindow {
                     }
                     Widgets.LabelButton {
                         id: clearButton
-                        text: "Limpar"
+                        text: "Clear"
                         labelFontSize: Config.Theme.fontSizeSmall
                         idleTextColor: Config.Theme.colTextSec
                         hoverTextColor: Config.Theme.colOnHighlightContainer
@@ -168,7 +168,7 @@ PanelWindow {
                     id: searchField
                     Layout.fillWidth: true
                     Layout.preferredHeight: 48
-                    placeholderText: "Filtrar histórico..."
+                    placeholderText: "Filter history..."
                     text: root.searchText
                     onTextChanged: {
                         root.searchText = text;
@@ -199,7 +199,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     visible: Services.ClipboardHistory.entries.length === 0
-                    text: "O histórico aparece aqui enquanto o QuickShell estiver aberto."
+                    text: "History appears here while QuickShell is running."
                     color: Config.Theme.colTextSec
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSizeSmall
@@ -268,7 +268,7 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "↑ ↓ selecionar · Enter copiar · Tab ações · Esc fechar · até 50 itens"
+                    text: "↑ ↓ select · Enter copy · Tab actions · Esc close · up to 50 items"
                     color: Config.Theme.colTextSec
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSizeSmall

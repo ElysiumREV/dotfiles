@@ -27,9 +27,9 @@ Item {
     activeFocusOnTab: true
     Accessible.role: Accessible.Button
     Accessible.name: batteryPresent
-        ? "Bateria, " + batteryLevel + "%"
-            + (isCharging ? ", carregando" : (isFullyCharged ? ", carregada" : ""))
-        : "Computador desktop, sem bateria"
+        ? "Battery, " + batteryLevel + "%"
+            + (isCharging ? ", charging" : (isFullyCharged ? ", fully charged" : ""))
+        : "Desktop computer, no battery"
 
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {

@@ -16,7 +16,7 @@ Singleton {
     property string backlightPath: ""
     property string maxBrightnessPath: ""
 
-    // Evita que uma leitura já em andamento sobrescreva uma mudança feita pela UI.
+    // Prevents an in-flight read from overwriting a change made by the UI.
     property bool settingBrightness: false
 
     Timer {
@@ -56,7 +56,7 @@ Singleton {
             return
 
         /*
-         * Mantém o valor sempre entre 0 e 1.
+         * Keeps the value always between 0 and 1.
          */
         value = Math.max(
             0,
@@ -64,20 +64,20 @@ Singleton {
         )
 
         /*
-         * A UI é atualizada imediatamente.
+         * The UI is updated immediately.
          */
         brightness = value
 
-        // Ignora leituras de hardware iniciadas antes da alteração pelo usuário.
+        // Ignores hardware reads started before the user's change.
         settingBrightness = true
         settingTimer.restart()
 
-        // brightnessctl altera o hardware; exec aceita atualizações repetidas do slider.
+        // brightnessctl changes the hardware; exec accepts repeated slider updates.
         const valuePercentNumber =
             Math.floor(value * 100)
 
         /*
-         * Evita deixar a tela completamente preta.
+         * Avoids leaving the screen completely black.
          */
         const valuePercent =
             valuePercentNumber <= 0
@@ -107,7 +107,7 @@ Singleton {
     }
 
     /*
-     * Detecta o backlight disponível.
+     * Detects the available backlight.
      */
     Process {
         id: detectBacklightProcess
@@ -154,7 +154,7 @@ Singleton {
     }
 
     /*
-     * Descobre o valor máximo.
+     * Finds the maximum value.
      */
     Process {
         id: maxBrightnessProcess
@@ -180,7 +180,7 @@ Singleton {
     }
 
     /*
-     * Lê o valor atual do hardware.
+     * Reads the current hardware value.
      */
     Process {
         id: brightnessReadProcess
@@ -207,13 +207,13 @@ Singleton {
     }
 
     /*
-     * Processo usado para alterar o brilho.
+     * Process used to change the brightness.
      *
-     * IMPORTANTE:
-     * usamos exec() em vez de running = true.
+     * IMPORTANT:
+     * we use exec() instead of running = true.
      *
-     * Isso permite que chamadas consecutivas durante o
-     * arrasto do slider sejam realmente executadas.
+     * This lets consecutive calls during the
+     * slider drag actually run.
      */
     Process {
         id: setBrightnessProcess

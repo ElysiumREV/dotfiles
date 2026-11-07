@@ -143,7 +143,7 @@ Scope {
 
                                 Text {
                                     Layout.fillWidth: true
-                                    text: modelData.appName || "Notificação"
+                                    text: modelData.appName || "Notification"
                                     color: Config.Theme.colTextSec
                                     font.family: Config.Theme.fontFamily
                                     font.pixelSize: 10
@@ -168,7 +168,7 @@ Scope {
                                 buttonRadius: 7
                                 implicitWidth: 28
                                 implicitHeight: 28
-                                Accessible.name: "Dispensar notificação de " + (modelData.appName || "Notificação")
+                                Accessible.name: "Dismiss notification from " + (modelData.appName || "Notification")
                                 onClicked: Services.Notifications.dismiss(modelData.id)
                             }
                         }

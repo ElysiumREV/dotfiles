@@ -55,7 +55,7 @@ Item {
                     iconRotation: root.collapsed ? 180 : 0
                     implicitWidth: 28
                     implicitHeight: 28
-                    Accessible.name: root.collapsed ? "Mostrar calendário" : "Recolher calendário"
+                    Accessible.name: root.collapsed ? "Show calendar" : "Collapse calendar"
                     onClicked: root.collapseToggled(!root.collapsed)
                 }
 
@@ -120,7 +120,7 @@ Item {
                         buttonRadius: 8
                         implicitWidth: 28
                         implicitHeight: 28
-                        Accessible.name: "Mês anterior"
+                        Accessible.name: "Previous month"
                         onClicked: root.viewedMonth = new Date(
                             root.viewedMonth.getFullYear(), root.viewedMonth.getMonth() - 1, 1
                         )
@@ -132,7 +132,7 @@ Item {
                         buttonRadius: 8
                         implicitWidth: 28
                         implicitHeight: 28
-                        Accessible.name: "Próximo mês"
+                        Accessible.name: "Next month"
                         onClicked: root.viewedMonth = new Date(
                             root.viewedMonth.getFullYear(), root.viewedMonth.getMonth() + 1, 1
                         )
@@ -165,7 +165,7 @@ Item {
                         columnSpacing: 2
 
                         Repeater {
-                            model: ["Do", "2ª", "3ª", "4ª", "5ª", "6ª", "Sá"]
+                            model: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
 
                             delegate: Text {
                                 required property string modelData

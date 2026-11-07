@@ -16,13 +16,13 @@ Variants {
         Item {
             /*
              * =========================================================
-             * CANTOS INFERIORES DA TELA
+             * SCREEN BOTTOM CORNERS
              * =========================================================
              *
-             * Essa é uma janela separada porque o PanelWindow da barra
-             * ocupa somente a região superior da tela.
+             * This is a separate window because the bar's PanelWindow
+             * only covers the top region of the screen.
              *
-             * Ela é transparente e só possui os dois RoundCorner.
+             * It is transparent and only holds the two RoundCorner items.
              */
 
             required property var modelData
@@ -32,7 +32,7 @@ Variants {
 
             /*
              * =========================================================
-             * BARRA SUPERIOR
+             * TOP BAR
              * =========================================================
              */
             PanelWindow {
@@ -78,7 +78,7 @@ Variants {
 
                 /*
                  * =====================================================
-                 * SUPERFÍCIE DA BARRA
+                 * BAR SURFACE
                  * =====================================================
                  */
                 Rectangle {
@@ -147,7 +147,7 @@ Variants {
                             anchors.right: focusedAppGroup.right
                             anchors.rightMargin: 6
                             anchors.verticalCenter: parent.verticalCenter
-                            text: Hyprland.activeToplevel?.title || "Área de trabalho"
+                            text: Hyprland.activeToplevel?.title || "Desktop"
                             color: Config.Theme.colFg
                             elide: Text.ElideRight
                             verticalAlignment: Text.AlignVCenter
@@ -219,7 +219,7 @@ Variants {
 
                         /*
                          * =================================================
-                         * MÓDULOS DA DIREITA
+                         * RIGHT MODULES
                          * =================================================
                          */
                         Row {
@@ -245,7 +245,7 @@ Variants {
                                     && Services.Notifications.centerMonitor === Hyprland.monitorFor(modelData)
                                 anchors.verticalCenter: parent.verticalCenter
                                 Accessible.role: Accessible.Button
-                                Accessible.name: "Abrir controles rápidos e notificações"
+                                Accessible.name: "Open quick controls and notifications"
                                 activeFocusOnTab: true
 
                                 Keys.onPressed: event => {
@@ -299,8 +299,8 @@ Variants {
                                         width: 18
                                         height: Config.Theme.moduleHeight
                                         Accessible.role: Accessible.StaticText
-                                        Accessible.name: !Networking.wifiEnabled ? "Wi-Fi desativado"
-                                            : (connectedWifi ? "Wi-Fi conectado a " + connectedWifi.name : "Wi-Fi desconectado")
+                                        Accessible.name: !Networking.wifiEnabled ? "Wi-Fi off"
+                                            : (connectedWifi ? "Wi-Fi connected to " + connectedWifi.name : "Wi-Fi disconnected")
 
                                         readonly property var wifiDevice: {
                                             for (const device of Networking.devices.values) {
@@ -350,9 +350,9 @@ Variants {
                                         readonly property var connectedDevice: Bluetooth.devices.values.find(device => device.connected) ?? null
                                         Accessible.role: Accessible.StaticText
                                         Accessible.name: (connectedDevice
-                                            ? "Bluetooth conectado a " + (connectedDevice.name || "dispositivo")
-                                            : (Bluetooth.defaultAdapter?.enabled ? "Bluetooth ativo, sem conexão" : "Bluetooth desativado"))
-                                            + (Services.Notifications.doNotDisturb ? "; Não Perturbe ativado" : "")
+                                            ? "Bluetooth connected to " + (connectedDevice.name || "dispositivo")
+                                            : (Bluetooth.defaultAdapter?.enabled ? "Bluetooth on, not connected" : "Bluetooth off"))
+                                            + (Services.Notifications.doNotDisturb ? "; Do Not Disturb on" : "")
 
                                         Text {
                                             anchors.left: parent.left
@@ -482,7 +482,7 @@ Variants {
 
                 /*
                  * =========================================================
-                 * CANTOS DA BARRA
+                 * BAR CORNERS
                  * =========================================================
                  */
                 QsModules.RoundCorner {
@@ -514,7 +514,7 @@ Variants {
                 }
 
                 /*
-                 * Máscara da barra.
+                 * Bar mask.
                  */
                 mask: Region {
                     item: barMask

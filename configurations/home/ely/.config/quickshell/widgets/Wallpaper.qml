@@ -132,13 +132,13 @@ PanelWindow {
         if (cleanPath === "") {
             folderExists = false;
             wallpapers = [];
-            statusMessage = "Informe o caminho da pasta de wallpapers.";
+            statusMessage = "Enter the wallpaper folder path.";
             return;
         }
 
         wallpaperDirectory = cleanPath;
         wallpapers = [];
-        statusMessage = "Procurando wallpapers…";
+        statusMessage = "Searching for wallpapers…";
         scanProcess.exec([
             "find", cleanPath, "-maxdepth", "1", "-type", "f",
             "(", "-iname", "*.png", "-o", "-iname", "*.jpg", "-o",
@@ -148,7 +148,7 @@ PanelWindow {
     }
 
     function createDefaultDirectory() {
-        statusMessage = "Criando " + defaultDirectory + "…";
+        statusMessage = "Creating " + defaultDirectory + "…";
         createDirectoryProcess.exec(["mkdir", "-p", defaultDirectory]);
     }
 
@@ -199,7 +199,7 @@ PanelWindow {
             root.folderExists = exitCode === 0;
             if (exitCode !== 0) {
                 root.wallpapers = [];
-                root.statusMessage = "Não encontrei essa pasta. Informe outro caminho ou crie a pasta padrão.";
+                root.statusMessage = "Could not find that folder. Enter another path or create the default folder.";
                 return;
             }
 
@@ -207,8 +207,8 @@ PanelWindow {
                 .sort((a, b) => a.split("/").pop().localeCompare(b.split("/").pop()));
             Config.Preferences.wallpaper.directory = root.wallpaperDirectory;
             root.statusMessage = root.wallpapers.length
-                ? root.wallpapers.length + " wallpapers encontrados"
-                : "A pasta existe, mas não encontrei imagens compatíveis.";
+                ? root.wallpapers.length + " wallpapers found"
+                : "The folder exists, but no compatible images were found.";
         }
     }
 
@@ -218,7 +218,7 @@ PanelWindow {
             if (exitCode === 0)
                 root.scanDirectory(root.defaultDirectory);
             else
-                root.showError("Não consegui criar a pasta padrão.");
+                root.showError("Could not create the default folder.");
         }
     }
 
@@ -324,19 +324,19 @@ PanelWindow {
                         Layout.fillWidth: true
                         text: root.wallpaperDirectory
                         onTextChanged: root.wallpaperDirectory = text
-                        placeholderText: "Caminho da pasta de wallpapers"
+                        placeholderText: "Wallpaper folder path"
                         fieldRadius: 9
                         font.pixelSize: Config.Theme.fontSizeSmall
                     }
                     Widgets.ActionButton {
-                        label: "Carregar"
+                        label: "Load"
                         iconName: "folder_open"
                         emphasized: true
                         onClicked: root.scanDirectory(directoryField.text)
                     }
                     Widgets.ActionButton {
                         visible: !root.folderExists && directoryField.text.trim() === root.defaultDirectory
-                        label: "Criar pasta padrão"
+                        label: "Create default folder"
                         iconName: "create_new_folder"
                         onClicked: root.createDefaultDirectory()
                     }
@@ -346,7 +346,7 @@ PanelWindow {
                     id: searchField
                     Layout.fillWidth: true
                     Layout.preferredHeight: 48
-                    placeholderText: "Filtrar wallpapers pelo nome…"
+                    placeholderText: "Filter wallpapers by name…"
                     text: root.searchText
                     onTextChanged: {
                         root.searchText = text;
@@ -441,14 +441,14 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: root.statusMessage
-                        color: root.statusMessage.startsWith("Falha") || root.statusMessage.startsWith("Não")
+                        color: root.statusMessage.startsWith("Failed") || root.statusMessage.startsWith("Could not")
                             ? Config.Theme.colRed : Config.Theme.colMuted
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSizeSmall
                         elide: Text.ElideRight
                     }
                     Text {
-                        text: "↓ lista     ← → ↑ ↓ escolher     ↵ aplicar     ESC fechar"
+                        text: "↓ list     ← → ↑ ↓ choose     ↵ apply     ESC close"
                         color: Config.Theme.colMuted
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSizeSmall

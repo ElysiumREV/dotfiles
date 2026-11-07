@@ -20,7 +20,7 @@ PanelWindow {
     property int selectedIndex: 0
     property int currentPage: 1
     property int lastPage: 1
-    property string statusMessage: "Digite algo para buscar no Wallhaven."
+    property string statusMessage: "Type something to search Wallhaven."
     property bool requestRunning: false
     property int requestGeneration: 0
     property int activeRequestGeneration: 0
@@ -87,7 +87,7 @@ PanelWindow {
         pageCache = ({});
         prefetchQueue = [];
         monitorResolutionGeneration = requestGeneration;
-        statusMessage = "Lendo resolução dos monitores…";
+        statusMessage = "Reading monitor resolutions…";
         if (!monitorProcess.running)
             monitorProcess.running = true;
         Qt.callLater(() => {
@@ -110,7 +110,7 @@ PanelWindow {
         try {
             monitors = JSON.parse(String(output || ""));
         } catch (error) {
-            console.warn("Não consegui interpretar as resoluções do Hyprland:", error);
+            console.warn("Could not parse Hyprland resolutions:", error);
             return "";
         }
 
@@ -145,7 +145,7 @@ PanelWindow {
 
     function startSearch(page, resolution, statusOverride) {
         const query = normalizedQuery();
-        statusMessage = statusOverride || (query ? "Buscando no Wallhaven…" : "Carregando o Toplist…");
+        statusMessage = statusOverride || (query ? "Searching Wallhaven…" : "Loading the Toplist…");
         requestRunning = true;
         activeRequestGeneration = requestGeneration;
         activeSearchQuery = query;
@@ -223,13 +223,13 @@ PanelWindow {
         lastPage = cachedPage.lastPage;
         selectedIndex = 0;
         const resolutionNote = cachedPage.minimumResolution
-            ? " · mínimo " + cachedPage.minimumResolution
+            ? " · minimum " + cachedPage.minimumResolution
             : (root.resolutionFallbackUsed
-                ? " · sem filtro (sem resultados para ≥ " + root.minimumResolution + ")"
-                : (root.resolutionDetectionFailed ? " · resolução indisponível" : ""));
+                ? " · unfiltered (no results for ≥ " + root.minimumResolution + ")"
+                : (root.resolutionDetectionFailed ? " · resolution unavailable" : ""));
         statusMessage = wallpapers.length
-            ? wallpapers.length + " resultados" + resolutionNote + " · página " + currentPage + " de " + lastPage
-            : "Nenhum wallpaper encontrado. Tente outros termos.";
+            ? wallpapers.length + " results" + resolutionNote + " · page " + currentPage + " of " + lastPage
+            : "No wallpapers found. Try other terms.";
     }
 
     function queueNeighborPages(centerPage) {
@@ -380,10 +380,10 @@ PanelWindow {
             root.searchResolution = resolution;
             root.resolutionDetectionFailed = !resolution;
             if (resolution) {
-                root.statusMessage = "Carregando wallpapers com resolução mínima " + resolution + "…";
+                root.statusMessage = "Loading wallpapers with minimum resolution " + resolution + "…";
             } else {
-                root.statusMessage = "Não consegui ler a resolução; carregando sem filtro…";
-                console.warn("Não consegui obter as resoluções com `hyprctl -j monitors`; usando a busca sem filtro.");
+                root.statusMessage = "Could not read the resolution; loading without a filter…";
+                console.warn("Could not get resolutions from `hyprctl -j monitors`; using unfiltered search.");
             }
             root.search(1);
         }
@@ -405,32 +405,32 @@ PanelWindow {
             }
             if (exitCode !== 0) {
                 root.wallpapers = [];
-                root.statusMessage = "Não consegui acessar o Wallhaven. Confira sua conexão e tente novamente.";
+                root.statusMessage = "Could not reach Wallhaven. Check your connection and try again.";
                 return;
             }
             let response;
             try {
                 response = JSON.parse(String(searchOutput.text || ""));
             } catch (error) {
-                console.warn("Wallhaven retornou conteúdo que não é JSON:", error);
+                console.warn("Wallhaven returned non-JSON content:", error);
                 root.wallpapers = [];
-                root.statusMessage = "O Wallhaven respondeu em formato inválido: " + error;
+                root.statusMessage = "Wallhaven responded with an invalid format: " + error;
                 return;
             }
             if (!response || !response.data || typeof response.data.length !== "number" || !response.meta) {
-                const detail = (response && (response.error || response.message)) || "faltam os campos data/meta";
-                if (root.retryWithoutResolution("A busca filtrada falhou; tentando sem filtro de resolução…"))
+                const detail = (response && (response.error || response.message)) || "missing data/meta fields";
+                if (root.retryWithoutResolution("The filtered search failed; retrying without a resolution filter…"))
                     return;
-                console.warn("Resposta inesperada da API Wallhaven:", detail);
+                console.warn("Unexpected Wallhaven API response:", detail);
                 root.wallpapers = [];
-                root.statusMessage = "Resposta inesperada do Wallhaven: " + detail;
+                root.statusMessage = "Unexpected response from Wallhaven: " + detail;
                 return;
             }
 
             try {
                 const data = response.data;
                 if (!data.length && root.retryWithoutResolution(
-                        "Nenhum resultado nessa resolução; tentando sem filtro…"))
+                        "No results at this resolution; retrying without a filter…"))
                     return;
 
                 const page = Number(response.meta.current_page || root.activeSearchPage);
@@ -442,9 +442,9 @@ PanelWindow {
                 root.selectIndex(0);
                 resultsGrid.forceActiveFocus();
             } catch (error) {
-                console.warn("Falha processando resultados do Wallhaven:", error);
+                console.warn("Failed processing Wallhaven results:", error);
                 root.wallpapers = [];
-                root.statusMessage = "Falha ao processar resultados do Wallhaven: " + error;
+                root.statusMessage = "Failed to process Wallhaven results: " + error;
             }
         }
     }
@@ -467,7 +467,7 @@ PanelWindow {
                     root.lastPage = lastPage;
                     root.queueNeighborPages(root.currentPage);
                 } catch (error) {
-                    // A pré-carga é oportunista; uma falha não interrompe a navegação.
+                    // Prefetching is opportunistic; a failure does not interrupt browsing.
                 }
             }
             root.runNextPrefetch();
@@ -551,7 +551,7 @@ PanelWindow {
                             font.bold: true
                         }
                         Text {
-                            text: "Busque e baixe para a pasta de wallpapers configurada"
+                            text: "Search and download to the configured wallpaper folder"
                             color: Config.Theme.colTextSec
                             font.family: Config.Theme.fontFamily
                             font.pixelSize: Config.Theme.fontSizeSmall
@@ -576,13 +576,13 @@ PanelWindow {
                                 root.lastPage = 1;
                             }
                         }
-                        placeholderText: "Buscar wallpapers (ex.: mountains, cyberpunk)…"
+                        placeholderText: "Search wallpapers (e.g. mountains, cyberpunk)…"
                         enabled: !Services.WallpaperManager.busy
                         fieldRadius: 11
                         Keys.onPressed: event => root.handleSearchKey(event)
                     }
                     Widgets.ActionButton {
-                        label: "Buscar"
+                        label: "Search"
                         iconName: "search"
                         emphasized: true
                         enabled: !root.requestRunning && !Services.WallpaperManager.busy
@@ -686,10 +686,10 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: root.statusMessage
-                        color: String(root.statusMessage).indexOf("Não") === 0
-                            || String(root.statusMessage).indexOf("Resposta") === 0
-                            || String(root.statusMessage).indexOf("O Wallhaven") === 0
-                            || String(root.statusMessage).indexOf("Falha") === 0
+                        color: String(root.statusMessage).indexOf("Could not") === 0
+                            || String(root.statusMessage).indexOf("Unexpected") === 0
+                            || String(root.statusMessage).indexOf("Wallhaven responded") === 0
+                            || String(root.statusMessage).indexOf("Failed") === 0
                             ? Config.Theme.colRed : Config.Theme.colMuted
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSizeSmall
@@ -706,7 +706,7 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "Digite para buscar · Enter buscar/aplicar · ← → ↑ ↓ escolher · Shift+←/→ páginas · ESC fechar"
+                    text: "Type to search · Enter search/apply · ← → ↑ ↓ choose · Shift+←/→ pages · ESC close"
                     color: Config.Theme.colMuted
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSizeSmall

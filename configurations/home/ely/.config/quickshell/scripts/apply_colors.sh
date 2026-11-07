@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Gera a paleta Matugen a partir de um wallpaper e propaga para os aplicativos.
-# O config.toml do Matugen só gera os arquivos; todos os hooks ficam aqui.
-# Só o Matugen é obrigatório; cada integração é opcional e, se faltar ou
-# falhar, apenas registra um aviso sem interromper as demais.
+# Generates the Matugen palette from a wallpaper and propagates it to applications.
+# Matugen's config.toml only generates files; all hooks live here.
+# Only Matugen is required; every integration is optional and, if missing or
+# failing, just logs a warning without interrupting the others.
 set -u
 
-# Configurações de caminhos
+# Paths
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 DEFAULT_WALLPAPER_DIR="$HOME/Pictures/Wallpapers"
@@ -16,90 +16,90 @@ COLORS_JSON="$XDG_STATE_HOME/quickshell/generated/colors.json"
 MODE="${QS_COLOR_MODE:-dark}"
 
 log()  { echo "[Colors] $*"; }
-warn() { echo "[Aviso] $*" >&2; }
-fail() { echo "[Erro] $*" >&2; exit 1; }
+warn() { echo "[Warning] $*" >&2; }
+fail() { echo "[Error] $*" >&2; exit 1; }
 
-# Executa um comando opcional; falhas viram aviso e nunca abortam o script.
+# Runs an optional command; failures become warnings and never abort the script.
 optional() {
     local label="$1"
     shift
-    "$@" >/dev/null 2>&1 || warn "$label falhou ou não está disponível."
+    "$@" >/dev/null 2>&1 || warn "$label failed or is unavailable."
 }
 
-log "Iniciando processo de atualização de cores..."
+log "Starting color update..."
 
-# 1. Link simbólico do wallpaper atual
+# 1. Symlink to the current wallpaper
 WALLPAPER_PATH="${1:-}"
 if [ -z "$WALLPAPER_PATH" ] || [ ! -f "$WALLPAPER_PATH" ]; then
-    fail "Nenhum caminho de wallpaper válido fornecido."
+    fail "No valid wallpaper path provided."
 fi
 
 WALLPAPER_LINK="$DEFAULT_WALLPAPER_DIR/.current-wallpaper.png"
 
-log "Atualizando link simbólico do wallpaper..."
+log "Updating wallpaper symlink..."
 if ! mkdir -p "$DEFAULT_WALLPAPER_DIR" || ! ln -sfn "$WALLPAPER_PATH" "$WALLPAPER_LINK"; then
-    fail "Não foi possível atualizar o link simbólico do wallpaper."
+    fail "Could not update the wallpaper symlink."
 fi
 
-# 2. Paleta Matugen (único passo obrigatório)
-command -v matugen >/dev/null 2>&1 || fail "Matugen não está instalado."
+# 2. Matugen palette (the only required step)
+command -v matugen >/dev/null 2>&1 || fail "Matugen is not installed."
 
-log "Gerando paleta com Matugen ($MODE)..."
+log "Generating palette with Matugen ($MODE)..."
 matugen image "$WALLPAPER_LINK" --mode "$MODE" --source-color-index 0 \
-    || fail "Matugen falhou ao gerar cores."
+    || fail "Matugen failed to generate colors."
 
-# Força o Quickshell a recarregar as cores
+# Forces Quickshell to reload the colors
 [ -f "$COLORS_JSON" ] && touch "$COLORS_JSON"
 
-# 3. Tema do Kitty
+# 3. Kitty theme
 KITTY_THEME="$XDG_CONFIG_HOME/kitty/themes/Matugen.conf"
 if [ -f "$KITTY_THEME" ]; then
-    log "Sincronizando tema do Kitty..."
-    optional "Cópia do tema do Kitty" cp "$KITTY_THEME" "$XDG_CONFIG_HOME/kitty/current-theme.conf"
+    log "Syncing Kitty theme..."
+    optional "Copying the Kitty theme" cp "$KITTY_THEME" "$XDG_CONFIG_HOME/kitty/current-theme.conf"
 fi
 
-# 4. KDE/Qt via kde-material-you-colors (opcional)
+# 4. KDE/Qt via kde-material-you-colors (optional)
 if [ -f "$KDE_WRAPPER" ]; then
     SCHEME_VARIANT=""
     if [ -f "$KDE_CONFIG" ]; then
         SCHEME_VARIANT=$(grep 'scheme_variant' "$KDE_CONFIG" | head -n 1 | awk -F= '{print $2}' | xargs)
     else
-        warn "Config do kde-material-you-colors não encontrada: $KDE_CONFIG"
+        warn "kde-material-you-colors config not found: $KDE_CONFIG"
     fi
     SCHEME_VARIANT="${SCHEME_VARIANT:-scheme-tonal-spot}"
 
-    log "Aplicando cores ao KDE/Qt (variante: $SCHEME_VARIANT)..."
+    log "Applying colors to KDE/Qt (variant: $SCHEME_VARIANT)..."
     bash "$KDE_WRAPPER" --scheme-variant "$SCHEME_VARIANT" \
-        || warn "Wrapper do KDE terminou com erro."
+        || warn "KDE wrapper exited with an error."
 else
-    warn "Wrapper do kde-material-you-colors não encontrado; pulando KDE/Qt."
+    warn "kde-material-you-colors wrapper not found; skipping KDE/Qt."
 fi
 
-# 5. Recarga dos aplicativos
-log "Atualizando aplicativos..."
+# 5. Reloading applications
+log "Updating applications..."
 
 if command -v kitty >/dev/null 2>&1; then
     kitty @ set-colors --all "$KITTY_THEME" >/dev/null 2>&1 \
-        || optional "Recarga do Kitty" kitty +kitten themes --reload-in=all Matugen &
+        || optional "Kitty reload" kitty +kitten themes --reload-in=all Matugen &
 fi
 
 if [ -f "$GTK_RELOAD" ]; then
-    optional "Recarga do GTK" sh "$GTK_RELOAD" "$MODE" &
+    optional "GTK reload" sh "$GTK_RELOAD" "$MODE" &
 fi
 
-# Neovim recarrega o tema ao receber SIGUSR1; -x evita casar outros processos.
+# Neovim reloads its theme on SIGUSR1; -x avoids matching other processes.
 if command -v pkill >/dev/null 2>&1; then
     pkill -SIGUSR1 -x nvim >/dev/null 2>&1 || true
 fi
 
 if command -v pywalfox >/dev/null 2>&1; then
-    optional "Atualização do Pywalfox" pywalfox update &
+    optional "Pywalfox update" pywalfox update &
 fi
 
 if command -v spotifast >/dev/null 2>&1; then
-    optional "Recarga de temas do Spotifast" spotifast reload-themes &
+    optional "Spotifast theme reload" spotifast reload-themes &
 fi
 
 wait
-log "Processo concluído."
+log "Done."
 exit 0

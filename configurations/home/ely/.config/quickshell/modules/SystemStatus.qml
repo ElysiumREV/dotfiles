@@ -17,8 +17,8 @@ Item {
     implicitWidth: rowLayout.implicitWidth
     activeFocusOnTab: true
     Accessible.role: Accessible.Button
-    Accessible.name: "Uso de recursos: CPU " + Services.SystemStats.cpuUsage
-        + " por cento, memória " + Services.SystemStats.memoryUsage + " por cento"
+    Accessible.name: "Resource usage: CPU " + Services.SystemStats.cpuUsage
+        + " percent, memory " + Services.SystemStats.memoryUsage + " percent"
 
     function togglePopup() {
         if (usagePopupLoader.activeAsync) {

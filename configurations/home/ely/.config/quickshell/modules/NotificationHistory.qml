@@ -43,7 +43,7 @@ Item {
 
             Text {
                 Layout.fillWidth: true
-                text: "Notificações"
+                text: "Notifications"
                 color: Config.Theme.colFg
                 font.family: Config.Theme.fontFamily
                 font.pixelSize: Config.Theme.fontSizeLarge
@@ -52,14 +52,14 @@ Item {
 
             Widgets.IconButton {
                 Accessible.name: notificationService.doNotDisturb
-                    ? "Desativar Não Perturbe" : "Ativar Não Perturbe"
+                    ? "Turn off Do Not Disturb" : "Turn on Do Not Disturb"
                 iconName: notificationService.doNotDisturb ? "notifications_off" : "notifications_active"
                 selected: notificationService.doNotDisturb
                 onClicked: notificationService.doNotDisturb = !notificationService.doNotDisturb
             }
 
             Widgets.IconButton {
-                Accessible.name: "Fechar central de notificações"
+                Accessible.name: "Close notification center"
                 iconName: "close"
                 onClicked: notificationService.closeCenter()
             }
@@ -71,7 +71,7 @@ Item {
 
             Text {
                 Layout.fillWidth: true
-                text: notificationService.doNotDisturb ? "Não Perturbe ativado" : "Avisos recentes"
+                text: notificationService.doNotDisturb ? "Do Not Disturb on" : "Recent alerts"
                 color: Config.Theme.colTextSec
                 font.family: Config.Theme.fontFamily
                 font.pixelSize: Config.Theme.fontSizeSmall
@@ -79,8 +79,8 @@ Item {
 
             Widgets.LabelButton {
                 visible: notificationService.history.length > 0
-                Accessible.name: "Limpar todas as notificações"
-                text: "Limpar tudo"
+                Accessible.name: "Clear all notifications"
+                text: "Clear all"
                 labelFontSize: 10
                 labelAlignment: Text.AlignRight
                 idleTextColor: Config.Theme.colMuted
@@ -109,7 +109,7 @@ Item {
             Text {
                 anchors.centerIn: parent
                 visible: notificationService.historyGroups.length === 0
-                text: "Nenhuma notificação recente"
+                text: "No recent notifications"
                 color: Config.Theme.colMuted
                 font.family: Config.Theme.fontFamily
                 font.pixelSize: Config.Theme.fontSizeSmall
@@ -191,8 +191,8 @@ Item {
                             width: parent.width
                             implicitHeight: 30
                             Accessible.name: groupDelegate.modelData.appName + ", "
-                                + groupDelegate.modelData.notifications.length + " notificações. "
-                                + (groupDelegate.expanded ? "Recolher grupo" : "Expandir grupo")
+                                + groupDelegate.modelData.notifications.length + " notifications. "
+                                + (groupDelegate.expanded ? "Collapse group" : "Expand group")
                             onClicked: groupDelegate.expanded = !groupDelegate.expanded
 
                             contentItem: RowLayout {
@@ -313,7 +313,7 @@ Item {
                                                 buttonRadius: 6
                                                 implicitWidth: 23
                                                 implicitHeight: 23
-                                                Accessible.name: "Dispensar notificação de " + modelData.appName
+                                                Accessible.name: "Dismiss notification from " + modelData.appName
                                                 onClicked: notificationService.dismiss(modelData.id)
                                             }
                                         }

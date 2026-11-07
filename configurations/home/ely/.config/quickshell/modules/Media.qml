@@ -16,7 +16,7 @@ Item {
     readonly property var media: QsServices.Media
     property real screenWidth: 0
 
-    // Mantém espaço estável na barra (sem piscar/sumir).
+    // Keeps stable space in the bar (no flicker/disappearing).
     opacity: media.connected ? 1 : 0.65
 
     Behavior on opacity {
@@ -43,7 +43,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         spacing: Config.Theme.moduleInnerSpacing
 
-        // Ícone de play/pause
+        // Play/pause icon
         Text {
             id: playIcon
             Layout.alignment: Qt.AlignVCenter
@@ -54,7 +54,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
         }
 
-        // Info em uma linha: "Artista — Música"
+        // Info on one line: "Artist — Track"
         Text {
             id: trackText
             Layout.alignment: Qt.AlignVCenter
@@ -75,7 +75,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
         }
 
-        // Volume indicator (quando diferente de 0)
+        // Volume indicator (when non-zero)
         Text {
             Layout.alignment: Qt.AlignVCenter
             text: media.volume > 0 ? " " + media.volume + "%" : ""
@@ -86,7 +86,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
         }
 
-        // Ícone musical
+        // Music icon
         Text {
             Layout.alignment: Qt.AlignVCenter
             text: "music_note"
@@ -117,7 +117,7 @@ Item {
                 mediaPopupLoader.activeAsync = true
         }
 
-        // Scroll para volume (Shift + scroll) ou navegação (normal)
+        // Scroll for volume (Shift + scroll) or navigation (normal)
         WheelHandler {
             onWheel: event => {
                 if (event.modifiers & Qt.ShiftModifier) {

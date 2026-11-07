@@ -54,7 +54,7 @@ PanelWindow {
         const firstDay = new Date(
             viewedMonth.getFullYear(), viewedMonth.getMonth(), 1
         ).getDay();
-        return firstDay; // Calendário começa no domingo.
+        return firstDay; // Calendar starts on Sunday.
     }
     readonly property int daysInViewedMonth: new Date(
         viewedMonth.getFullYear(), viewedMonth.getMonth() + 1, 0

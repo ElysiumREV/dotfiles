@@ -24,13 +24,13 @@ Item {
     readonly property bool isCritical: BatteryRules.isCritical(batteryPercentage, isPluggedIn)
     readonly property string batteryStatus: {
         if (!batteryPresent)
-            return "Nenhuma bateria detectada";
+            return "No battery detected";
         if (isFullyCharged)
-            return "Carga completa";
+            return "Fully charged";
         if (isCharging)
-            return "Carregando";
+            return "Charging";
         if (isDischarging)
-            return "Descarregando";
+            return "Discharging";
         return UPowerDeviceState.toString(battery.state);
     }
     readonly property real estimatedTimeSeconds: !batteryPresent ? 0
@@ -134,7 +134,7 @@ Item {
                 Layout.fillWidth: true
                 spacing: 2
                 Text {
-                    text: "Bateria"
+                    text: "Battery"
                     color: Config.Theme.colFg
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSize
@@ -180,7 +180,7 @@ Item {
         Text {
             Layout.fillWidth: true
             visible: !root.batteryPresent
-            text: "As informações e os perfis aparecem quando uma bateria é detectada."
+            text: "Battery info and power profiles appear when a battery is detected."
             color: Config.Theme.colTextSec
             font.family: Config.Theme.fontFamily
             font.pixelSize: Config.Theme.fontSizeSmall
@@ -196,11 +196,11 @@ Item {
 
             Repeater {
                 model: [
-                    { label: "Saúde", value: root.batteryHealth },
-                    { label: "Ciclos", value: root.chargeCycles >= 0 ? String(root.chargeCycles) : "—" },
-                    { label: "Capacidade", value: root.batteryCapacity === "—" ? "—" : root.batteryCapacity + " Wh" },
-                    { label: "Potência", value: root.battery ? (Math.abs(root.battery.changeRate || 0).toFixed(1) + " W") : "—" },
-                    { label: root.isCharging ? "Até carga completa" : "Autonomia estimada", value: root.estimatedTime }
+                    { label: "Health", value: root.batteryHealth },
+                    { label: "Cycles", value: root.chargeCycles >= 0 ? String(root.chargeCycles) : "—" },
+                    { label: "Capacity", value: root.batteryCapacity === "—" ? "—" : root.batteryCapacity + " Wh" },
+                    { label: "Power", value: root.battery ? (Math.abs(root.battery.changeRate || 0).toFixed(1) + " W") : "—" },
+                    { label: root.isCharging ? "Time to full" : "Estimated time left", value: root.estimatedTime }
                 ]
 
                 delegate: Rectangle {
@@ -249,7 +249,7 @@ Item {
             visible: Services.PowerProfiles.isAvailable
 
             Text {
-                text: "Perfil de energia"
+                text: "Power profile"
                 color: Config.Theme.colTextSec
                 font.family: Config.Theme.fontFamily
                 font.pixelSize: Config.Theme.fontSizeSmall
@@ -270,8 +270,8 @@ Item {
                         Layout.fillWidth: true
                         implicitHeight: 42
                         activeFocusOnTab: true
-                        Accessible.name: "Perfil de energia " + Services.PowerProfiles.getProfileLabel(modelData)
-                            + (selected ? ", ativo" : "")
+                        Accessible.name: "Power profile " + Services.PowerProfiles.getProfileLabel(modelData)
+                            + (selected ? ", active" : "")
                         ToolTip.text: Services.PowerProfiles.getProfileLabel(modelData)
                         ToolTip.visible: root.compactWidth && hovered
                         onClicked: Services.PowerProfiles.setProfile(modelData)
@@ -313,7 +313,7 @@ Item {
         Text {
             Layout.fillWidth: true
             visible: !Services.PowerProfiles.isAvailable
-            text: "Perfis de energia indisponíveis neste sistema."
+            text: "Power profiles are unavailable on this system."
             color: Config.Theme.colMuted
             font.family: Config.Theme.fontFamily
             font.pixelSize: Config.Theme.fontSizeSmall

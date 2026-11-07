@@ -63,7 +63,7 @@ Scope {
             "mouse_up": "Scroll ↑",
             "mouse_down": "Scroll ↓"
         };
-        return (substitutions[key] ?? key) || "Tecla desconhecida";
+        return (substitutions[key] ?? key) || "Unknown key";
     }
 
     function categoryFor(binding, description) {
@@ -75,18 +75,18 @@ Scope {
             return "Workspaces";
         if (["movefocus", "movewindow", "resizeactive", "fullscreen", "togglefloating",
                 "togglesplit", "killactive", "closewindow", "pseudo"].includes(dispatcher))
-            return "Janelas";
+            return "Windows";
         if (dispatcher === "exec") {
             const command = (binding.arg ?? "").toString().toLowerCase();
             if (command.includes("playerctl") || command.includes("volume")
                     || command.includes("brightness") || command.includes("wpctl"))
-                return "Mídia e controles";
+                return "Media and controls";
             if (command.includes("screenshot") || command.includes("wallpaper")
                     || command.includes("clipboard"))
                 return "QuickShell";
-            return "Aplicativos e sistema";
+            return "Apps and system";
         }
-        return "Sistema";
+        return "System";
     }
 
     function actionFor(binding, description) {
@@ -100,54 +100,54 @@ Scope {
         const ipcAction = arg.match(/(?:qs|quickshell)\s+ipc\s+call\s+shell\s+([\w]+)/i);
         if (ipcAction) {
             const labels = {
-                toggleLauncher: "Abrir/fechar launcher",
-                toggleLogout: "Abrir/fechar menu de sessão",
-                toggleClipboardHistory: "Abrir/fechar histórico da área de transferência",
-                screenshotRegion: "Capturar uma região da tela",
-                screenshotWindow: "Capturar uma janela",
-                toggleWallpaper: "Abrir/fechar seletor de wallpaper",
-                toggleWallhaven: "Abrir/fechar Wallhaven",
-                toggleNotificationCenter: "Abrir/fechar notificações",
-                increaseVolume: "Aumentar volume",
-                decreaseVolume: "Diminuir volume",
-                toggleMute: "Alternar mute do áudio",
-                increaseBrightness: "Aumentar brilho",
-                decreaseBrightness: "Diminuir brilho"
+                toggleLauncher: "Toggle launcher",
+                toggleLogout: "Toggle session menu",
+                toggleClipboardHistory: "Toggle clipboard history",
+                screenshotRegion: "Capture a screen region",
+                screenshotWindow: "Capture a window",
+                toggleWallpaper: "Toggle wallpaper picker",
+                toggleWallhaven: "Toggle Wallhaven",
+                toggleNotificationCenter: "Toggle notifications",
+                increaseVolume: "Increase volume",
+                decreaseVolume: "Decrease volume",
+                toggleMute: "Toggle audio mute",
+                increaseBrightness: "Increase brightness",
+                decreaseBrightness: "Decrease brightness"
             };
-            return labels[ipcAction[1]] ?? `Ação QuickShell: ${ipcAction[1]}`;
+            return labels[ipcAction[1]] ?? `QuickShell action: ${ipcAction[1]}`;
         }
 
         if (dispatcher === "exec") {
             const command = arg.replace(/^\s*(?:exec|exec-once)\s*/, "").trim();
-            if (/^kitty(?:\s|$)/i.test(command)) return "Abrir terminal";
-            if (/^dolphin(?:\s|$)/i.test(command)) return "Abrir gerenciador de arquivos";
-            if (/^firefox(?:\s|$)/i.test(command)) return "Abrir navegador";
-            if (/playerctl\s+next/i.test(command)) return "Próxima faixa";
-            if (/playerctl\s+previous/i.test(command)) return "Faixa anterior";
-            if (/playerctl\s+play-pause/i.test(command)) return "Reproduzir/pausar mídia";
-            if (/playerctl\s+volume/i.test(command)) return "Ajustar volume da mídia";
-            if (/wpctl\s+set-mute/i.test(command)) return "Alternar mute do microfone";
-            if (/wpctl\s+set-volume/i.test(command)) return "Ajustar volume do sistema";
-            if (/brightness/i.test(command)) return "Ajustar brilho";
-            return `Executar: ${command}`;
+            if (/^kitty(?:\s|$)/i.test(command)) return "Open terminal";
+            if (/^dolphin(?:\s|$)/i.test(command)) return "Open file manager";
+            if (/^firefox(?:\s|$)/i.test(command)) return "Open browser";
+            if (/playerctl\s+next/i.test(command)) return "Next track";
+            if (/playerctl\s+previous/i.test(command)) return "Previous track";
+            if (/playerctl\s+play-pause/i.test(command)) return "Play/pause media";
+            if (/playerctl\s+volume/i.test(command)) return "Adjust media volume";
+            if (/wpctl\s+set-mute/i.test(command)) return "Toggle microphone mute";
+            if (/wpctl\s+set-volume/i.test(command)) return "Adjust system volume";
+            if (/brightness/i.test(command)) return "Adjust brightness";
+            return `Run: ${command}`;
         }
 
         const dispatcherLabels = {
-            movefocus: "Focar janela",
-            movewindow: "Mover janela",
-            resizeactive: "Redimensionar janela",
-            workspace: "Mudar para workspace",
-            movetoworkspace: "Mover janela para workspace",
-            fullscreen: "Alternar tela cheia",
-            togglefloating: "Alternar janela flutuante",
-            togglesplit: "Alternar divisão",
-            killactive: "Fechar janela",
-            closewindow: "Fechar janela",
-            pseudo: "Alternar modo pseudo",
-            exit: "Sair do Hyprland"
+            movefocus: "Focus window",
+            movewindow: "Move window",
+            resizeactive: "Resize window",
+            workspace: "Switch to workspace",
+            movetoworkspace: "Move window to workspace",
+            fullscreen: "Toggle fullscreen",
+            togglefloating: "Toggle floating window",
+            togglesplit: "Toggle split",
+            killactive: "Close window",
+            closewindow: "Close window",
+            pseudo: "Toggle pseudo mode",
+            exit: "Exit Hyprland"
         };
         const label = dispatcherLabels[dispatcher] ?? dispatcher;
-        return arg ? `${label}: ${arg}` : label || "Ação do compositor";
+        return arg ? `${label}: ${arg}` : label || "Compositor action";
     }
 
     function formatBinding(binding) {
@@ -224,9 +224,9 @@ Scope {
                     const parsed = JSON.parse(text);
                     root.bindings = parsed.filter(binding => binding.key || binding.keycode);
                     if (root.bindings.length === 0)
-                        root.loadError = "O Hyprland não retornou atalhos.";
+                        root.loadError = "Hyprland returned no shortcuts.";
                 } catch (error) {
-                    root.loadError = "Não foi possível ler os atalhos do Hyprland.";
+                    root.loadError = "Could not read Hyprland shortcuts.";
                     console.warn("[KeybindCheatsheet] Could not parse hyprctl binds:", error);
                 }
             }
@@ -235,7 +235,7 @@ Scope {
         onExited: (exitCode, exitStatus) => {
             root.loading = false;
             if (exitCode !== 0 && root.active) {
-                root.loadError = "Não foi possível consultar as binds do Hyprland.";
+                root.loadError = "Could not query Hyprland binds.";
                 console.warn("[KeybindCheatsheet] hyprctl binds failed with code", exitCode);
             }
         }
@@ -316,7 +316,7 @@ Scope {
                                     spacing: 2
 
                                     Text {
-                                        text: "Atalhos do Hyprland"
+                                        text: "Hyprland shortcuts"
                                         color: Config.Theme.colFg
                                         font.family: Config.Theme.fontFamily
                                         font.pixelSize: Config.Theme.fontSizeLarge
@@ -333,7 +333,7 @@ Scope {
 
                                 Widgets.IconButton {
                                     iconName: "close"
-                                    Accessible.name: "Fechar cheatsheet de atalhos"
+                                    Accessible.name: "Close shortcut cheatsheet"
                                     onClicked: root.close()
                                 }
                             }
@@ -341,7 +341,7 @@ Scope {
                             Widgets.ThemedTextField {
                                 id: searchField
                                 Layout.fillWidth: true
-                                placeholderText: "Buscar atalho ou ação..."
+                                placeholderText: "Search shortcut or action..."
                                 horizontalTextPadding: 6
                                 selectByMouse: true
                                 activeFocusOnTab: true
@@ -474,8 +474,8 @@ Scope {
                                     Text {
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         text: root.loadError || (root.loading
-                                            ? "Carregando atalhos..."
-                                            : "Nenhum atalho corresponde à busca.")
+                                            ? "Loading shortcuts..."
+                                            : "No shortcuts match the search.")
                                         color: Config.Theme.colTextSec
                                         font.family: Config.Theme.fontFamily
                                         font.pixelSize: Config.Theme.fontSize

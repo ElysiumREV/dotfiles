@@ -10,7 +10,7 @@
       property int workspaceCount: 10
       property real buttonSize: 26
       property real spacing: 4
-      // Mude para true para exibir alertas de urgência nos workspaces.
+      // Set to true to show urgency alerts on workspaces.
       property bool showUrgencyAlerts: false
 
       readonly property var monitor:
@@ -65,13 +65,13 @@
                   required property int index
                   readonly property int workspaceId: index + 1
 
-                  // `workspace` será null quando o espaço ainda não foi criado.
+                  // `workspace` will be null when the workspace has not been created yet.
                   readonly property var workspace:
                       Hyprland.workspaces.values.find(
                           item => item.id === workspaceId
                       )
 
-                  // Escolha simples: a última janela da lista representa o workspace.
+                  // Simple choice: the last window in the list represents the workspace.
                   readonly property var toplevels:
                       workspace?.toplevels.values ?? []
 
@@ -98,7 +98,7 @@
                   height: root.buttonSize
                   z: 2
 
-                  // Camada 2: fundo discreto de workspace ocupado.
+                  // Layer 2: subtle background for an occupied workspace.
                   Rectangle {
                       anchors.centerIn: parent
                       width: root.buttonSize
@@ -136,7 +136,7 @@
                       }
                   }
 
-                  // Camada 4: ícone do aplicativo principal.
+                  // Layer 4: main application icon.
                   Image {
                       id: appIcon
                       anchors.centerIn: parent
@@ -147,7 +147,7 @@
                       asynchronous: true
                       smooth: true
 
-                      // O fallback evita um ícone quebrado para apps sem desktop entry.
+                      // The fallback avoids a broken icon for apps without a desktop entry.
                       source: workspaceItem.appId
                           ? Quickshell.iconPath(
                               workspaceItem.appId,
@@ -175,7 +175,7 @@
                       }
                   }
 
-                  // Mostra numeral romano apenas se o workspace estiver vazio.
+                  // Shows a Roman numeral only if the workspace is empty.
                   Text {
                       anchors.centerIn: parent
                       visible: !workspaceItem.occupied
@@ -240,7 +240,7 @@
                       cursorShape: Qt.PointingHandCursor
 
                       onClicked: {
-                          // Também cria/foca um workspace ainda inexistente.
+                          // Also creates/focuses a workspace that does not exist yet.
                           Hyprland.dispatch(
                               Hyprland.usingLua
                               ? `hl.dsp.focus({ workspace = ${workspaceItem.workspaceId} })`

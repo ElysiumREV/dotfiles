@@ -21,7 +21,7 @@ Singleton {
         if (busy || !path)
             return;
         pendingPath = path;
-        failureMessage = "Falha ao trocar o wallpaper. Confira se o daemon swww/awww está ativo.";
+        failureMessage = "Failed to change the wallpaper. Check that the swww/awww daemon is running.";
         busy = true;
         switchWallpaper();
     }
@@ -38,9 +38,9 @@ Singleton {
             return;
 
         pendingPath = wallpaperDirectory + "/wallhaven-" + safeId + "." + safeExtension;
-        failureMessage = "Falha ao baixar o wallpaper do Wallhaven.";
+        failureMessage = "Failed to download the wallpaper from Wallhaven.";
         busy = true;
-        status = "Baixando wallpaper…";
+        status = "Downloading wallpaper…";
         downloadProcess.exec([
                                  "sh", "-c",
                                  "mkdir -p \"$2\" && exec curl -fL --retry 2 --connect-timeout 15 --max-time 180 --output \"$3\" \"$1\"",
@@ -49,7 +49,7 @@ Singleton {
     }
 
     function switchWallpaper() {
-        status = "Aplicando wallpaper…";
+        status = "Applying wallpaper…";
         wallpaperProcess.exec([
                                   "sh", "-c",
                                   `if command -v swww >/dev/null 2>&1; then
@@ -97,8 +97,8 @@ fi`,
         id: applyColorsProcess
         onExited: (exitCode, exitStatus) => {
             root.finish(true, exitCode === 0
-                        ? "Wallpaper e paleta atualizados."
-                        : "Wallpaper trocado, mas a geração de cores pelo Matugen falhou.");
+                        ? "Wallpaper and palette updated."
+                        : "Wallpaper changed, but Matugen color generation failed.");
         }
     }
 }

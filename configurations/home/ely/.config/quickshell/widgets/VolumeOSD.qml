@@ -64,7 +64,7 @@ Scope {
                 anchors.fill: parent
                 title: "Volume"
                 iconName: root.icon
-                value: root.muted ? "Mudo" : root.percentage + "%"
+                value: root.muted ? "Muted" : root.percentage + "%"
                 progress: root.percentage / 100
                 muted: root.muted
             }

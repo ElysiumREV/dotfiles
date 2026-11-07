@@ -18,9 +18,9 @@ PanelWindow {
 
     readonly property var volumeService: Services.Volume
     readonly property string outputName: volumeService.audioSink?.description
-        || volumeService.audioSink?.name || "Sem dispositivo de saída"
+        || volumeService.audioSink?.name || "No output device"
     readonly property string inputName: volumeService.audioSource?.description
-        || volumeService.audioSource?.name || "Sem dispositivo de entrada"
+        || volumeService.audioSource?.name || "No input device"
     readonly property var captureApplications: volumeService.captureApplications
 
     screen: targetScreen
@@ -105,7 +105,7 @@ PanelWindow {
                     Layout.fillWidth: true
                     spacing: 2
                     Text {
-                        text: "Áudio"
+                        text: "Audio"
                         color: Config.Theme.colFg
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSizeLarge
@@ -127,7 +127,7 @@ PanelWindow {
                     implicitWidth: 32
                     implicitHeight: 32
                     activeFocusOnTab: true
-                    Accessible.name: "Fechar menu de áudio"
+                    Accessible.name: "Close audio menu"
                     onClicked: root.closeMenu()
                 }
             }
@@ -148,14 +148,14 @@ PanelWindow {
                         Layout.fillWidth: true
                         Text {
                             Layout.fillWidth: true
-                            text: "Saída de áudio"
+                            text: "Audio output"
                             color: Config.Theme.colTextSec
                             font.family: Config.Theme.fontFamily
                             font.pixelSize: Config.Theme.fontSizeSmall
                             font.bold: true
                         }
                         Text {
-                            text: volumeService.effectivelyMuted ? "Mudo" : volumeService.percentage + "%"
+                            text: volumeService.effectivelyMuted ? "Muted" : volumeService.percentage + "%"
                             color: Config.Theme.colFg
                             font.family: Config.Theme.fontFamily
                             font.pixelSize: Config.Theme.fontSize
@@ -176,7 +176,7 @@ PanelWindow {
                             stepSize: 0.01
                             value: volumeService.volume
                             enabled: volumeService.audioIface !== null
-                            Accessible.name: "Volume de saída"
+                            Accessible.name: "Output volume"
                             onMoved: volumeService.setVolume(value)
                         }
 
@@ -190,7 +190,7 @@ PanelWindow {
                             implicitWidth: 38
                             implicitHeight: 36
                             activeFocusOnTab: true
-                            Accessible.name: volumeService.effectivelyMuted ? "Ativar áudio" : "Silenciar saída"
+                            Accessible.name: volumeService.effectivelyMuted ? "Unmute audio" : "Mute output"
                             onClicked: volumeService.toggleMute()
                         }
                     }
@@ -214,15 +214,15 @@ PanelWindow {
                         Layout.fillWidth: true
                         Text {
                             Layout.fillWidth: true
-                            text: "Microfone"
+                            text: "Microphone"
                             color: Config.Theme.colTextSec
                             font.family: Config.Theme.fontFamily
                             font.pixelSize: Config.Theme.fontSizeSmall
                             font.bold: true
                         }
                         Text {
-                            text: volumeService.microphoneMuted ? "MUTADO"
-                                : (root.captureApplications.length > 0 ? "EM USO" : "LIVRE")
+                            text: volumeService.microphoneMuted ? "MUTED"
+                                : (root.captureApplications.length > 0 ? "IN USE" : "IDLE")
                             color: volumeService.microphoneMuted ? Config.Theme.colRed
                                 : (root.captureApplications.length > 0 ? Config.Theme.colYellow
                                    : Config.Theme.colTextSec)
@@ -245,8 +245,8 @@ PanelWindow {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         text: root.captureApplications.length > 0
-                            ? "Captura conectada por: " + root.captureApplications.join(", ")
-                            : "Nenhum aplicativo conectado ao microfone."
+                            ? "Capture connected by: " + root.captureApplications.join(", ")
+                            : "No application is connected to the microphone."
                         color: Config.Theme.colTextSec
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSizeSmall
@@ -259,8 +259,8 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: volumeService.microphoneMuted
-                            ? "O microfone está silenciado na barra."
-                            : "O ícone da barra silencia o microfone durante a captura."
+                            ? "The microphone is muted from the bar."
+                            : "The bar icon mutes the microphone during capture."
                         color: Config.Theme.colMuted
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: 9
@@ -273,7 +273,7 @@ PanelWindow {
             Widgets.LabelButton {
                 id: advancedButton
                 Layout.fillWidth: true
-                text: "Opções avançadas · pavucontrol"
+                text: "Advanced options · pavucontrol"
                 implicitHeight: 38
                 labelFontSize: Config.Theme.fontSizeSmall
                 idleTextColor: Config.Theme.colFg
@@ -285,7 +285,7 @@ PanelWindow {
                 )
                 cornerRadius: 9
                 activeFocusOnTab: true
-                Accessible.name: "Abrir opções avançadas de áudio no pavucontrol"
+                Accessible.name: "Open advanced audio options in pavucontrol"
                 onClicked: {
                     root.closeMenu()
                     Quickshell.execDetached(["pavucontrol"])

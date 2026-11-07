@@ -12,7 +12,7 @@ Item {
     readonly property bool hovered: hoverHandler.hovered
     readonly property bool highlighted: interactive && (hovered || activeFocus || selected)
 
-    // Grupos ocultos deixam de reservar largura no Row e nas relações de âncora.
+    // Hidden groups stop reserving width in the Row and in anchor relations.
     width: visible ? contentWidth + 10 : 0
 
     Rectangle {

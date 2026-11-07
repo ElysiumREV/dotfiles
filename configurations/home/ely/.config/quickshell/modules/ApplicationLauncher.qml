@@ -265,7 +265,7 @@ PanelWindow {
                     }
                     Text {
                         Layout.fillWidth: true
-                        text: "Aplicativos"
+                        text: "Applications"
                         color: Config.Theme.colFg
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSizeLarge
@@ -320,7 +320,7 @@ PanelWindow {
                             onActiveFocusChanged: {
                                 root.keyboardNavigationActive = activeFocus;
                             }
-                            placeholderText: "Buscar aplicativos..."
+                            placeholderText: "Search applications..."
                             flat: true
                             horizontalTextPadding: 6
                             selectByMouse: true
@@ -395,7 +395,7 @@ PanelWindow {
                                 }
                                 Text {
                                     Layout.fillWidth: true
-                                    text: modelData.genericName || modelData.comment || "Aplicativo"
+                                    text: modelData.genericName || modelData.comment || "Application"
                                     color: Config.Theme.colTextSec
                                     font.family: Config.Theme.fontFamily
                                     font.pixelSize: Config.Theme.fontSizeSmall
@@ -429,7 +429,7 @@ PanelWindow {
                     Text {
                         anchors.centerIn: parent
                         visible: appList.count === 0
-                        text: "Nenhum aplicativo encontrado"
+                        text: "No applications found"
                         color: Config.Theme.colTextSec
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSize
@@ -438,7 +438,7 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "↑ ↓ navegar     ↵ abrir     ESC fechar"
+                    text: "↑ ↓ navigate     ↵ open     ESC close"
                     color: Config.Theme.colMuted
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSizeSmall

@@ -21,7 +21,7 @@ Item {
             }
         }
 
-        // Escala sutil para dar profundidade
+        // Subtle scale to give depth
         scale: root.active ? 1.0 : 0.98
         Behavior on scale {
             NumberAnimation {
@@ -31,7 +31,7 @@ Item {
             }
         }
 
-        // Efeito de "descer da barra": começa acima (-20px) e desce para 0
+        // "Dropping from the bar" effect: starts above (-20px) and moves down to 0
         y: root.active ? 0 : -20
         Behavior on y {
             NumberAnimation {

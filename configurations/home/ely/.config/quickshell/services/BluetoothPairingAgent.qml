@@ -45,17 +45,17 @@ Singleton {
         }
         if (/Enter PIN code|Request PIN code/i.test(data)) {
             promptType = "pin";
-            promptText = data.trim() || "Digite o PIN solicitado pelo dispositivo.";
+            promptText = data.trim() || "Enter the PIN requested by the device.";
         } else if (/Confirm passkey|Authorize service|Request authorization/i.test(data)) {
             promptType = "confirm";
-            promptText = data.trim() || "Confirme a solicitação de pareamento.";
+            promptText = data.trim() || "Confirm the pairing request.";
         } else if (/Passkey:\s*\d+|PIN code:\s*\d+/i.test(data)) {
             promptType = "display";
             promptText = data.trim();
         }
         if (agentRegistered && defaultAgentRequested) {
             ready = true;
-            status = "Agente pronto para confirmação e códigos de pareamento.";
+            status = "Agent ready for pairing confirmations and codes.";
         }
     }
 
@@ -70,7 +70,7 @@ Singleton {
         agentRegistered = false;
         defaultAgentRequested = false;
         registrationFailed = false;
-        status = "Iniciando agente de pareamento…";
+        status = "Starting pairing agent…";
         agentProcess.running = true;
     }
 
@@ -114,7 +114,7 @@ Singleton {
                 root.intentionalStop = false;
                 root.status = "";
             } else {
-                root.status = code === 0 ? "Agente de pareamento encerrado." : "Não foi possível iniciar o agente Bluetooth.";
+                root.status = code === 0 ? "Pairing agent stopped." : "Could not start the Bluetooth agent.";
             }
         }
     }
@@ -126,16 +126,16 @@ Singleton {
         onTriggered: {
             if (agentProcess.running && root.agentRegistered && root.defaultAgentRequested) {
                 root.ready = true;
-                root.status = "Agente pronto para confirmação e códigos de pareamento.";
+                root.status = "Agent ready for pairing confirmations and codes.";
             } else if (agentProcess.running && !root.ready) {
                 // bluetoothctl output varies by BlueZ version and can omit these
                 // acknowledgements. Keep pairing available if the interactive
                 // client is alive; explicit registration errors still block it.
                 if (!root.registrationFailed) {
                     root.ready = true;
-                    root.status = "Agente Bluetooth ativo para pareamento.";
+                    root.status = "Bluetooth agent active for pairing.";
                 } else {
-                    root.status = "O Bluetooth recusou o registro do agente.";
+                    root.status = "Bluetooth rejected the agent registration.";
                 }
             }
         }

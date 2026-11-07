@@ -77,9 +77,9 @@ Singleton {
 
   function getProfileLabel(profile) {
     switch(profile) {
-      case "performance": return "Desempenho"
-      case "balanced": return "Equilibrado"
-      case "power-saver": return "Economia"
+      case "performance": return "Performance"
+      case "balanced": return "Balanced"
+      case "power-saver": return "Power Saver"
       default: return profile
     }
   }

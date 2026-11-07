@@ -42,8 +42,8 @@ Singleton {
         if (!notification || !notification.id)
             return;
 
-        // A mesma instância pode ser reemitida (por exemplo, em reloads).
-        // Conecte uma vez por objeto e capture só o ID, sem reter a notificação.
+        // The same instance may be re-emitted (for example, on reloads).
+        // Connect once per object and capture only the ID, without retaining the notification.
         const alreadyActive = activeNotifications.some(item => item === notification);
         if (!alreadyActive) {
             const notificationId = notification.id;
@@ -52,13 +52,13 @@ Singleton {
 
         notification.tracked = true;
 
-        // Remove duplicata antiga se houver (mesmo ID atualizado)
+        // Remove the old duplicate if any (same ID updated)
         activeNotifications = activeNotifications.filter(item => item.id !== notification.id).concat([notification]);
 
         if (!notification.transient) {
             const record = {
                 id: notification.id,
-                appName: notification.appName || notification.desktopEntry || "Notificação",
+                appName: notification.appName || notification.desktopEntry || "Notification",
                 appIcon: notification.appIcon || "",
                 summary: boundedText(notification.summary, summaryCharacterLimit),
                 body: boundedText(notification.body, bodyCharacterLimit),
@@ -166,7 +166,7 @@ Singleton {
             };
         });
 
-        // Libera a trava após o ciclo de eventos do QML
+        // Releases the lock after the QML event loop cycle
         Qt.callLater(() => {
             delete closingIds[id];
         });
@@ -232,7 +232,7 @@ Singleton {
         centerRequestedTab = tab || "notifications";
         centerMonitor = monitor;
         centerVisible = true;
-        // O painel unificado marca o histórico como lido ao ser aberto.
+        // The unified panel marks the history as read when opened.
     }
 
     function closeCenter() {

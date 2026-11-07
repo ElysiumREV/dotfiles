@@ -2,7 +2,7 @@
 
 Este é o documento canônico de contexto, decisões, roadmap e auditorias deste projeto. Atualizar este arquivo quando uma feature mudar de estado, uma preferência visual for decidida ou uma ideia nova surgir. Ao retomar trabalho, consultar primeiro **Estado atual**, **Decisões persistentes** e **Roadmap**; o apêndice preserva os planos antigos para contexto histórico.
 
-Última consolidação: 2026-10-25.
+Última consolidação: 2026-11-06.
 
 ## Visão do projeto
 
@@ -26,6 +26,7 @@ O Quickshell deve concentrar a interface diária do desktop: barra, menus, launc
 - A identidade visual é Material 3 dinâmico via Matugen. Usar cores semânticas, superfícies em níveis e hierarquia consistente; não copiar diretamente uma linguagem visual incompatível.
 - O grupo direito da barra deve ganhar fundo colorido no hover/foco/seleção, sem uma borda luminosa ao redor.
 - Preferir soluções simples, nativas e locais. Não duplicar serviços ou armazenar dados persistentes sem benefício claro.
+- A UI, logs e comentários do código são em inglês; este diário permanece em português e deve ser atualizado a cada mudança relevante (feature, decisão ou limpeza).
 
 ## Estado atual das features
 
@@ -49,7 +50,7 @@ O Quickshell deve concentrar a interface diária do desktop: barra, menus, launc
 - A pasta escolhida no seletor de wallpapers fica salva em `wallpaper.directory` e também é usada para downloads do Wallhaven; valor vazio mantém `~/Pictures/Wallpapers` como padrão.
 - A duração padrão dos pop-ups de notificação é ajustável entre 1 e 10 segundos na aba Configurações; timeout informado pelo aplicativo tem precedência e zero continua significando sem expiração.
 - Volume e brilho acionados por IPC conforme os atalhos existentes.
-- Scripts necessários do projeto estão dentro do diretório do QuickShell (`scripts/`). O projeto não depende mais de `~/.config/scripts/updateWall.sh`; `services/WallpaperManager.qml` chama `scripts/apply_colors.sh`.
+- Scripts necessários do projeto estão dentro do diretório do QuickShell (`scripts/`). O projeto não depende mais de `~/.config/scripts/updateWall.sh` (removido em 2026-11-06); `services/WallpaperManager.qml` chama `scripts/apply_colors.sh`. O `config.toml` do Matugen só gera arquivos (sem `post_hook`); todos os hooks (Kitty, GTK, KDE, Neovim, Pywalfox, Spotifast) ficam em `scripts/apply_colors.sh`, cada um opcional e com aviso em caso de falha. Gera também `~/.config/hypr/hyprlock-colors.conf`, incluído pelo `hyprlock.conf`.
 - Wallpaper, Clipboard e Wallhaven foram alinhados visualmente ao Application Launcher: superfície flutuante Material, desktop visível, cantos e espaçamentos coerentes, destaque de foco e scrollbars temáticas. Quickshell recarregou sem erros QML aparentes em 2026-10-16.
 
 ### Em validação ou polimento
@@ -62,7 +63,7 @@ O Quickshell deve concentrar a interface diária do desktop: barra, menus, launc
 - Screenshot: seleção de região e janela via `hyprshot --freeze`; em 2026-10-26, o usuário confirmou que o fluxo funciona também em jogo fullscreen. O Quickshell deixa a seleção/salvamento/clipboard a cargo do utilitário externo.
 - MPRIS/Spotifast: o serviço agora permite o player Spotifast pela identidade, entrada desktop ou nome de barramento MPRIS. Falta validar metadados, artwork, volume e comandos durante uma sessão ativa; a inspeção atual não conseguiu acessar o barramento D-Bus da sessão.
 - Cheatsheet de atalhos: primeira versão implementada com `SUPER+H`; consulta `hyprctl binds -j` somente ao abrir, categoriza os atalhos e oferece busca por teclado, seleção da lista e fechamento por `Esc`. As binds ativas atuais receberam descrições curtas com categoria; novas binds devem seguir esse padrão. Falta validar o painel visualmente na sessão.
-- Alguns textos ainda podem misturar português/inglês; uniformizar quando os arquivos forem editados.
+- Idioma: a UI, os logs, os comentários do código e as descrições dos atalhos do Hyprland passaram a ser **todos em inglês** (2026-11-06). Este diário continua em português por decisão do usuário. Novos textos de UI devem ser escritos em inglês.
 
 ### Ideias ainda em aberto
 
@@ -165,7 +166,7 @@ Esses pontos foram identificados por leitura estática; não foram reproduzidos 
 8. **Launcher:** inventário anterior encontrou cerca de 92 arquivos `.desktop`; busca em lista e `ListView` não justificam reescrita em C++ sem medição.
 9. **Métricas de CPU/memória:** consultas a `/proc/stat` e `/proc/meminfo` a cada 5 s não eram prioridade na auditoria estática.
 10. **Brilho:** registros de auditoria antigos mencionavam polling sysfs a cada 200 ms. Estado posterior priorizou IPC/detecção sob uso; não reintroduzir polling sem medir e revisar o comportamento atual.
-11. **Wlogout:** existe fluxo integrado e standalone; qualquer sincronização de tema precisa preservar ambos.
+11. **Wlogout:** `widgets/WLogout.qml` é o único componente; o modo standalone e os arquivos de compatibilidade (`Wlogout.qml`, `WlogoutShell.qml`, `WlogoutOverlay.qml`, `WlogoutButtons.qml`) foram removidos em 2026-11-06. As cores vêm de `Theme.qml`.
 12. **Scripts/cores:** scripts do shell estão dentro do projeto; Matugen, wrappers Qt/KDE e outras ferramentas de sistema continuam dependências externas. Não confundir script do projeto com dependência do sistema.
 
 ## Dependências do sistema
@@ -201,7 +202,7 @@ Dependências são necessárias para as features correspondentes, não necessari
 | `swww` ou `awww` | Aplicar wallpapers | Um deles e seu daemon de sessão são necessários. |
 | Matugen | Geração de paleta | Necessário para atualizar cores pelo wallpaper. |
 | `kde-material-you-colors` e wrapper Matugen correspondente | Sincronização de cores KDE/Qt | Dependência opcional do ambiente integrado; `scripts/apply_colors.sh` verifica wrapper. |
-| `kitty`, `makoctl`, hooks GTK, `pywalfox`, Neovim | Pós-hooks do `scripts/apply_colors.sh` | Opcionais; script tenta executar apenas quando disponíveis. Mako não deve rodar junto com servidor de notificações Quickshell. |
+| `kitty`, hooks GTK, `pywalfox`, `spotifast`, Neovim | Pós-hooks do `scripts/apply_colors.sh` | Opcionais; script tenta executar apenas quando disponíveis. Mako não é mais usado (hook removido). |
 | `hyprlock` | Bloqueio de sessão | Necessário para Lock. |
 | `hyprshutdown` | Wlogout e comandos de sessão | Necessário para o fluxo Wlogout atual. |
 | `systemctl`, `shutdown`, `reboot` | Ações de energia | Necessários para as ações correspondentes; ambiente atual usa systemd. |
@@ -435,10 +436,10 @@ Leitura estática de `Theme.qml`, `Colors.qml`, `shell.qml`, módulos e widgets 
 1. **Validar resoluções e múltiplos monitores.** A barra posiciona grupos esquerdo, central e direito de forma independente; mídia pode ocupar até 350 px. Há risco de colisões em telas estreitas ou bandejas grandes, mas a leitura estática não confirma colisão em resolução específica. Alguns popups têm tamanho fixo e abrem abaixo da barra; Arch Menu tem lista Wi-Fi limitada/rolável, mas a lista Bluetooth e o painel total podem precisar de limites. Validar na tela menor e só então compactar, limitar altura/rolagem ou reposicionar para cima.
 2. **Reduzir polling do brilho.** `services/Brightness.qml` consulta sysfs por processo a cada 200 ms. Considerar 500 ms–1 s e conferir a resposta às teclas Fn; benefício esperado é modesto, com possível pequeno atraso visual.
 3. **Separar `ArchMenu.qml`.** O arquivo é muito grande e combina UI, estado e operações. Extrair por responsabilidade deve melhorar manutenção; não se espera ganho de runtime só pela divisão.
-4. **Revisar idioma.** A maior parte da UI é português, mas Wallhaven e System Usage ainda têm textos em inglês. Uniformizar em português; adicionar localização configurável só se houver intenção de suportar idiomas diferentes.
+4. **Revisar idioma.** Concluído em 2026-11-06: toda a UI está em inglês. Localização configurável só se houver intenção de suportar idiomas diferentes.
 5. **Documentar famílias de ícones.** A configuração usa JetBrainsMono Nerd Font e Material Symbols Rounded. Ambas são dependências visuais atuais; centralizar tamanhos recorrentes no tema e declarar `font.family` onde hoje depende da fonte padrão.
 6. **Centralizar tokens visuais recorrentes.** Raios, bordas, scrim e fundos de legenda aparecem como literais em launcher, seletores, Arch Menu e popups. Adicionar tokens semânticos para superfícies/campos quando esses arquivos forem editados; não transformar todo espaçamento isolado em token.
-7. **Rever carregamento de cores do Wlogout.** A instância do `shell.qml` usa `Theme.qml`, enquanto o modo standalone de `widgets/Wlogout.qml` mantém FileView/JsonAdapter e fallback próprios. Considerar helper compartilhado se o fluxo permitir; manter as duas fontes sincronizadas até lá.
+7. **Rever carregamento de cores do Wlogout.** Resolvido em 2026-11-06: o modo standalone foi removido e o componente usa apenas `Theme.qml`.
 8. **Avaliar cache do Wallhaven apenas se necessário.** O cache de JSON dura enquanto o seletor está aberto e é limpo ao fechar ou iniciar outra busca. Limitar páginas próximas só se sessões longas mostrarem consumo relevante.
 
 ### Melhorias de baixo impacto ou adiáveis
@@ -493,7 +494,7 @@ Inventário baseado nos comandos/imports atuais. “Obrigatória” significa ne
 | `wl-clipboard` (`wl-copy`) | Copiar screenshot | Obrigatório para enviar a captura à área de transferência. |
 | `libnotify` (`notify-send`) | Confirmação após screenshot | Opcional; a captura e cópia continuam funcionando sem ele. |
 | `swww` ou `awww` | Aplicar wallpapers | Um deles é necessário e seu daemon deve iniciar na sessão. O código tenta `swww` e depois `awww`. |
-| Matugen e `~/.config/scripts/updateWall.sh` | Atualização de paleta após wallpaper | Necessários para o fluxo atual. O script é externo ao projeto e precisa ser instalado/documentado numa máquina nova. |
+| Matugen e `scripts/apply_colors.sh` | Atualização de paleta após wallpaper | Necessários para o fluxo atual. O script fica dentro do projeto e concentra todos os hooks. |
 | `hyprlock` | Bloqueio de sessão | Necessário para Lock. |
 | `hyprshutdown` | Wlogout e comandos de sessão | Necessário para fluxo Wlogout atual. |
 | `systemctl`, `shutdown`, `reboot` | Energia e sessão | Necessários para as ações correspondentes; ambiente atual usa systemd. |
@@ -514,7 +515,7 @@ Inventário baseado nos comandos/imports atuais. “Obrigatória” significa ne
 2. Instalar/iniciar NetworkManager, BlueZ, PipeWire + gerenciador de sessão e UPower conforme as features desejadas.
 3. Instalar fontes JetBrainsMono Nerd Font e Material Symbols Rounded.
 4. Escolher `swww` ou `awww`, iniciar seu daemon e instalar Matugen.
-5. Incluir `~/.config/scripts/updateWall.sh` ou migrá-lo para dentro deste projeto; confirmar sua chamada ao Matugen.
+5. O `scripts/apply_colors.sh` já faz parte do projeto; confirmar apenas que o Matugen está instalado e que o `config.toml` tem os templates (sem `post_hook`).
 6. Instalar os opcionais de hardware/sessão que serão usados: `brightnessctl`, `power-profiles-daemon`, `hyprlock`, `hyprshutdown`.
 7. Garantir que só um daemon de notificações esteja ativo.
 8. Criar um manifesto específico do Arch separando obrigatório, opcional e planejado. Este documento é inventário, não instalador.

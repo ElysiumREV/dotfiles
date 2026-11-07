@@ -27,7 +27,7 @@ Item {
     implicitHeight: Config.Theme.moduleHeight
     activeFocusOnTab: true
     Accessible.role: Accessible.Button
-    Accessible.name: "Controles de áudio, " + percentage + (muted ? " por cento, silenciado" : " por cento")
+    Accessible.name: "Audio controls, " + percentage + (muted ? " percent, muted" : " percent")
 
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {

@@ -15,7 +15,7 @@ hl.config({
 	},
 })
 
--- Teclado físico do notebook (ABNT2)
+-- Laptop built-in keyboard (ABNT2)
 hl.device({
 	name = "at-translated-set-2-keyboard",
 	kb_layout = "br",

@@ -1,22 +1,22 @@
 import QtQuick
 import ".." as Config
 
-// Animação compartilhada de entrada/saída dos popups e overlays.
+// Shared enter/exit animation for popups and overlays.
 //
-// Dois canais de progresso:
-//   progress    -> opacidade e deslocamento, curva sem overshoot
-//   popProgress -> só o scale, com overshoot controlado pela curva spatial rápida
+// Two progress channels:
+//   progress    -> opacity and offset, curve without overshoot
+//   popProgress -> scale only, with overshoot controlled by the fast spatial curve
 //
-// A superfície deve:
-//   1. implementar close() chamando requestClose()
-//   2. esconder a janela em onExitFinished() (porque `visible` pode ser binding
-//      nos overlays ligados ao WindowControl, e escrever nele quebraria o binding)
+// The surface must:
+//   1. implement close() by calling requestClose()
+//   2. hide the window in onExitFinished() (because `visible` may be a binding
+//      in overlays tied to WindowControl, and writing to it would break the binding)
 QtObject {
     id: root
 
     required property var popup
 
-    // Emitido quando a animação de saída termina; a superfície esconde a janela aqui.
+    // Emitted when the exit animation finishes; the surface hides the window here.
     signal exitFinished()
 
     property real progress: 0
@@ -25,11 +25,11 @@ QtObject {
     readonly property bool closing: internalClosing
     property bool internalClosing: false
 
-    // Valores iniciais do card.
+    // Initial card values.
     property real startScale: 0.96
     property real startOffset: -8
 
-    // Overlays de tela cheia pedem mais tempo que popups ancorados na barra.
+    // Fullscreen overlays take longer than popups anchored to the bar.
     property int inDuration: Config.Theme.durPopupIn
     property int outDuration: Config.Theme.durPopupOut
 
@@ -37,7 +37,7 @@ QtObject {
     readonly property real contentScale: startScale + (1 - startScale) * popProgress
     readonly property real contentOffsetY: startOffset * (1 - progress)
 
-    // Animação de entrada. Assumir a janela já visível: quem abre decide como.
+    // Enter animation. Assumes the window is already visible: the opener decides how.
     function playIn() {
         internalClosing = false;
         closeOpacity.stop();
@@ -46,7 +46,7 @@ QtObject {
         enterPop.restart();
     }
 
-    // Animação de saída. Idempotente.
+    // Exit animation. Idempotent.
     function requestClose() {
         if (internalClosing) return;
         internalClosing = true;
@@ -56,7 +56,7 @@ QtObject {
         closePop.restart();
     }
 
-    // Reentrada do ponteiro durante a saída: volta ao aberto.
+    // Pointer re-entry during exit: go back to open.
     function cancelClose() {
         if (!internalClosing) return;
         internalClosing = false;
@@ -66,7 +66,7 @@ QtObject {
         enterPop.restart();
     }
 
-    // Janela escondida por outro caminho: zerar sem animar.
+    // Window hidden by another path: reset without animating.
     function reset() {
         internalClosing = false;
         enterOpacity.stop();

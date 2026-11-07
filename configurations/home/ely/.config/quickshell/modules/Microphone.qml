@@ -17,8 +17,8 @@ Item {
     implicitHeight: Config.Theme.moduleHeight
     activeFocusOnTab: true
     Accessible.role: Accessible.Button
-    Accessible.name: !available ? "Microfone indisponível"
-        : (muted ? "Ativar microfone" : "Silenciar microfone")
+    Accessible.name: !available ? "Microphone unavailable"
+        : (muted ? "Unmute microphone" : "Mute microphone")
 
     Keys.onPressed: event => {
         if (available && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter

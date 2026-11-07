@@ -21,7 +21,7 @@ PanelWindow {
     required property var positionProvider
     property real popupRight: 16
     property real enterProgress: 0
-    property string uptimeText: "Ligado há …"
+    property string uptimeText: "Up …"
     property string activeTab: "notifications"
     readonly property bool compactLayout: (targetScreen?.height ?? 720) < 800
     readonly property bool compactWidth: implicitWidth < 360
@@ -51,7 +51,7 @@ PanelWindow {
     readonly property var activeWifiNetwork: wifiNetworks.find(network => network.connected) ?? null
     readonly property bool wifiEnabled: Networking.wifiEnabled
     readonly property bool wifiHardwareEnabled: Networking.wifiHardwareEnabled
-    readonly property string wifiName: activeWifiNetwork?.name ?? "Desconectado"
+    readonly property string wifiName: activeWifiNetwork?.name ?? "Disconnected"
     property var pendingWifiNetwork: null
     property string wifiErrorText: ""
     readonly property var bluetoothAdapter: Bluetooth.defaultAdapter
@@ -95,7 +95,7 @@ PanelWindow {
 
     function openMenu() {
         popupRight = positionProvider(implicitWidth).right ?? 16;
-        // O painel abre sempre na aba principal, como o quick settings do end-4.
+        // The panel always opens on the main tab, like end-4's quick settings.
         activeTab = "notifications";
         wifiExpanded = false;
         bluetoothExpanded = false;
@@ -120,14 +120,14 @@ PanelWindow {
         const hours = Math.floor((seconds % 86400) / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
         if (days > 0)
-            return "Ligado há " + days + "d " + hours + "h";
+            return "Up " + days + "d " + hours + "h";
         if (hours > 0)
-            return "Ligado há " + hours + "h " + minutes + " min";
-        return minutes > 0 ? "Ligado há " + minutes + " min" : "Ligado há menos de 1 min";
+            return "Up " + hours + "h " + minutes + " min";
+        return minutes > 0 ? "Up " + minutes + " min" : "Up less than 1 min";
     }
 
     function audioNodeName(node) {
-        return node?.nickname || node?.description || node?.name || "Dispositivo de áudio";
+        return node?.nickname || node?.description || node?.name || "Audio device";
     }
 
     function audioDeviceIndex(devices, preferredDevice, currentDevice) {
@@ -142,7 +142,7 @@ PanelWindow {
     function audioAppName(node) {
         const properties = node?.properties ?? {};
         const application = properties["application.name"]
-            || node?.description || node?.name || "Aplicativo";
+            || node?.description || node?.name || "Application";
         const media = properties["media.name"];
         return media && media !== application ? application + " · " + media : application;
     }
@@ -269,7 +269,7 @@ PanelWindow {
     function toggleWifi() {
         wifiErrorText = "";
         if (!wifiHardwareEnabled) {
-            wifiErrorText = "O adaptador Wi-Fi está bloqueado pelo sistema.";
+            wifiErrorText = "The Wi-Fi adapter is blocked by the system.";
             return;
         }
         if (Networking.wifiEnabled) {
@@ -323,7 +323,7 @@ PanelWindow {
         }
         bluetoothExpanded = false;
         wifiExpanded = true;
-        wifiErrorText = wifiHardwareEnabled ? "" : "O adaptador Wi-Fi está bloqueado pelo sistema.";
+        wifiErrorText = wifiHardwareEnabled ? "" : "The Wi-Fi adapter is blocked by the system.";
         if (wifiEnabled && wifiDevice) {
             wifiDevice.scannerEnabled = true;
             wifiScanStopTimer.restart();
@@ -382,7 +382,7 @@ PanelWindow {
             Qt.callLater(() => wifiPasswordField.forceActiveFocus());
             return;
         }
-        wifiErrorText = "Falha ao conectar em " + network.name + ": " + ConnectionFailReason.toString(reason);
+        wifiErrorText = "Failed to connect to " + network.name + ": " + ConnectionFailReason.toString(reason);
     }
 
     function connectSecuredWifi() {
@@ -395,7 +395,7 @@ PanelWindow {
         if (pskSecurity && pendingWifiNetwork.connectWithPsk)
             pendingWifiNetwork.connectWithPsk(wifiPassword);
         else
-            wifiErrorText = "Esta rede exige credenciais avançadas que ainda não são suportadas pelo menu.";
+            wifiErrorText = "This network requires advanced credentials that the menu does not support yet.";
         showWifiPassword = false;
         wifiPassword = "";
         pendingWifiSsid = "";
@@ -460,10 +460,10 @@ PanelWindow {
         bluetoothBusyAction = "";
         if (code !== 0) {
             bluetoothActionMessage = action === "pair"
-                ? "Não foi possível parear. Confira se o dispositivo está em modo de pareamento."
-                : action === "connect" ? "Não foi possível conectar ao dispositivo."
-                : action === "disconnect" ? "Não foi possível desconectar o dispositivo."
-                : "Não foi possível remover o dispositivo pareado.";
+                ? "Could not pair. Check that the device is in pairing mode."
+                : action === "connect" ? "Could not connect to the device."
+                : action === "disconnect" ? "Could not disconnect the device."
+                : "Could not remove the paired device.";
             if (!visible && Services.BluetoothPairingAgent.promptType === "")
                 Services.BluetoothPairingAgent.release();
             return;
@@ -598,7 +598,7 @@ PanelWindow {
             } else {
                 root.bluetoothBusyAddress = "";
                 root.bluetoothBusyAction = "";
-                root.bluetoothActionMessage = Services.BluetoothPairingAgent.status || "Agente de pareamento indisponível.";
+                root.bluetoothActionMessage = Services.BluetoothPairingAgent.status || "Pairing agent unavailable.";
             }
         }
     }
@@ -647,7 +647,7 @@ PanelWindow {
                         root.bluetoothAdapter.enabled = true;
                 });
             } else {
-                root.bluetoothActionMessage = "O sistema não permitiu desbloquear o Bluetooth (rfkill).";
+                root.bluetoothActionMessage = "The system did not allow unblocking Bluetooth (rfkill).";
             }
         }
     }
@@ -747,7 +747,7 @@ PanelWindow {
             root.bluetoothBusyAddress = "";
             root.bluetoothBusyAction = "";
             if (code !== 0)
-                root.bluetoothActionMessage = "Pareado, mas não foi possível marcar como confiável.";
+                root.bluetoothActionMessage = "Paired, but could not mark the device as trusted.";
             root.refreshBluetoothDevices();
             if (!root.visible && Services.BluetoothPairingAgent.promptType === "")
                 Services.BluetoothPairingAgent.release();
@@ -816,7 +816,7 @@ PanelWindow {
                 iconName: "close"
                 implicitWidth: 34
                 implicitHeight: 34
-                Accessible.name: "Fechar painel"
+                Accessible.name: "Close panel"
                 onClicked: Services.Notifications.closeCenter()
             }
 
@@ -830,8 +830,8 @@ PanelWindow {
                 idleIconColor: Config.Theme.colFg
                 implicitWidth: 38
                 implicitHeight: 36
-                Accessible.name: "Abrir opções de sessão"
-                ToolTip.text: "Abrir wlogout"
+                Accessible.name: "Open session options"
+                ToolTip.text: "Open wlogout"
                 ToolTip.visible: hovered
                 onClicked: {
                     Services.Notifications.closeCenter();
@@ -898,7 +898,7 @@ PanelWindow {
                         Text {
                             Layout.fillWidth: true
                             text: root.wifiEnabled ? root.wifiName
-                                : (root.wifiHardwareEnabled ? "Desativado" : "Bloqueado")
+                                : (root.wifiHardwareEnabled ? "Disabled" : "Blocked")
                             color: Config.Theme.colTextSec
                             font.family: Config.Theme.fontFamily
                             font.pixelSize: 9
@@ -912,7 +912,7 @@ PanelWindow {
                         selected: root.wifiEnabled
                         implicitWidth: 27
                         implicitHeight: 34
-                        Accessible.name: root.wifiEnabled ? "Desativar Wi-Fi" : "Ativar Wi-Fi"
+                        Accessible.name: root.wifiEnabled ? "Turn off Wi-Fi" : "Turn on Wi-Fi"
                         onClicked: root.toggleWifi()
                     }
                     Widgets.IconButton {
@@ -920,7 +920,7 @@ PanelWindow {
                         implicitHeight: 34
                         id: wifiDetailsButton
                         iconName: root.wifiExpanded ? "expand_less" : "chevron_right"
-                        Accessible.name: root.wifiExpanded ? "Fechar redes Wi-Fi" : "Ver redes Wi-Fi"
+                        Accessible.name: root.wifiExpanded ? "Hide Wi-Fi networks" : "Show Wi-Fi networks"
                         onClicked: root.toggleWifiDetails()
                     }
                 }
@@ -968,8 +968,8 @@ PanelWindow {
                         Text {
                             Layout.fillWidth: true
                             text: root.bluetoothEnabled
-                                ? (root.bluetoothConnected.length > 0 ? "Conectado" : "Ativo")
-                                : "Desativado"
+                                ? (root.bluetoothConnected.length > 0 ? "Connected" : "On")
+                                : "Disabled"
                             color: Config.Theme.colTextSec
                             font.family: Config.Theme.fontFamily
                             font.pixelSize: 9
@@ -982,7 +982,7 @@ PanelWindow {
                         selected: root.bluetoothEnabled
                         implicitWidth: 27
                         implicitHeight: 34
-                        Accessible.name: root.bluetoothEnabled ? "Desativar Bluetooth" : "Ativar Bluetooth"
+                        Accessible.name: root.bluetoothEnabled ? "Turn off Bluetooth" : "Turn on Bluetooth"
                         onClicked: root.toggleBluetooth()
                     }
                     Widgets.IconButton {
@@ -990,7 +990,7 @@ PanelWindow {
                         implicitWidth: 24
                         implicitHeight: 34
                         iconName: root.bluetoothExpanded ? "expand_less" : "chevron_right"
-                        Accessible.name: root.bluetoothExpanded ? "Fechar dispositivos Bluetooth" : "Ver dispositivos Bluetooth"
+                        Accessible.name: root.bluetoothExpanded ? "Hide Bluetooth devices" : "Show Bluetooth devices"
                         onClicked: root.toggleBluetoothDetails()
                     }
                 }
@@ -1019,7 +1019,7 @@ PanelWindow {
 
                     Text {
                         Layout.fillWidth: true
-                        text: "Brilho"
+                        text: "Brightness"
                         color: Config.Theme.colFg
 
                         font {
@@ -1049,7 +1049,7 @@ PanelWindow {
                     implicitHeight: 16
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Slider
-                    Accessible.name: "Brilho da tela"
+                    Accessible.name: "Screen brightness"
 
                     Keys.onPressed: event => {
                         const current = Services.Brightness.brightness;
@@ -1122,7 +1122,7 @@ PanelWindow {
                 Layout.preferredHeight: root.compactLayout ? 50 : 58
                 visible: Services.Volume.captureApplications.length > 0
                 Accessible.role: Accessible.Button
-                Accessible.name: Services.Volume.microphoneMuted ? "Ativar microfone" : "Silenciar microfone"
+                Accessible.name: Services.Volume.microphoneMuted ? "Unmute microphone" : "Mute microphone"
                 activeFocusOnTab: visible
 
                 Rectangle {
@@ -1242,7 +1242,7 @@ PanelWindow {
                     idleIconColor: Config.Theme.colFg
                     implicitWidth: 30
                     implicitHeight: 34
-                    Accessible.name: "Faixa anterior"
+                    Accessible.name: "Previous track"
                     enabled: Services.Media.canPrevious
                     onClicked: Services.Media.previous()
                 }
@@ -1256,7 +1256,7 @@ PanelWindow {
                     idleIconColor: Config.Theme.colFg
                     implicitWidth: 34
                     implicitHeight: 34
-                    Accessible.name: Services.Media.playing ? "Pausar" : "Continuar reprodução"
+                    Accessible.name: Services.Media.playing ? "Pause" : "Resume playback"
                     enabled: Services.Media.canToggle
                     onClicked: Services.Media.togglePlayPause()
                 }
@@ -1268,7 +1268,7 @@ PanelWindow {
                     idleIconColor: Config.Theme.colFg
                     implicitWidth: 30
                     implicitHeight: 34
-                    Accessible.name: "Próxima faixa"
+                    Accessible.name: "Next track"
                     enabled: Services.Media.canNext
                     onClicked: Services.Media.next()
                 }
@@ -1333,7 +1333,7 @@ PanelWindow {
 
                         Text {
                             Layout.fillWidth: true
-                            text: root.wifiEnabled ? root.wifiName : "Desativado"
+                            text: root.wifiEnabled ? root.wifiName : "Disabled"
                             color: Config.Theme.colMuted
                             elide: Text.ElideRight
 
@@ -1439,7 +1439,7 @@ PanelWindow {
                         Text {
                             anchors.centerIn: parent
                             visible: root.wifiNetworks.length === 0
-                            text: root.wifiDevice?.scannerEnabled ? "Buscando redes…" : "Nenhuma rede encontrada"
+                            text: root.wifiDevice?.scannerEnabled ? "Scanning for networks…" : "No networks found"
                             color: Config.Theme.colMuted
                             font.family: Config.Theme.fontFamily
                             font.pixelSize: Config.Theme.fontSizeSmall
@@ -1463,7 +1463,7 @@ PanelWindow {
                                     activeFocusOnTab: !modelData.stateChanging
                                     Accessible.role: Accessible.Button
                                     Accessible.name: modelData.name
-                                        + (modelData.connected ? ", conectado" : ", rede Wi-Fi")
+                                        + (modelData.connected ? ", connected" : ", Wi-Fi network")
                                     color: activeFocus
                                         ? Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
                                                   Config.Theme.colHighlight.b, Config.Theme.stateSelectedOpacity)
@@ -1536,7 +1536,7 @@ PanelWindow {
                                         }
 
                                         Text {
-                                            text: modelData.known ? "Salva" : ""
+                                            text: modelData.known ? "Saved" : ""
                                             color: Config.Theme.colMuted
                                             font.family: Config.Theme.fontFamily
                                             font.pixelSize: 9
@@ -1575,7 +1575,7 @@ PanelWindow {
                         radius: 7
                         activeFocusOnTab: visible
                         Accessible.role: Accessible.Button
-                        Accessible.name: root.wifiShowAll ? "Mostrar menos redes Wi-Fi" : "Mostrar todas as redes Wi-Fi"
+                        Accessible.name: root.wifiShowAll ? "Show fewer Wi-Fi networks" : "Show all Wi-Fi networks"
                         color: activeFocus
                             ? Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
                                       Config.Theme.colHighlight.b, Config.Theme.stateSelectedOpacity)
@@ -1612,7 +1612,7 @@ PanelWindow {
                             }
 
                             Text {
-                                text: root.wifiShowAll ? "Mostrar menos" : "Mostrar todas as redes"
+                                text: root.wifiShowAll ? "Show less" : "Show all networks"
                                 color: Config.Theme.colFg
 
                                 font {
@@ -1646,7 +1646,7 @@ PanelWindow {
                         radius: 7
                         activeFocusOnTab: true
                         Accessible.role: Accessible.Button
-                        Accessible.name: "Atualizar redes Wi-Fi"
+                        Accessible.name: "Refresh Wi-Fi networks"
                         color: activeFocus
                             ? Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
                                       Config.Theme.colHighlight.b, Config.Theme.stateSelectedOpacity)
@@ -1681,7 +1681,7 @@ PanelWindow {
                             }
 
                             Text {
-                                text: "Atualizar redes"
+                                text: "Refresh networks"
                                 color: Config.Theme.colFg
 
                                 font {
@@ -1737,7 +1737,7 @@ PanelWindow {
                             }
 
                             Text {
-                                text: "Senha de " + root.pendingWifiSsid
+                                text: "Password for " + root.pendingWifiSsid
                                 color: Config.Theme.colFg
 
                                 font {
@@ -1756,7 +1756,7 @@ PanelWindow {
                                     id: wifiPasswordField
 
                                     Layout.fillWidth: true
-                                    placeholderText: "Senha"
+                                    placeholderText: "Password"
                                     echoMode: TextInput.Password
                                     horizontalTextPadding: 6
                                     text: root.wifiPassword
@@ -1782,7 +1782,7 @@ PanelWindow {
                                         ? Config.Theme.colHighlight : Config.Theme.colTextSec
                                     activeFocusOnTab: true
                                     Accessible.role: Accessible.Button
-                                    Accessible.name: "Conectar à rede Wi-Fi " + root.pendingWifiSsid
+                                    Accessible.name: "Connect to Wi-Fi network " + root.pendingWifiSsid
 
                                     Keys.onPressed: event => {
                                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
@@ -1810,12 +1810,12 @@ PanelWindow {
                             }
 
                             Text {
-                                text: "Cancelar"
+                                text: "Cancel"
                                 color: cancelWifiMouse.containsMouse || activeFocus
                                     ? Config.Theme.colHighlight : Config.Theme.colMuted
                                 activeFocusOnTab: true
                                 Accessible.role: Accessible.Button
-                                Accessible.name: "Cancelar conexão Wi-Fi"
+                                Accessible.name: "Cancel Wi-Fi connection"
 
                                 Keys.onPressed: event => {
                                     if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
@@ -1918,12 +1918,12 @@ PanelWindow {
                             Layout.fillWidth: true
                             text: {
                                 if (!root.bluetoothEnabled)
-                                    return root.bluetoothBlocked ? "Bloqueado pelo sistema" : "Desativado";
+                                    return root.bluetoothBlocked ? "Blocked by the system" : "Disabled";
 
                                 if (root.bluetoothConnected.length > 0)
                                     return root.bluetoothConnected.length + " conectado(s)";
 
-                                return "Nenhum dispositivo conectado";
+                                return "No connected devices";
                             }
                             color: Config.Theme.colMuted
                             elide: Text.ElideRight
@@ -2029,7 +2029,7 @@ PanelWindow {
                                 id: bluetoothPinInput
                                 Layout.fillWidth: true
                                 visible: Services.BluetoothPairingAgent.promptType === "pin"
-                                placeholderText: "PIN ou código"
+                                placeholderText: "PIN or code"
                                 horizontalTextPadding: 6
                                 inputMethodHints: Qt.ImhDigitsOnly
                                 font.pixelSize: 11
@@ -2053,14 +2053,14 @@ PanelWindow {
                                 Item { Layout.fillWidth: true }
 
                                 Text {
-                                    text: Services.BluetoothPairingAgent.promptType === "display" ? "OK" : "Recusar"
+                                    text: Services.BluetoothPairingAgent.promptType === "display" ? "OK" : "Decline"
                                     color: activeFocus ? Config.Theme.colFg : Config.Theme.colMuted
                                     font.underline: activeFocus
                                     font.family: Config.Theme.fontFamily
                                     font.pixelSize: 10
                                     activeFocusOnTab: true
                                     Accessible.role: Accessible.Button
-                                    Accessible.name: text === "OK" ? "Aceitar confirmação Bluetooth" : "Recusar pareamento Bluetooth"
+                                    Accessible.name: text === "OK" ? "Accept Bluetooth confirmation" : "Decline Bluetooth pairing"
                                     Keys.onPressed: event => {
                                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
                                                 || event.key === Qt.Key_Space) {
@@ -2078,7 +2078,7 @@ PanelWindow {
 
                                 Text {
                                     visible: Services.BluetoothPairingAgent.promptType === "confirm"
-                                    text: "Confirmar"
+                                    text: "Confirm"
                                     color: Config.Theme.colHighlight
                                     font.family: Config.Theme.fontFamily
                                     font.pixelSize: 10
@@ -2086,7 +2086,7 @@ PanelWindow {
                                     font.underline: activeFocus
                                     activeFocusOnTab: visible
                                     Accessible.role: Accessible.Button
-                                    Accessible.name: "Confirmar pareamento Bluetooth"
+                                    Accessible.name: "Confirm Bluetooth pairing"
                                     Keys.onPressed: event => {
                                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
                                                 || event.key === Qt.Key_Space) {
@@ -2104,7 +2104,7 @@ PanelWindow {
 
                                 Text {
                                     visible: Services.BluetoothPairingAgent.promptType === "pin"
-                                    text: "Enviar"
+                                    text: "Send"
                                     color: Config.Theme.colHighlight
                                     font.family: Config.Theme.fontFamily
                                     font.pixelSize: 10
@@ -2112,7 +2112,7 @@ PanelWindow {
                                     font.underline: activeFocus
                                     activeFocusOnTab: visible
                                     Accessible.role: Accessible.Button
-                                    Accessible.name: "Enviar código Bluetooth"
+                                    Accessible.name: "Send Bluetooth code"
                                     Keys.onPressed: event => {
                                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
                                                 || event.key === Qt.Key_Space) {
@@ -2138,7 +2138,7 @@ PanelWindow {
                     Text {
                         visible: root.bluetoothDevices.length === 0
                         Layout.fillWidth: true
-                        text: root.scanningBluetooth ? "Procurando dispositivos…" : "Nenhum dispositivo conhecido"
+                        text: root.scanningBluetooth ? "Searching for devices…" : "No known devices"
                         color: Config.Theme.colMuted
                         horizontalAlignment: Text.AlignHCenter
                         topPadding: 8
@@ -2182,7 +2182,7 @@ PanelWindow {
                             Accessible.role: Accessible.Button
                             Accessible.name: modelData.name
                                 + (root.isBluetoothConnected(modelData.address)
-                                   ? ", conectado" : ", dispositivo Bluetooth")
+                                   ? ", connected" : ", Bluetooth device")
                             color: activeFocus
                                 ? Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
                                           Config.Theme.colHighlight.b, Config.Theme.stateSelectedOpacity)
@@ -2246,11 +2246,11 @@ PanelWindow {
 
                                     Text {
                                         text: root.bluetoothBusyAddress === modelData.address
-                                            ? (root.bluetoothBusyAction === "pair" ? "Pareando…"
-                                               : root.bluetoothBusyAction === "trust" ? "Salvando pareamento…"
-                                               : root.bluetoothBusyAction === "connect" ? "Conectando…"
-                                               : root.bluetoothBusyAction === "disconnect" ? "Desconectando…" : "Removendo…")
-                                            : (root.isBluetoothConnected(modelData.address) ? "Conectado" : (modelData.paired ? "Pareado" : "Disponível para parear"))
+                                            ? (root.bluetoothBusyAction === "pair" ? "Pairing…"
+                                               : root.bluetoothBusyAction === "trust" ? "Saving pairing…"
+                                               : root.bluetoothBusyAction === "connect" ? "Connecting…"
+                                               : root.bluetoothBusyAction === "disconnect" ? "Disconnecting…" : "Removing…")
+                                            : (root.isBluetoothConnected(modelData.address) ? "Connected" : (modelData.paired ? "Paired" : "Available to pair"))
                                         color: root.isBluetoothConnected(modelData.address) || root.bluetoothBusyAddress === modelData.address
                                             ? Config.Theme.colHighlight : Config.Theme.colMuted
 
@@ -2263,7 +2263,7 @@ PanelWindow {
 
                                     Text {
                                         visible: root.bluetoothBatteryLabel(modelData.address) !== ""
-                                        text: "Bateria " + root.bluetoothBatteryLabel(modelData.address)
+                                        text: "Battery " + root.bluetoothBatteryLabel(modelData.address)
                                         color: Config.Theme.colMuted
                                         font.family: Config.Theme.fontFamily
                                         font.pixelSize: 9
@@ -2317,7 +2317,7 @@ PanelWindow {
                                     z: 2
                                     activeFocusOnTab: modelData.paired
                                     Accessible.role: Accessible.Button
-                                    Accessible.name: "Esquecer dispositivo Bluetooth " + modelData.name
+                                    Accessible.name: "Forget Bluetooth device " + modelData.name
                                     Keys.onPressed: event => {
                                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
                                                 || event.key === Qt.Key_Space) {
@@ -2356,7 +2356,7 @@ PanelWindow {
 
                             Text {
                                 Layout.fillWidth: true
-                                text: "Esquecer “" + root.bluetoothName(root.pendingForgetAddress) + "”?"
+                                text: "Forget “" + root.bluetoothName(root.pendingForgetAddress) + "”?"
                                 color: Config.Theme.colFg
                                 wrapMode: Text.Wrap
                                 font.family: Config.Theme.fontFamily
@@ -2370,13 +2370,13 @@ PanelWindow {
                                 Item { Layout.fillWidth: true }
 
                                 Text {
-                                    text: "Cancelar"
+                                    text: "Cancel"
                                     color: Config.Theme.colMuted
                                     font.family: Config.Theme.fontFamily
                                     font.pixelSize: 10
                                     activeFocusOnTab: true
                                     Accessible.role: Accessible.Button
-                                    Accessible.name: "Cancelar remoção do dispositivo Bluetooth"
+                                    Accessible.name: "Cancel removing Bluetooth device"
                                     Keys.onPressed: event => {
                                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
                                                 || event.key === Qt.Key_Space) {
@@ -2393,14 +2393,14 @@ PanelWindow {
                                 }
 
                                 Text {
-                                    text: "Esquecer"
+                                    text: "Forget"
                                     color: Config.Theme.colRed
                                     font.family: Config.Theme.fontFamily
                                     font.pixelSize: 10
                                     font.bold: true
                                     activeFocusOnTab: true
                                     Accessible.role: Accessible.Button
-                                    Accessible.name: "Confirmar remoção do dispositivo Bluetooth"
+                                    Accessible.name: "Confirm removing Bluetooth device"
                                     Keys.onPressed: event => {
                                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
                                                 || event.key === Qt.Key_Space) {
@@ -2438,7 +2438,7 @@ PanelWindow {
                         radius: 7
                         activeFocusOnTab: true
                         Accessible.role: Accessible.Button
-                        Accessible.name: root.scanningBluetooth ? "Parar busca Bluetooth" : "Procurar dispositivos Bluetooth"
+                        Accessible.name: root.scanningBluetooth ? "Stop Bluetooth scan" : "Scan for Bluetooth devices"
                         color: activeFocus
                             ? Qt.rgba(Config.Theme.colHighlight.r, Config.Theme.colHighlight.g,
                                       Config.Theme.colHighlight.b, Config.Theme.stateSelectedOpacity)
@@ -2476,7 +2476,7 @@ PanelWindow {
                             }
 
                             Text {
-                                text: root.scanningBluetooth ? "Procurando dispositivos..." : "Procurar dispositivos"
+                                text: root.scanningBluetooth ? "Scanning..." : "Scan for devices"
                                 color: Config.Theme.colFg
 
                                 font {
@@ -2518,18 +2518,18 @@ PanelWindow {
 
             Widgets.SegmentedTabButton {
                 Layout.fillWidth: true
-                Accessible.name: "Notificações"
-                text: root.compactWidth ? "" : "Avisos"
+                Accessible.name: "Notifications"
+                text: root.compactWidth ? "" : "Alerts"
                 iconName: "notifications"
                 selected: root.activeTab === "notifications"
-                ToolTip.text: "Avisos"
+                ToolTip.text: "Alerts"
                 ToolTip.visible: root.compactWidth && hovered
                 onClicked: root.activeTab = "notifications"
             }
 
             Widgets.SegmentedTabButton {
                 Layout.fillWidth: true
-                Accessible.name: "Mixer de volume"
+                Accessible.name: "Volume mixer"
                 text: root.compactWidth ? "" : "Mixer"
                 iconName: "volume_up"
                 selected: root.activeTab === "volume"
@@ -2540,28 +2540,28 @@ PanelWindow {
 
             Widgets.SegmentedTabButton {
                 Layout.fillWidth: true
-                Accessible.name: "Informações e perfil de bateria"
-                text: root.compactWidth ? "" : "Bateria"
+                Accessible.name: "Battery info and power profile"
+                text: root.compactWidth ? "" : "Battery"
                 iconName: "battery_full"
                 selected: root.activeTab === "battery"
-                ToolTip.text: "Bateria"
+                ToolTip.text: "Battery"
                 ToolTip.visible: root.compactWidth && hovered
                 onClicked: root.activeTab = "battery"
             }
 
             Widgets.SegmentedTabButton {
                 Layout.fillWidth: true
-                Accessible.name: "Atalhos rápidos"
-                text: root.compactWidth ? "" : "Atalhos"
+                Accessible.name: "Quick shortcuts"
+                text: root.compactWidth ? "" : "Shortcuts"
                 iconName: "bolt"
                 selected: root.activeTab === "shortcuts"
-                ToolTip.text: "Atalhos"
+                ToolTip.text: "Shortcuts"
                 ToolTip.visible: root.compactWidth && hovered
                 onClicked: root.activeTab = "shortcuts"
             }
 
             Widgets.IconButton {
-                Accessible.name: "Configurações do Quickshell"
+                Accessible.name: "Quickshell settings"
                 iconName: "settings"
                 selected: root.activeTab === "settings"
                 ToolTip.text: Accessible.name
@@ -2571,7 +2571,7 @@ PanelWindow {
 
             Widgets.IconButton {
                 Accessible.name: Services.Notifications.doNotDisturb
-                    ? "Desativar Não Perturbe" : "Ativar Não Perturbe"
+                    ? "Turn off Do Not Disturb" : "Turn on Do Not Disturb"
                 iconName: Services.Notifications.doNotDisturb ? "notifications_off" : "notifications_active"
                 selected: Services.Notifications.doNotDisturb
                 selectedIconColor: Config.Theme.colYellow
@@ -2635,7 +2635,7 @@ PanelWindow {
                     buttonRadius: 7
                     implicitWidth: 28
                     implicitHeight: 28
-                    Accessible.name: Services.Volume.effectivelyMuted ? "Ativar áudio" : "Silenciar áudio"
+                    Accessible.name: Services.Volume.effectivelyMuted ? "Unmute audio" : "Mute audio"
                     ToolTip.text: Accessible.name
                     ToolTip.visible: hovered
                     onClicked: Services.Volume.toggleMute()
@@ -2648,8 +2648,8 @@ PanelWindow {
                     buttonRadius: 7
                     implicitWidth: 28
                     implicitHeight: 28
-                    Accessible.name: "Abrir opções avançadas de áudio"
-                    ToolTip.text: "Opções avançadas"
+                    Accessible.name: "Open advanced audio options"
+                    ToolTip.text: "Advanced options"
                     ToolTip.visible: hovered
                     onClicked: Quickshell.execDetached(["pavucontrol"])
                 }
@@ -2661,7 +2661,7 @@ PanelWindow {
                 from: 0
                 to: 1
                 value: Services.Volume.volume
-                Accessible.name: "Volume de saída"
+                Accessible.name: "Output volume"
                 onMoved: Services.Volume.setVolume(value)
 
                 Connections {
@@ -2709,7 +2709,7 @@ PanelWindow {
                                     ? Config.Theme.colMuted : Config.Theme.colHighlight
                                 implicitWidth: 30
                                 implicitHeight: 30
-                                Accessible.name: "Silenciar " + root.audioAppName(appVolumeRow.modelData)
+                                Accessible.name: "Mute " + root.audioAppName(appVolumeRow.modelData)
                                 onClicked: root.toggleAppMute(appVolumeRow.modelData)
                             }
 
@@ -2732,7 +2732,7 @@ PanelWindow {
                                     to: 1
                                     stepSize: 0.01
                                     value: appVolumeRow.modelData.audio?.volume ?? 0
-                                    Accessible.name: "Volume de " + root.audioAppName(appVolumeRow.modelData)
+                                    Accessible.name: "Volume for " + root.audioAppName(appVolumeRow.modelData)
                                     onMoved: root.setAppVolume(appVolumeRow.modelData, value)
                                 }
                             }
@@ -2763,7 +2763,7 @@ PanelWindow {
                 }
 
                 Widgets.LabelButton {
-                    text: Services.Volume.microphoneMuted ? "Ativar" : "Silenciar"
+                    text: Services.Volume.microphoneMuted ? "Unmute" : "Mute"
                     labelFontSize: Config.Theme.fontSizeSmall
                     idleTextColor: Config.Theme.colFg
                     hoverTextColor: Config.Theme.colBg
@@ -2774,7 +2774,7 @@ PanelWindow {
                     hoverBackgroundColor: Config.Theme.colHighlight
                     cornerRadius: 7
                     Accessible.name: Services.Volume.microphoneMuted
-                        ? "Ativar microfone" : "Silenciar microfone"
+                        ? "Unmute microphone" : "Mute microphone"
                     onClicked: Services.Volume.toggleMicrophoneMute()
                 }
             }
@@ -2827,7 +2827,7 @@ PanelWindow {
                         spacing: 1
 
                         Text {
-                            text: "SAÍDA DE ÁUDIO"
+                            text: "AUDIO OUTPUT"
                             color: Config.Theme.colTextSec
                             font.family: Config.Theme.fontFamily
                             font.pixelSize: 9
@@ -2852,7 +2852,7 @@ PanelWindow {
                             contentItem: Text {
                                 leftPadding: 0
                                 rightPadding: 24
-                                text: outputDeviceCombo.displayText || "Sem dispositivo de saída"
+                                text: outputDeviceCombo.displayText || "No output device"
                                 color: Config.Theme.colFg
                                 font.family: Config.Theme.fontFamily
                                 font.pixelSize: Config.Theme.fontSizeSmall
@@ -2944,7 +2944,7 @@ PanelWindow {
                         spacing: 1
 
                         Text {
-                            text: "ENTRADA DE ÁUDIO"
+                            text: "AUDIO INPUT"
                             color: Config.Theme.colTextSec
                             font.family: Config.Theme.fontFamily
                             font.pixelSize: 9
@@ -2969,7 +2969,7 @@ PanelWindow {
                             contentItem: Text {
                                 leftPadding: 0
                                 rightPadding: 24
-                                text: inputDeviceCombo.displayText || "Sem dispositivo de entrada"
+                                text: inputDeviceCombo.displayText || "No input device"
                                 color: Config.Theme.colFg
                                 font.family: Config.Theme.fontFamily
                                 font.pixelSize: Config.Theme.fontSizeSmall
@@ -3063,7 +3063,7 @@ PanelWindow {
 
             Text {
                 Layout.fillWidth: true
-                text: "Atalhos rápidos"
+                text: "Quick shortcuts"
                 color: Config.Theme.colFg
                 font.family: Config.Theme.fontFamily
                 font.pixelSize: Config.Theme.fontSize
@@ -3072,7 +3072,7 @@ PanelWindow {
 
             Text {
                 Layout.fillWidth: true
-                text: "Ações do sistema e do Quickshell. Os atalhos de teclado são definidos no Hyprland."
+                text: "System and Quickshell actions. Keyboard shortcuts are defined in Hyprland."
                 color: Config.Theme.colTextSec
                 font.family: Config.Theme.fontFamily
                 font.pixelSize: Config.Theme.fontSizeSmall
@@ -3087,7 +3087,7 @@ PanelWindow {
 
                 Widgets.ActionButton {
                     Layout.fillWidth: true
-                    label: "Bloquear tela"
+                    label: "Lock screen"
                     iconName: "lock"
                     Accessible.name: label
                     onClicked: {
@@ -3098,9 +3098,9 @@ PanelWindow {
 
                 Widgets.ActionButton {
                     Layout.fillWidth: true
-                    label: "Sessão"
+                    label: "Session"
                     iconName: "power_settings_new"
-                    Accessible.name: "Abrir ações de sessão"
+                    Accessible.name: "Open session actions"
                     onClicked: {
                         Services.Notifications.closeCenter();
                         Services.WindowControl.toggleLogout();
@@ -3111,7 +3111,7 @@ PanelWindow {
                     Layout.fillWidth: true
                     label: "Launcher"
                     iconName: "apps"
-                    Accessible.name: "Abrir launcher"
+                    Accessible.name: "Open launcher"
                     onClicked: {
                         Services.Notifications.closeCenter();
                         Services.WindowControl.toggleLauncher();
@@ -3122,7 +3122,7 @@ PanelWindow {
                     Layout.fillWidth: true
                     label: "Clipboard"
                     iconName: "content_paste"
-                    Accessible.name: "Abrir histórico da área de transferência"
+                    Accessible.name: "Open clipboard history"
                     onClicked: {
                         Services.Notifications.closeCenter();
                         Services.WindowControl.toggleClipboardHistory(Hyprland.focusedMonitor);
@@ -3132,9 +3132,9 @@ PanelWindow {
                 Widgets.ActionButton {
                     Layout.fillWidth: true
                     Layout.columnSpan: 2
-                    label: "Configurar áudio"
+                    label: "Configure audio"
                     iconName: "tune"
-                    Accessible.name: "Abrir pavucontrol"
+                    Accessible.name: "Open pavucontrol"
                     onClicked: {
                         Services.Notifications.closeCenter();
                         Quickshell.execDetached(["pavucontrol"]);
@@ -3152,7 +3152,7 @@ PanelWindow {
 
             Text {
                 Layout.fillWidth: true
-                text: "Configurações"
+                text: "Settings"
                 color: Config.Theme.colFg
                 font.family: Config.Theme.fontFamily
                 font.pixelSize: Config.Theme.fontSize
@@ -3161,7 +3161,7 @@ PanelWindow {
 
             Text {
                 Layout.fillWidth: true
-                text: "Personalize a barra, o launcher e os avisos. As alterações são salvas automaticamente."
+                text: "Customize the bar, launcher and notifications. Changes are saved automatically."
                 color: Config.Theme.colTextSec
                 wrapMode: Text.Wrap
                 font.family: Config.Theme.fontFamily
@@ -3170,56 +3170,56 @@ PanelWindow {
 
             Widgets.PreferenceSwitch {
                 Layout.fillWidth: true
-                text: "Aplicativo em foco"
-                accessibleLabel: "Mostrar o aplicativo em foco na barra"
+                text: "Focused application"
+                accessibleLabel: "Show the focused application in the bar"
                 checked: Config.Preferences.bar.showFocusedApp
                 onToggled: Config.Preferences.bar.showFocusedApp = checked
             }
 
             Widgets.PreferenceSwitch {
                 Layout.fillWidth: true
-                text: "Data na barra"
-                accessibleLabel: "Mostrar a data na barra"
+                text: "Date in bar"
+                accessibleLabel: "Show the date in the bar"
                 checked: Config.Preferences.bar.showDate
                 onToggled: Config.Preferences.bar.showDate = checked
             }
 
             Widgets.PreferenceSwitch {
                 Layout.fillWidth: true
-                text: "Bandeja do sistema"
-                accessibleLabel: "Mostrar os ícones da bandeja do sistema na barra"
+                text: "System tray"
+                accessibleLabel: "Show system tray icons in the bar"
                 checked: Config.Preferences.bar.showTray
                 onToggled: Config.Preferences.bar.showTray = checked
             }
 
             Widgets.PreferenceSwitch {
                 Layout.fillWidth: true
-                text: "Controles de dispositivos"
-                accessibleLabel: "Mostrar volume, bateria, Wi-Fi, Bluetooth e Não Perturbe na barra"
+                text: "Device controls"
+                accessibleLabel: "Show volume, battery, Wi-Fi, Bluetooth and Do Not Disturb in the bar"
                 checked: Config.Preferences.bar.showDeviceIndicators
                 onToggled: Config.Preferences.bar.showDeviceIndicators = checked
             }
 
             Widgets.PreferenceSwitch {
                 Layout.fillWidth: true
-                text: "Status do sistema"
-                accessibleLabel: "Mostrar os indicadores de CPU e memória na barra"
+                text: "System status"
+                accessibleLabel: "Show CPU and memory indicators in the bar"
                 checked: Config.Preferences.bar.showSystemStatus
                 onToggled: Config.Preferences.bar.showSystemStatus = checked
             }
 
             Widgets.PreferenceSwitch {
                 Layout.fillWidth: true
-                text: "Mídia"
-                accessibleLabel: "Mostrar o player de mídia na barra"
+                text: "Media"
+                accessibleLabel: "Show the media player in the bar"
                 checked: Config.Preferences.bar.showMedia
                 onToggled: Config.Preferences.bar.showMedia = checked
             }
 
             Widgets.PreferenceSwitch {
                 Layout.fillWidth: true
-                text: "Priorizar apps usados"
-                accessibleLabel: "Priorizar aplicativos usados recentemente nos empates do launcher"
+                text: "Prioritize used apps"
+                accessibleLabel: "Prioritize recently used applications when launcher results tie"
                 checked: Config.Preferences.launcher.prioritizeUsage
                 onToggled: Config.Preferences.launcher.prioritizeUsage = checked
             }
@@ -3230,7 +3230,7 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "Duração padrão dos avisos"
+                    text: "Default notification duration"
                     color: Config.Theme.colFg
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSize
@@ -3250,7 +3250,7 @@ PanelWindow {
                 to: 10
                 stepSize: 1
                 value: Config.Preferences.notifications.defaultTimeoutSeconds
-                Accessible.name: "Duração padrão dos avisos em segundos"
+                Accessible.name: "Default notification duration in seconds"
                 onMoved: Config.Preferences.notifications.defaultTimeoutSeconds = Math.round(value)
             }
         }

@@ -67,7 +67,6 @@ ShellRoot {
         activeAsync: Services.WindowControl.logoutVisible
 
         WLogout {
-            standalone: false
             backgroundColor: Config.Theme.colWlogoutBg
             buttonColor: Config.Theme.colWlogoutButton
             buttonHoverColor: Config.Theme.colWlogoutButtonHover

@@ -103,7 +103,7 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "Notificações"
+                    text: "Notifications"
                     color: Config.Theme.colFg
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSizeLarge
@@ -147,14 +147,14 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: notificationService.doNotDisturb ? "Não Perturbe ativado" : "Avisos recentes"
+                    text: notificationService.doNotDisturb ? "Do Not Disturb on" : "Recent alerts"
                     color: Config.Theme.colTextSec
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSizeSmall
                 }
 
                 Text {
-                    text: "Limpar tudo"
+                    text: "Clear all"
                     color: clearMouse.containsMouse ? Config.Theme.colHighlight : Config.Theme.colMuted
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: 10
@@ -185,7 +185,7 @@ PanelWindow {
                 Text {
                     anchors.centerIn: parent
                     visible: notificationService.history.length === 0
-                    text: "Nenhuma notificação recente"
+                    text: "No recent notifications"
                     color: Config.Theme.colMuted
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSizeSmall

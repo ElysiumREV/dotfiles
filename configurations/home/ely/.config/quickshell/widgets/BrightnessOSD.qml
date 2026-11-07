@@ -59,7 +59,7 @@ Scope {
 
             QsWidgets.OsdCard {
                 anchors.fill: parent
-                title: "Brilho"
+                title: "Brightness"
                 iconName: root.icon
                 value: root.percentage + "%"
                 progress: root.percentage / 100

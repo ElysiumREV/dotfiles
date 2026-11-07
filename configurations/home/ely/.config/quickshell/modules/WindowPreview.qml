@@ -64,7 +64,7 @@ PanelWindow {
 
             Text {
                 Layout.fillWidth: true
-                text: root.sourceToplevel?.title || "Janela do workspace"
+                text: root.sourceToplevel?.title || "Workspace window"
                 color: Config.Theme.colFg
                 font.family: Config.Theme.fontFamily
                 font.pixelSize: Config.Theme.fontSizeSmall
@@ -109,8 +109,8 @@ PanelWindow {
                         anchors.centerIn: parent
                         width: parent.width - 24
                         text: root.unavailable
-                            ? "Prévia indisponível neste compositor"
-                            : "Capturando prévia…"
+                            ? "Preview unavailable on this compositor"
+                            : "Capturing preview…"
                         color: Config.Theme.colTextSec
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSizeSmall

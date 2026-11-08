@@ -176,8 +176,14 @@ PanelWindow {
     }
 
     function requestUrl(query, page, resolution) {
-        return "https://wallhaven.cc/api/v1/search?categories=111&purity=100&sorting=toplist&topRange=1M&page="
-            + page + (query ? "&q=" + encodeURIComponent(query) : "")
+        // Without a query, browse the monthly Toplist. With a query, the toplist/topRange
+        // filters would restrict matches to last month's top wallpapers, so search
+        // the whole catalogue (no time range), most favourited first.
+        const sorting = query
+            ? "sorting=favorites&order=desc&q=" + encodeURIComponent(query)
+            : "sorting=toplist&topRange=1M";
+        return "https://wallhaven.cc/api/v1/search?categories=111&purity=100&" + sorting
+            + "&page=" + page
             + (resolution ? "&atleast=" + encodeURIComponent(resolution) : "");
     }
 

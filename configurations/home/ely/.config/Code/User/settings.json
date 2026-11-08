@@ -75,7 +75,7 @@
     }
   ],
   "workbench.iconTheme": "material-icon-theme",
-"workbench.colorTheme": "Matugen",
+"workbench.colorTheme": "Dark+",
 "terminal.integrated.mouseWheelScrollSensitivity": 3,
 "terminal.integrated.gpuAcceleration": "off",
 "jdk.telemetry.enabled": false,

@@ -1,0 +1,5 @@
+# sched-ext scheduler started at boot by scx_loader.service.
+# scx_lavd: latency-aware, made for gaming/interactive desktops.
+# Trocar na hora: scxctl switch --sched lavd --mode gaming  (ou scxctl stop)
+default_sched = "scx_lavd"
+default_mode = "Auto"

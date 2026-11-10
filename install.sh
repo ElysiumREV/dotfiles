@@ -270,6 +270,8 @@ OPTIONAL_GAMING_PKGS=(
   gamescope
   mangohud
   lib32-mangohud
+  gamemode
+  lib32-gamemode
   umu-launcher
   protontricks
   winetricks
@@ -506,19 +508,28 @@ ensure_essential_services() {
   # (mexe no firewall). Para ativar: sudo systemctl enable --now ufw && sudo ufw enable
 }
 
-# Ajustes de bateria só para notebook (detecta /sys/class/power_supply/BAT*):
-# runtime PM, sysctl, serviços sob demanda (CUPS/Avahi/VPNs) e ações do ppd.
-setup_laptop_power() {
-  if ! ls /sys/class/power_supply/BAT* >/dev/null 2>&1; then
-    return 0
-  fi
+# Ajustes de sistema (system/):
+#   common  -> sempre: serviços sob demanda (CUPS/Avahi/VPNs)
+#   laptop  -> com bateria: runtime PM, sysctl, ações do ppd
+#   desktop -> sem bateria: sched-ext, ananicy-cpp, gamemode, sysctl
+run_system_tweaks() {
+  local name="$1" label="$2"
 
-  info "Notebook detectado: aplicando ajustes de bateria..."
-  if "$DOTFILES_DIR/system/laptop/apply.sh"; then
-    success "Ajustes de bateria aplicados."
+  info "Aplicando ajustes de $label..."
+  if "$DOTFILES_DIR/system/$name/apply.sh"; then
+    success "Ajustes de $label aplicados."
   else
-    WARNINGS+=("Falha ao aplicar system/laptop/apply.sh.")
-    warn "Falha ao aplicar os ajustes de bateria; rode system/laptop/apply.sh manualmente."
+    WARNINGS+=("Falha ao aplicar system/$name/apply.sh.")
+    warn "Falha ao aplicar os ajustes de $label; rode system/$name/apply.sh manualmente."
+  fi
+}
+
+setup_system_tweaks() {
+  run_system_tweaks common "serviços sob demanda"
+  if ls /sys/class/power_supply/BAT* >/dev/null 2>&1; then
+    run_system_tweaks laptop "bateria (notebook)"
+  else
+    run_system_tweaks desktop "desempenho (desktop)"
   fi
 }
 
@@ -923,7 +934,7 @@ install_dependencies() {
 
   configure_flatpak
   ensure_essential_services
-  setup_laptop_power
+  setup_system_tweaks
 
   install_gpu_drivers
 

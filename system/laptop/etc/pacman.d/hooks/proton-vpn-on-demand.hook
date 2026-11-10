@@ -1,0 +1,12 @@
+# proton-vpn-daemon's install script re-enables proton.VPN.service on every
+# upgrade. Keep it disabled: the app starts it through D-Bus when needed.
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = proton-vpn-daemon
+
+[Action]
+Description = Keeping proton.VPN.service on demand (D-Bus activation)...
+When = PostTransaction
+Exec = /usr/bin/systemctl disable --quiet proton.VPN.service

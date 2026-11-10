@@ -18,6 +18,8 @@ hl.on("hyprland.start", function()
 	-- Hyprland ecosystem
 	hl.exec_cmd("uwsm app -- hyprsunset")
 	hl.exec_cmd("uwsm app -- hypridle")
+	-- Eco visuals on battery / power-saver (no-op on the desktop)
+	hl.exec_cmd("uwsm app -- ~/.config/hypr/scripts/power-watch.sh")
 	-- hl.exec_cmd("systemctl --user start hyprpolkitagent")
 
 	-- Apps / services

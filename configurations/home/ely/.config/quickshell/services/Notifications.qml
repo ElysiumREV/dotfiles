@@ -2,6 +2,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Services.Notifications
 
 Singleton {
@@ -105,15 +106,79 @@ Singleton {
     function expirePopup(id) {
         const notification = findActive(id);
         removePopup(id);
-        if (!notification)
+        // The server advertises persistence: an expired popup only leaves the screen and
+        // stays alive in the center, so its actions and click still reach the app.
+        // Transient notifications have no history entry, so they really expire.
+        if (!notification || !notification.transient)
             return;
-
-        // Expiration closes the live notification but leaves its history record.
         try {
             notification.expire();
         } catch (e) {
             notification.dismiss();
         }
+    }
+
+    // The "default" action is what a click on the notification itself should do;
+    // the remaining actions are shown as buttons.
+    function defaultActionOf(notification) {
+        return (notification?.actions ?? []).find(action => action.identifier === "default") ?? null;
+    }
+
+    function buttonActionsOf(notification) {
+        return (notification?.actions ?? []).filter(action => action.identifier !== "default");
+    }
+
+    // Click on a notification (popup or center): run its default action, or else bring
+    // the sending application's window to the front.
+    function activate(id) {
+        const record = history.find(item => item.id === id) ?? null;
+        const notification = findActive(id) ?? record?.notification ?? null;
+        const defaultAction = defaultActionOf(notification);
+        // Read before invoking: invoking may close and destroy the notification.
+        const desktopEntry = notification?.desktopEntry ?? "";
+        const appName = record?.appName ?? notification?.appName ?? "";
+
+        removePopup(id);
+        if (defaultAction) {
+            // Invoking dismisses non-resident notifications (handled by handleClosed).
+            defaultAction.invoke();
+        }
+        focusApplication(desktopEntry, appName);
+        if (centerVisible)
+            closeCenter();
+    }
+
+    function focusApplication(desktopEntry, appName) {
+        const candidates = [desktopEntry, appName]
+            .map(name => String(name || "").toLowerCase())
+            .filter(name => name !== "");
+        if (candidates.length === 0)
+            return false;
+
+        const matches = appId => {
+            const id = String(appId || "").toLowerCase();
+            if (id === "")
+                return false;
+            return candidates.some(name => id === name || id.endsWith("." + name)
+                || name.endsWith("." + id) || id.replace(/[-_ ]/g, "") === name.replace(/[-_ ]/g, ""));
+        };
+
+        const toplevel = Hyprland.toplevels.values.find(window =>
+            matches(window.wayland?.appId) || matches(window.lastIpcObject?.class)) ?? null;
+        if (toplevel) {
+            const address = String(toplevel.address);
+            Hyprland.dispatch(`hl.dsp.focus({ window = "address:${address.startsWith("0x") ? address : "0x" + address}" })`);
+            return true;
+        }
+
+        // No open window (e.g. the app lives in the tray): launching its desktop entry
+        // usually brings the running single-instance app forward.
+        const entry = desktopEntry !== "" ? DesktopEntries.byId(desktopEntry) : null;
+        if (entry) {
+            entry.execute();
+            return true;
+        }
+        return false;
     }
 
     function dismiss(id) {
@@ -296,6 +361,7 @@ Singleton {
         id: server
         actionsSupported: true
         imageSupported: true
+        persistenceSupported: true
         keepOnReload: true
         onNotification: notification => root.receive(notification)
     }

@@ -73,7 +73,7 @@ scenario_image() {
 }
 
 scenario_actions() {
-    say "actions" "Click an action button (or the popup itself) within 15 s; the chosen action is printed here."
+    say "actions" "Hover the popup (it must not expire while hovered), then click the popup body (prints \"default\") or a button (Reply/Archive) within 15 s."
     local picked
     picked=$(timeout 20 notify-send -a "Test: actions" -u normal -t 15000 \
         -A "default=Open" -A "reply=Reply" -A "archive=Archive" \
@@ -143,4 +143,5 @@ for name in "$@"; do
     fi
 done
 echo
-echo "[Done] Also check: open the panel (SUPER+O), Alerts tab: archive/remove one, clear all, then reload the shell."
+echo "[Done] Also check in the panel (SUPER+O, Alerts): click an expired notification (its default action or the app"
+echo "       comes forward), use its buttons, remove one, clear all, then reload the shell."

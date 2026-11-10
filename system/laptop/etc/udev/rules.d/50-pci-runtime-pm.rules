@@ -1,0 +1,2 @@
+# Let every PCI device enter runtime suspend when idle (default is "on").
+ACTION=="add|change", SUBSYSTEM=="pci", ATTR{power/control}="auto"

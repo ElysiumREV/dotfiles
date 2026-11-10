@@ -244,9 +244,19 @@ Item {
                                 width: groupColumn.width
                                 implicitHeight: notificationCardContent.implicitHeight + 20
                                 height: implicitHeight
-                                surfaceColor: Config.Theme.colSurface
+                                surfaceColor: cardHover.hovered ? Config.Theme.colSurfaceRaised : Config.Theme.colSurface
                                 outlined: modelData.urgency === NotificationUrgency.Critical
                                 outlineColor: Config.Theme.colRed
+
+                                HoverHandler { id: cardHover }
+
+                                // Click the notification: run its default action or bring the
+                                // app forward (the panel closes). Buttons on top keep their clicks.
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: notificationService.activate(notificationCard.modelData.id)
+                                }
 
                                 RowLayout {
                                     id: notificationCardContent
@@ -336,10 +346,11 @@ Item {
                                             Layout.fillWidth: true
                                             spacing: 5
                                             visible: modelData.active && modelData.notification
-                                                && modelData.notification.actions.length > 0
+                                                && notificationService.buttonActionsOf(modelData.notification).length > 0
 
                                             Repeater {
-                                                model: modelData.notification?.actions ?? []
+                                                model: modelData.active
+                                                    ? notificationService.buttonActionsOf(modelData.notification) : []
 
                                                 delegate: Widgets.LabelButton {
                                                     required property var modelData

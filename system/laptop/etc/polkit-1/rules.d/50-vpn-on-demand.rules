@@ -1,0 +1,13 @@
+// Lets wheel users start/stop the VPN daemons without a password, so they
+// can stay disabled at boot and start only when the app is opened.
+polkit.addRule(function (action, subject) {
+  if (action.id == "org.freedesktop.systemd1.manage-units" &&
+      subject.isInGroup("wheel") && subject.active && subject.local) {
+    var unit = action.lookup("unit");
+    var verb = action.lookup("verb");
+    if ((unit == "warp-svc.service" || unit == "proton.VPN.service") &&
+        (verb == "start" || verb == "stop" || verb == "restart")) {
+      return polkit.Result.YES;
+    }
+  }
+});

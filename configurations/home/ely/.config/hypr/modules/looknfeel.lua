@@ -1,4 +1,8 @@
 local colors = require("modules.colors")
+local power = require("modules.power")
+
+-- eco = laptop on battery or in power-saver (see modules/power.lua)
+local eco = power.eco
 
 --------------------
 -- LOOK AND FEEL
@@ -33,7 +37,7 @@ hl.config({
 			active_border = colors.primary,
 			inactive_border = colors.surface_variant,
 		},
-		allow_tearing = true,
+		allow_tearing = not eco,
 		layout = "dwindle",
 	},
 
@@ -45,23 +49,23 @@ hl.config({
 		rounding = 10,
 		rounding_power = 2,
 		active_opacity = 1,
-		inactive_opacity = 0.9,
+		inactive_opacity = eco and 1 or 0.9,
 		fullscreen_opacity = 1,
 		blur = {
-			enabled = true,
+			enabled = not eco,
       size = 5,
       passes = 3,
       popups = true,
       input_methods = true,
 		},
 		shadow = {
-			enabled = true,
+			enabled = not eco,
       range = 25,
       render_power = 3,
 			color = "rgba(00000020)",
 		},
 		-- Dim
-		dim_inactive = true,
+		dim_inactive = not eco,
 		dim_strength = 0.05,
 		dim_special = 0.2,
 	},
@@ -75,7 +79,7 @@ hl.config({
 	misc = {
 		disable_hyprland_logo = true,
 		disable_splash_rendering = true,
-		vrr = 1,
+		vrr = eco and 0 or 1,
 		mouse_move_enables_dpms = true,
 		key_press_enables_dpms = true,
 		animate_manual_resizes = false,
@@ -87,7 +91,7 @@ hl.config({
 		session_lock_xray = true,
 		initial_workspace_tracking = 0,
 		focus_on_activate = false,
-		render_unfocused_fps = 60,
+		render_unfocused_fps = eco and 15 or 60,
 		middle_click_paste = false,
 	},
 })
@@ -103,19 +107,19 @@ hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
 hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1.0 } } })
 hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
 
-hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
-hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
-hl.animation({ leaf = "windows", enabled = true, speed = 4.79, bezier = "easeOutQuint" })
-hl.animation({ leaf = "windowsIn", enabled = true, speed = 4.1, bezier = "easeOutQuint", style = "popin 87%" })
-hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.49, bezier = "linear", style = "popin 87%" })
-hl.animation({ leaf = "fadeIn", enabled = true, speed = 1.73, bezier = "almostLinear" })
-hl.animation({ leaf = "fadeOut", enabled = true, speed = 1.46, bezier = "almostLinear" })
-hl.animation({ leaf = "fade", enabled = true, speed = 3.03, bezier = "quick" })
-hl.animation({ leaf = "layers", enabled = true, speed = 3.81, bezier = "easeOutQuint" })
-hl.animation({ leaf = "layersIn", enabled = true, speed = 4, bezier = "easeOutQuint", style = "fade" })
-hl.animation({ leaf = "layersOut", enabled = true, speed = 1.5, bezier = "linear", style = "fade" })
-hl.animation({ leaf = "fadeLayersIn", enabled = true, speed = 1.79, bezier = "almostLinear" })
-hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.39, bezier = "almostLinear" })
-hl.animation({ leaf = "workspaces", enabled = true, speed = 1.94, bezier = "almostLinear", style = "fade" })
-hl.animation({ leaf = "workspacesIn", enabled = true, speed = 1.21, bezier = "almostLinear", style = "fade" })
-hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "almostLinear", style = "fade" })
+hl.animation({ leaf = "global", enabled = not eco, speed = 10, bezier = "default" })
+hl.animation({ leaf = "border", enabled = not eco, speed = 5.39, bezier = "easeOutQuint" })
+hl.animation({ leaf = "windows", enabled = not eco, speed = 4.79, bezier = "easeOutQuint" })
+hl.animation({ leaf = "windowsIn", enabled = not eco, speed = 4.1, bezier = "easeOutQuint", style = "popin 87%" })
+hl.animation({ leaf = "windowsOut", enabled = not eco, speed = 1.49, bezier = "linear", style = "popin 87%" })
+hl.animation({ leaf = "fadeIn", enabled = not eco, speed = 1.73, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeOut", enabled = not eco, speed = 1.46, bezier = "almostLinear" })
+hl.animation({ leaf = "fade", enabled = not eco, speed = 3.03, bezier = "quick" })
+hl.animation({ leaf = "layers", enabled = not eco, speed = 3.81, bezier = "easeOutQuint" })
+hl.animation({ leaf = "layersIn", enabled = not eco, speed = 4, bezier = "easeOutQuint", style = "fade" })
+hl.animation({ leaf = "layersOut", enabled = not eco, speed = 1.5, bezier = "linear", style = "fade" })
+hl.animation({ leaf = "fadeLayersIn", enabled = not eco, speed = 1.79, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeLayersOut", enabled = not eco, speed = 1.39, bezier = "almostLinear" })
+hl.animation({ leaf = "workspaces", enabled = not eco, speed = 1.94, bezier = "almostLinear", style = "fade" })
+hl.animation({ leaf = "workspacesIn", enabled = not eco, speed = 1.21, bezier = "almostLinear", style = "fade" })
+hl.animation({ leaf = "workspacesOut", enabled = not eco, speed = 1.94, bezier = "almostLinear", style = "fade" })

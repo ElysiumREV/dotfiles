@@ -506,6 +506,22 @@ ensure_essential_services() {
   # (mexe no firewall). Para ativar: sudo systemctl enable --now ufw && sudo ufw enable
 }
 
+# Ajustes de bateria só para notebook (detecta /sys/class/power_supply/BAT*):
+# runtime PM, sysctl, serviços sob demanda (CUPS/Avahi/VPNs) e ações do ppd.
+setup_laptop_power() {
+  if ! ls /sys/class/power_supply/BAT* >/dev/null 2>&1; then
+    return 0
+  fi
+
+  info "Notebook detectado: aplicando ajustes de bateria..."
+  if "$DOTFILES_DIR/system/laptop/apply.sh"; then
+    success "Ajustes de bateria aplicados."
+  else
+    WARNINGS+=("Falha ao aplicar system/laptop/apply.sh.")
+    warn "Falha ao aplicar os ajustes de bateria; rode system/laptop/apply.sh manualmente."
+  fi
+}
+
 # ============================================================
 # AUR
 # ============================================================
@@ -907,6 +923,7 @@ install_dependencies() {
 
   configure_flatpak
   ensure_essential_services
+  setup_laptop_power
 
   install_gpu_drivers
 

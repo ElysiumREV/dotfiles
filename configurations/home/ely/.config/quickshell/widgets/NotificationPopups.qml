@@ -83,19 +83,46 @@ Scope {
                         width: popupColumn.width
                     implicitHeight: cardContent.implicitHeight + 24
                     radius: Config.Theme.radiusCard
-                    color: Config.Theme.colBg
+                    color: cardHover.hovered
+                        ? Qt.tint(Config.Theme.colBg, Config.Theme.alpha(Config.Theme.colHighlight, 0.06))
+                        : Config.Theme.colBg
                     border.width: 1
                     border.color: modelData.urgency === NotificationUrgency.Critical
                         ? Config.Theme.colRed
                         : Config.Theme.alpha(Config.Theme.colTextSec, 0.25)
 
+                    // Hovering pauses the timeout; after the pointer leaves, the popup
+                    // stays a little longer instead of resuming the full duration.
+                    readonly property int hoverGraceMs: 3000
+                    property bool wasHovered: false
+
                     Timer {
-                        interval: card.timeoutMs
+                        id: expireTimer
+                        interval: card.wasHovered ? card.hoverGraceMs : card.timeoutMs
                         // Expiration must not depend on the layer window's visible
                         // state: it can briefly report false while being created or
                         // reconfigured, which would pause the timeout indefinitely.
-                        running: interval > 0
+                        running: card.timeoutMs > 0 && !cardHover.hovered
                         onTriggered: Services.Notifications.expirePopup(modelData.id)
+                    }
+
+                    HoverHandler {
+                        id: cardHover
+                        onHoveredChanged: if (!hovered) card.wasHovered = true
+                    }
+
+                    // Click the notification itself: default action / focus the app.
+                    // Right or middle click dismisses it. Buttons on top keep their clicks.
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: mouse => {
+                            if (mouse.button === Qt.LeftButton)
+                                Services.Notifications.activate(modelData.id);
+                            else
+                                Services.Notifications.dismiss(modelData.id);
+                        }
                     }
 
                     ColumnLayout {
@@ -211,10 +238,10 @@ Scope {
                         Flow {
                             Layout.fillWidth: true
                             spacing: 6
-                            visible: modelData.actions.length > 0
+                            visible: Services.Notifications.buttonActionsOf(modelData).length > 0
 
                             Repeater {
-                                model: modelData.actions
+                                model: Services.Notifications.buttonActionsOf(modelData)
                                 delegate: Widgets.LabelButton {
                                     required property var modelData
                                     text: modelData.text

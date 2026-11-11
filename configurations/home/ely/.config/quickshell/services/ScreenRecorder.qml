@@ -3,12 +3,15 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import Quickshell.Hyprland
 import ".." as Config
 
 // Screen recording through gpu-screen-recorder (GPU encoding, low overhead).
-// "screen" captures the focused monitor directly; "window" goes through the
-// xdg-desktop-portal picker, where a window or monitor is chosen interactively.
+// Both modes capture through xdg-desktop-portal, so Hyprland's no_screen_share
+// rules apply (e.g. notification popups stay out of the video); direct KMS
+// capture would bypass the compositor and record them.
+//   "screen": the portal session is restored, so the monitor is picked only on
+//             the first recording and later ones start right away.
+//   "window": the picker opens every time to choose a window or monitor.
 Singleton {
     id: root
 
@@ -41,14 +44,9 @@ Singleton {
     function buildArguments(path) {
         const args = ["gpu-screen-recorder", "-f", "60", "-c", "mp4", "-q", "high"];
 
-        if (Config.Preferences.recorder.captureMode === "window") {
-            args.push("-w", "portal");
-        } else {
-            const monitor = Hyprland.focusedMonitor?.name ?? "";
-            if (monitor === "")
-                return null;
-            args.push("-w", monitor);
-        }
+        args.push("-w", "portal");
+        if (Config.Preferences.recorder.captureMode !== "window")
+            args.push("-restore-portal-session", "yes");
 
         // Several sources joined with "|" are mixed into a single audio track.
         const sources = [];
@@ -78,10 +76,6 @@ Singleton {
         const stamp = Qt.formatDateTime(new Date(), "yyyy-MM-dd_HH-mm-ss");
         const path = directory + "/Recording_" + stamp + ".mp4";
         const args = buildArguments(path);
-        if (!args) {
-            message = "Could not find the focused monitor.";
-            return;
-        }
 
         outputPath = path;
         lastError = "";
@@ -89,7 +83,7 @@ Singleton {
         elapsedSeconds = 0;
         starting = true;
         message = Config.Preferences.recorder.captureMode === "window"
-            ? "Pick a window or monitor in the dialog…" : "Starting…";
+            ? "Pick a window or monitor in the dialog…" : "Starting… (pick the monitor if asked)";
         // exec keeps the same PID, so the stop signal reaches gpu-screen-recorder itself.
         recorder.exec(["sh", "-c", "mkdir -p \"$1\" && shift && exec \"$@\"", "recorder", directory].concat(args));
     }
@@ -173,12 +167,12 @@ Singleton {
                 return;
             }
 
-            if (!wasRecording && (wasStopping || Config.Preferences.recorder.captureMode === "window")) {
+            if (!wasRecording && (wasStopping || root.lastError === "")) {
                 // Cancelled before any frame was captured (picker dismissed or stop pressed).
                 root.message = "Recording cancelled.";
                 Quickshell.execDetached(["rm", "-f", root.outputPath]);
                 // The portal picker outlives a killed recorder; close it as well.
-                if (wasStopping && Config.Preferences.recorder.captureMode === "window")
+                if (wasStopping)
                     Quickshell.execDetached(["pkill", "-x", "hyprland-share-"]);
                 root.finished(root.outputPath, false);
                 return;
@@ -188,14 +182,6 @@ Singleton {
             root.notify("Recording failed", root.message, "critical");
             root.finished(root.outputPath, false);
         }
-    }
-
-    // Direct monitor capture has no dialog; if the log format ever changes, still
-    // start the clock a few seconds after launch instead of never.
-    Timer {
-        interval: 4000
-        running: root.starting && Config.Preferences.recorder.captureMode !== "window"
-        onTriggered: root.markCapturing()
     }
 
     Timer {

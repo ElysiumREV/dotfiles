@@ -1,9 +1,9 @@
 import Quickshell
-import Quickshell.Wayland
-import Quickshell.Io
+import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import ".." as Config
+import "../services" as Services
 
 Item {
     id: root
@@ -19,13 +19,28 @@ Item {
     property bool showDate: true
 
     readonly property color accentColor:
-        calendarMouse.containsMouse
+        calendarMouse.containsMouse || root.activeFocus
         ? Config.Theme.colHighlight
         : Config.Theme.colFg
 
 
     implicitWidth: clockRow.implicitWidth
     implicitHeight: Config.Theme.moduleHeight
+    activeFocusOnTab: true
+    Accessible.role: Accessible.Button
+    Accessible.name: "Open calendar, " + formattedTime
+
+    // The calendar lives in the Arch Menu; the clock opens it expanded.
+    function openCalendar() {
+        Services.Notifications.toggleCalendar(Hyprland.monitorFor(root.targetScreen));
+    }
+
+    Keys.onPressed: event => {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+            root.openCalendar();
+            event.accepted = true;
+        }
+    }
 
     RowLayout {
         id: clockRow
@@ -67,35 +82,6 @@ Item {
         }
     }
 
-    LazyLoader {
-        id: calendarPopupLoader
-
-        CalendarPopup {
-            targetScreen: root.targetScreen
-            positionProvider: popupWidth => {
-                const position = root.QsWindow.mapFromItem(
-                    root,
-                    (root.implicitWidth - popupWidth) / 2,
-                    root.implicitHeight
-                )
-                return {
-                    "x": Math.max(0, Math.min(position.x, root.screenWidth - popupWidth)),
-                    "y": position.y
-                }
-            }
-        }
-
-        onActiveChanged: if (active && item) item.openCalendar()
-    }
-
-    Connections {
-        target: calendarPopupLoader.item
-        function onVisibleChanged() {
-            if (target && !target.visible)
-                calendarPopupLoader.activeAsync = false
-        }
-    }
-
     MouseArea {
         id: calendarMouse
         anchors.fill: parent
@@ -103,14 +89,7 @@ Item {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
 
-        onClicked: {
-            if (calendarPopupLoader.activeAsync) {
-                calendarPopupLoader.item.visible = false;
-                calendarPopupLoader.activeAsync = false;
-            } else {
-                calendarPopupLoader.activeAsync = true;
-            }
-        }
+        onClicked: root.openCalendar()
     }
 
     Scope {

@@ -38,6 +38,9 @@ Scope {
         exclusionMode: ExclusionMode.Ignore
         exclusiveZone: 0
         WlrLayershell.layer: WlrLayer.Overlay
+        // Matches the Hyprland layer rule `^notifications$` (no_screen_share)
+        // in hypr/modules/workspaces.lua, hiding popups from screen shares.
+        WlrLayershell.namespace: "notifications"
 
         anchors {
             top: true

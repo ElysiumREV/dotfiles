@@ -49,7 +49,9 @@ Singleton {
             }
 
             property JsonObject recorder: JsonObject {
-                // "screen" records the focused monitor; "window" asks the portal picker.
+                // Both go through the portal (respects no_screen_share rules).
+                // "screen" remembers the monitor picked the first time;
+                // "window" asks the picker on every recording.
                 property string captureMode: "screen"
                 // "" = no microphone, "default_input" or a PipeWire source name.
                 property string microphone: ""

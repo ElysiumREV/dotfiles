@@ -41,7 +41,7 @@ O Quickshell deve concentrar a interface diária do desktop: barra, menus, launc
 - Indicadores de microfone e câmera. A detecção de captura acompanha conexões PipeWire sem polling; acessos diretos V4L2 podem não aparecer e não há mute genérico de câmera.
 - Painel unificado de controles e notificações: Wi-Fi, Bluetooth, Não Perturbe, brilho, mídia, notificações, mixer de volume, bateria e calendário. Detalhes de redes e Bluetooth começam recolhidos; wlogout é aberto por um único botão.
 - O grupo da direita da barra inclui volume, anel circular de nível da bateria sem percentual, Wi-Fi e Bluetooth. Clicar no anel abre a aba Bateria do painel unificado; nela aparecem estado/carga, autonomia, potência, saúde/ciclos quando disponíveis e seleção de perfis de energia. Os dados extras são consultados apenas enquanto a aba está carregada.
-- Calendário recolhível, iniciado no domingo, com segundos atualizados enquanto o menu está aberto e estado recolhido/expandido guardado durante a sessão.
+- Calendário único (desde 2026-11-11): só existe o calendário do Arch Menu (`modules/SidebarCalendar.qml`), recolhível, iniciado no domingo e com estado recolhido/expandido guardado durante a sessão. Clicar no relógio da barra (ou Enter/Espaço com foco nele) chama `Notifications.toggleCalendar()`, que abre o painel com o calendário expandido no mês atual, ou fecha o painel se ele já estiver aberto naquele monitor. O antigo popup `modules/CalendarPopup.qml` (data por extenso e hora com segundos) foi removido.
 - Seleção de screenshot por região ou janela: `hyprshot --freeze` cuida do congelamento, seleção, salvamento em `Pictures/Screenshots` e cópia para o clipboard.
 - Menus carregados por demanda por monitor; estado/posicionamento considera o monitor-alvo.
 - Preferências da barra em `settings.json`, carregadas/salvas via `Preferences.qml`; a aba Configurações permite controlar aplicativo em foco, data, bandeja, indicadores de dispositivos, status do sistema e mídia.
@@ -105,6 +105,11 @@ Antes de qualquer teste manual, rode `scripts/smoke-test.sh` (abre e fecha 9 pai
 - Idioma: a UI, os logs, os comentários do código e as descrições dos atalhos do Hyprland passaram a ser **todos em inglês** (2026-11-06). Este diário continua em português por decisão do usuário. Novos textos de UI devem ser escritos em inglês.
 
 ### Ideias ainda em aberto
+0. **Calendário com eventos (planejado, 2026-11-11; adiado pelo usuário)**, em fases: (1) unificar os calendários — feito; (2) eventos locais: criar, editar e marcar dias no calendário do Arch Menu; (3) por último, integrar contas externas (Gmail/Google via CalDAV; Proton parece oferecer só link `.ics` de leitura — confirmar).
+   - Referência end-4 (`~/Downloads/end-4-dotfiles`, commit `cb1c428b`): não tem eventos nem integração de calendário. O calendário dele é só a grade do mês; ao lado há uma lista de tarefas separada (`services/Todo.qml` + `modules/ii/sidebarRight/todo/`): itens com texto e "feito", sem data/lembrete, salvos em `~/.local/state/quickshell/user/todo.json` via `FileView`, abas Unfinished/Done e tecla **N**/botão flutuante para adicionar.
+   - Aproveitar do end-4: roda do mouse e Page Up/Down trocam o mês; clicar no título volta ao mês atual (com "•" quando fora dele); serviço com `FileView` em `~/.local/state/quickshell/`.
+   - Proposta: guardar eventos num `.ics` local (formato que Google e Proton importam/exportam), facilitando a fase 3.
+   - Perguntas em aberto para retomar: (a) clicar num dia abre a lista abaixo do calendário ou uma janela separada? (b) eventos só de dia inteiro ou com horário? (c) lembrete por notificação? (d) também uma lista de tarefas como a do end-4?
 
 1. **Central de atalhos:** implementada e confirmada em uso; ações no ArchMenu e binds `SUPER+O`/`SUPER+N` funcionando.
 2. **Busca ampliada no launcher:** avaliar busca de arquivos, ações e comandos. Definir dependências e custo de indexação antes de escolher estratégia; preservar busca sob demanda.

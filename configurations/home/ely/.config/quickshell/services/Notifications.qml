@@ -334,6 +334,16 @@ Singleton {
         openCenter(monitor, requestedTab);
     }
 
+    // Bar clock: toggles the panel with its calendar expanded.
+    function toggleCalendar(monitor) {
+        if (centerVisible && centerMonitor === monitor) {
+            closeCenter();
+            return;
+        }
+        centerCalendarCollapsed = false;
+        openCenter(monitor, "notifications");
+    }
+
     function openCenter(monitor, tab) {
         centerRequestedTab = tab || "notifications";
         centerMonitor = monitor;

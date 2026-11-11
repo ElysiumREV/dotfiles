@@ -58,6 +58,7 @@ PanelWindow {
         Services.BluetoothControl.expanded = false;
         Services.BluetoothControl.refresh();
         uptimeProcess.exec(["cat", "/proc/uptime"]);
+        sidebarCalendar.showToday();
         visible = true;
     }
 

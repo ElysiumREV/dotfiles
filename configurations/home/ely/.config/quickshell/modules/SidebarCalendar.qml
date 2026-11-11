@@ -18,6 +18,11 @@ Item {
     ).getDay()
     signal collapseToggled(bool collapsed)
 
+    function showToday() {
+        today = new Date();
+        viewedMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    }
+
     implicitHeight: calendarContent.implicitHeight + 20
     Behavior on implicitHeight {
         NumberAnimation {

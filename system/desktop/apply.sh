@@ -27,10 +27,18 @@ sudo install -Dm644 etc/sysctl.d/90-desktop-performance.conf /etc/sysctl.d/90-de
 sudo install -Dm644 etc/scx_loader.toml /etc/scx_loader.toml
 sudo sysctl --quiet --system
 
-# gamemode precisa do índice da GPU AMD (cardN); sem AMD a seção [gpu] sai
-gpu=""
-for card in /sys/class/drm/card[0-9]; do
-  [[ $(<"$card/device/vendor") == 0x1002 ]] && gpu=${card##*card} && break
+# gamemode precisa do índice da GPU AMD (cardN); sem AMD a seção [gpu] sai.
+# Com mais de uma AMD (APU + placa dedicada), fica a de maior VRAM: o vídeo
+# integrado só tem uma fatia pequena da RAM, a dedicada tem bem mais.
+gpu="" best_vram=-1
+for card in /sys/class/drm/card*; do
+  [[ ${card##*/} =~ ^card[0-9]+$ ]] || continue # pula conectores (card0-DP-1...)
+  [[ $(<"$card/device/vendor") == 0x1002 ]] || continue
+  vram=$(cat "$card/device/mem_info_vram_total" 2>/dev/null || echo 0)
+  if ((vram > best_vram)); then
+    best_vram=$vram
+    gpu=${card##*card}
+  fi
 done
 if [[ -n $gpu ]]; then
   sed "s/@GPU_DEVICE@/$gpu/" etc/gamemode/gamemode.ini

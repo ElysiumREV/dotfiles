@@ -72,6 +72,10 @@
     {
       "name": "Qt-5.15.19-linux-g++-x86_64_from_PATH",
       "path": "/usr/sbin/qmake"
+    },
+    {
+      "name": "Qt-5.15.19-linux-g++-x86_64_from_PATH",
+      "path": "/usr/sbin/qtpaths"
     }
   ],
   "workbench.iconTheme": "material-icon-theme",

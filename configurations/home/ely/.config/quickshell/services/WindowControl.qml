@@ -13,6 +13,9 @@ Singleton {
     property var wallhavenMonitor: null
     property bool clipboardVisible: false
     property var clipboardMonitor: null
+    property bool browserChooserVisible: false
+    property var browserChooserMonitor: null
+    property string browserChooserUrl: ""
 
     function closeOverlays(): void {
         launcherVisible = false;
@@ -24,6 +27,8 @@ Singleton {
         wallhavenMonitor = null;
         clipboardVisible = false;
         clipboardMonitor = null;
+        browserChooserVisible = false;
+        browserChooserMonitor = null;
     }
 
     function openLauncher(monitor): void {
@@ -75,6 +80,21 @@ Singleton {
         } else {
             openWallhaven(Hyprland.focusedMonitor);
         }
+    }
+
+    // url = "" opens a new browser window instead of a link.
+    function openBrowserChooser(url): void {
+        closeOverlays();
+        browserChooserUrl = url ?? "";
+        browserChooserMonitor = Hyprland.focusedMonitor;
+        browserChooserVisible = true;
+    }
+
+    function toggleBrowserChooser(): void {
+        if (browserChooserVisible)
+            closeOverlays();
+        else
+            openBrowserChooser("");
     }
 
     function toggleClipboardHistory(monitor): void {

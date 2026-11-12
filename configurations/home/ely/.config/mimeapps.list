@@ -6,6 +6,7 @@ application/zip=org.kde.ark.desktop;
 x-scheme-handler/antigravity=antigravity.desktop;
 
 [Default Applications]
+application/xhtml+xml=browser-chooser.desktop;
 application/pdf=firefox.desktop;
 application/x-msdownload=wine.desktop
 application/xml=org.kde.kate.desktop
@@ -25,7 +26,7 @@ image/tiff=imv.desktop
 image/webp=imv.desktop
 image/x-icon=imv.desktop
 inode/directory=org.kde.dolphin.desktop
-text/html=firefox.desktop
+text/html=browser-chooser.desktop;
 text/markdown=org.kde.kate.desktop
 text/plain=org.kde.kate.desktop
 text/x-readme=org.kde.kate.desktop
@@ -44,8 +45,8 @@ x-scheme-handler/deadlock-mod-manager=deadlock-modmanager-handler.desktop
 x-scheme-handler/deadlock-modmanager=deadlock-modmanager-handler.desktop
 x-scheme-handler/dlmm=deadlock-modmanager-handler.desktop
 x-scheme-handler/hayase=hayase.desktop
-x-scheme-handler/http=firefox.desktop
-x-scheme-handler/https=firefox.desktop
+x-scheme-handler/http=browser-chooser.desktop;
+x-scheme-handler/https=browser-chooser.desktop;
 x-scheme-handler/jetbrains=jetbrainsd.desktop
 x-scheme-handler/stremio=stremio-enhanced.desktop
 x-scheme-handler/unknown=firefox.desktop

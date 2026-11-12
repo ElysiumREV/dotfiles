@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Browser Chooser
+Comment=Ask which browser opens the link
+Exec=/home/ely/.config/quickshell/scripts/browser-chooser.sh %u
+Icon=web-browser
+Terminal=false
+NoDisplay=true
+Categories=Network;WebBrowser;
+MimeType=x-scheme-handler/http;x-scheme-handler/https;text/html;application/xhtml+xml;

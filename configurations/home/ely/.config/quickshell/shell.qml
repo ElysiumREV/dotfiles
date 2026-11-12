@@ -20,6 +20,9 @@ ShellRoot {
             keybindCheatsheet.toggle(Hyprland.focusedMonitor);
         }
         function toggleLogout(): void { Services.WindowControl.toggleLogout(); }
+        // Called by scripts/browser-chooser.sh, the default handler for web links.
+        function openBrowserChooser(url: string): void { Services.WindowControl.openBrowserChooser(url); }
+        function toggleBrowserChooser(): void { Services.WindowControl.toggleBrowserChooser(); }
         function screenshotRegion(): void { screenshotSelector.open("region"); }
         function screenshotWindow(): void { screenshotSelector.open("window"); }
         function cancelScreenshot(): void { screenshotSelector.close(); }

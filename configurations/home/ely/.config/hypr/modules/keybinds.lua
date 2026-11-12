@@ -43,8 +43,8 @@ hl.bind(mainMod .. " + P", hl.dsp.window.pseudo(), { description = "Windows: Tog
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser), { description = "Apps: Open browser" })
 hl.bind(
 	mainMod .. " + SHIFT + B",
-	hl.dsp.exec_cmd(browser .. " -p"),
-	{ description = "Apps: Open profile manager" }
+	hl.dsp.exec_cmd("qs ipc call shell toggleBrowserChooser"),
+	{ description = "Apps: Choose browser / Firefox profile" }
 )
 hl.bind(
 	mainMod .. " + T",

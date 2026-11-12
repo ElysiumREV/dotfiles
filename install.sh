@@ -197,6 +197,7 @@ PKGS_THEME=(
   adw-gtk-theme
   nwg-look
   papirus-icon-theme
+  kconfig # kreadconfig6: Quickshell reads the icon theme from kdeglobals at startup
   dconf
   gsettings-desktop-schemas
 )
@@ -309,6 +310,7 @@ AMD_PKGS=(
 
 AUR_PKGS=(
   aur-scanner
+  google-chrome # work/study browser; policies in system/common/etc/chrome-policies
   breeze-plus
   darkly-bin
   kde-material-you-colors
@@ -831,6 +833,21 @@ copy_dotfiles() {
     warn "Temas de cursor não encontrados em: $DOTFILES_SOURCE/.local/share/icons"
   fi
 
+  # Atalhos .desktop próprios (ex.: browser-chooser, o navegador padrão que
+  # pergunta qual navegador abre o link). Exec usa caminho absoluto.
+  if [[ -d "$DOTFILES_SOURCE/.local/share/applications" ]]; then
+    mkdir -p "$HOME/.local/share/applications"
+    cp -r "$DOTFILES_SOURCE/.local/share/applications/." "$HOME/.local/share/applications/"
+    if [[ "$HOME" != "/home/ely" ]]; then
+      grep -rlZ '/home/ely' "$DOTFILES_SOURCE/.local/share/applications" 2>/dev/null |
+        while IFS= read -r -d '' file; do
+          sed -i "s|/home/ely|$HOME|g" "$HOME/.local/share/applications/${file##*/}"
+        done
+    fi
+    update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+    success "Atalhos .desktop copiados."
+  fi
+
   # Pictures
   if [[ -d "$DOTFILES_SOURCE/Pictures" ]]; then
     mkdir -p "$HOME/Pictures"
@@ -853,7 +870,19 @@ seed_wallpaper() {
   local seed="$wall_dir/wallhaven-pomle9.jpg"
   local apply_colors="$HOME/.config/quickshell/scripts/apply_colors.sh"
 
+  # Re-run on a configured machine: copy_dotfiles just restored the generated
+  # color files (backup.exclude) from the repo, so regenerate them from the
+  # wallpaper already in use instead of keeping the old committed palette.
   if [[ -f "$current" ]]; then
+    if [[ -x "$apply_colors" ]]; then
+      info "Regenerando cores a partir do wallpaper atual..."
+      local mode
+      # dark/light saved by Quickshell ("theme": {"mode": ...}); default dark
+      mode=$(grep -oE '"mode": *"(dark|light)"' "$HOME/.config/quickshell/settings.json" 2>/dev/null |
+        grep -oE 'dark|light' | head -1)
+      "$apply_colors" "$current" "${mode:-dark}" >/dev/null ||
+        WARNINGS+=("apply_colors.sh falhou; troque o wallpaper pelo Quickshell (SUPER+W).")
+    fi
     success "Wallpaper atual já existe."
     return 0
   fi

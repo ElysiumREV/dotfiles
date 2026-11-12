@@ -93,6 +93,12 @@ Variants {
                         }
 
                         Widgets.PopupLoadState {
+                            id: browserChooserPopupState
+                            requested: Services.WindowControl.browserChooserVisible
+                                && Hyprland.monitorFor(modelData) === Services.WindowControl.browserChooserMonitor
+                        }
+
+                        Widgets.PopupLoadState {
                             id: clipboardPopupState
                             requested: Services.WindowControl.clipboardVisible
                                 && Hyprland.monitorFor(modelData) === Services.WindowControl.clipboardMonitor
@@ -148,6 +154,15 @@ Variants {
                             QsModules.ApplicationLauncher {
                                 targetScreen: modelData
                                 keepVisible: launcherPopupState.active
+                            }
+                        }
+
+                        LazyLoader {
+                            activeAsync: browserChooserPopupState.active
+
+                            QsModules.BrowserChooser {
+                                targetScreen: modelData
+                                keepVisible: browserChooserPopupState.active
                             }
                         }
 

@@ -13,7 +13,12 @@ hl.on("hyprland.start", function()
 	-- hl.exec_cmd("gnome-keyring-daemon --start")
 
 	-- Panel / system tray / notifications
-	hl.exec_cmd("uwsm app -- env QS_NO_RELOAD_POPUP=1 QML_DISABLE_DISK_CACHE=1 quickshell")
+	-- QS_ICON_THEME pins the icon theme (read from kdeglobals at startup) so the
+	-- KDE platform theme can't swap it at runtime; app icons used to vanish
+	-- until quickshell was restarted.
+	hl.exec_cmd(
+		"uwsm app -- sh -c 'QS_ICON_THEME=$(kreadconfig6 --file kdeglobals --group Icons --key Theme --default breeze-plus-dark) QS_NO_RELOAD_POPUP=1 QML_DISABLE_DISK_CACHE=1 exec quickshell'"
+	)
 
 	-- Hyprland ecosystem
 	hl.exec_cmd("uwsm app -- hyprsunset")

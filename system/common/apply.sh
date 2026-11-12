@@ -8,6 +8,12 @@ echo "==> Copiando regra polkit e hook do pacman para /etc"
 sudo install -Dm644 etc/polkit-1/rules.d/50-vpn-on-demand.rules /etc/polkit-1/rules.d/50-vpn-on-demand.rules
 sudo install -Dm644 etc/pacman.d/hooks/proton-vpn-on-demand.hook /etc/pacman.d/hooks/proton-vpn-on-demand.hook
 
+echo "==> Políticas do Chrome/Chromium (privacidade e Memory Saver)"
+# Mesmo arquivo para os dois; cada um lê o seu diretório.
+for dir in /etc/opt/chrome/policies/managed /etc/chromium/policies/managed; do
+  sudo install -Dm644 etc/chrome-policies/work-browser.json "$dir/work-browser.json"
+done
+
 echo "==> Serviços só sob demanda"
 # CUPS e Avahi: ficam só os sockets (sobem quando algo usa a porta)
 for unit in cups.service avahi-daemon.service; do

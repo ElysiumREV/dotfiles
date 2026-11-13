@@ -7,4 +7,4 @@ Icon=web-browser
 Terminal=false
 NoDisplay=true
 Categories=Network;WebBrowser;
-MimeType=x-scheme-handler/http;x-scheme-handler/https;text/html;application/xhtml+xml;
+MimeType=x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/mailto;text/html;application/xhtml+xml;application/pdf;application/json;application/rss+xml;application/rdf+xml;

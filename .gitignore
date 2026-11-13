@@ -3,3 +3,4 @@ configurations/home/ely/.config/fish/fish_variables
 # Added by ggshield
 .cache_ggshield
 configurations/home/ely/.config/kitty/power-*.conf
+.claude/settings.local.json

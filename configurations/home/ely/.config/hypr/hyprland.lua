@@ -21,7 +21,7 @@ hl.monitor({
 	position = "auto-right",
 	scale = 1,
 	cm = "auto",
-	icc = "/home/ely/Documents/rtings-icc-profile.icm",
+	icc = "/home/ely/.config/hypr/icc/lg-24gl600f-rtings.icm", -- LG 24GL600F, RTINGS calibration
 })
 -- hl.monitor({ output = "DP-2", mode = "1920x1080@144", position = "auto-right", scale = 1, cm = "auto" })
 -- Notebook

@@ -153,6 +153,41 @@ local function apply(monitor, silent)
 	end
 end
 
+-- Any output without its own rule mirrors the panel from the moment it appears.
+-- With an extend fallback, Hyprland first gave the projector a new empty
+-- workspace, which then moved to the panel and stayed active there.
+hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1, mirror = INTERNAL })
+
+-- Last workspace with windows shown on the panel, to go back to it if a
+-- hotplug still leaves the panel on an empty workspace.
+local last_ws = nil
+
+local function panel_workspace()
+	local panel = hl.get_monitor(INTERNAL)
+	return panel and panel.active_workspace or nil
+end
+
+do
+	local ws = panel_workspace()
+	if ws and not ws.is_empty then
+		last_ws = ws.id
+	end
+end
+
+hl.on("workspace.active", function()
+	local ws = panel_workspace()
+	if ws and not ws.is_empty then
+		last_ws = ws.id
+	end
+end)
+
+local function restore_workspace()
+	local ws = panel_workspace()
+	if last_ws and ws and ws.is_empty and ws.id ~= last_ws then
+		hl.dispatch(hl.dsp.focus({ workspace = last_ws }))
+	end
+end
+
 local function externals()
 	local list = {}
 	for _, m in ipairs(hl.get_monitors({ all = true }) or {}) do
@@ -166,6 +201,7 @@ end
 hl.on("monitor.added", function(monitor)
 	if monitor and monitor.name ~= INTERNAL then
 		apply(monitor, false)
+		hl.timer(restore_workspace, { timeout = 500, type = "oneshot" })
 	end
 end)
 

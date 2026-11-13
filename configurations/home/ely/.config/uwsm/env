@@ -21,3 +21,9 @@ export XDG_MENU_PREFIX=plasma-
 # Cursor
 export XCURSOR_SIZE=24
 export XCURSOR_THEME=XCursor-Pro-Dark
+
+# KDE Online Accounts (Google Drive in Dolphin via kio-gdrive)
+# libaccounts only looks for providers in accounts/providers/<desktop>/, and
+# KDE ships them under kde/, so with XDG_CURRENT_DESKTOP=Hyprland it finds none.
+export AG_PROVIDERS=/usr/share/accounts/providers/kde
+export AG_SERVICES=/usr/share/accounts/services/kde

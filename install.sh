@@ -998,9 +998,41 @@ install_dependencies() {
   install_pywalfox
 }
 
+# Nome/e-mail do git não vêm no repo (quem usar estes dotfiles faria commits
+# com a identidade de outra pessoa). Pergunta só se ainda não estiver
+# configurado, e grava em ~/.gitconfig, fora do backup; ~/.config/git/config
+# fica só com as opções compartilhadas.
+setup_git_identity() {
+  command -v git >/dev/null 2>&1 || return 0
+
+  local name email
+  name="$(git config --global user.name || true)"
+  email="$(git config --global user.email || true)"
+
+  if [[ -n "$name" && -n "$email" ]]; then
+    success "Identidade do git já configurada ($name)."
+    return 0
+  fi
+
+  info "Configurando a identidade do git (usada nos commits)."
+  [[ -n "$name" ]] || read -rp "Nome: " name
+  [[ -n "$email" ]] || read -rp "E-mail: " email
+
+  if [[ -z "$name" || -z "$email" ]]; then
+    WARNINGS+=("Identidade do git não configurada. Rode: git config --file ~/.gitconfig user.name \"Seu Nome\" && git config --file ~/.gitconfig user.email voce@exemplo.com")
+    warn "Nome ou e-mail vazio; identidade do git não configurada."
+    return 0
+  fi
+
+  git config --file "$HOME/.gitconfig" user.name "$name"
+  git config --file "$HOME/.gitconfig" user.email "$email"
+  success "Identidade do git salva em ~/.gitconfig."
+}
+
 update_configuration() {
   copy_dotfiles
   seed_wallpaper
+  setup_git_identity
 
   setup_fish
 

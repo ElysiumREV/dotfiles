@@ -849,6 +849,17 @@ copy_dotfiles() {
     success "Atalhos .desktop copiados."
   fi
 
+  # Estado de apps que vale manter (ex.: dolphinstaterc guarda o tamanho da
+  # janela; sem ele o Dolphin abre em 280x280 e espreme a barra lateral)
+  if [[ -d "$DOTFILES_SOURCE/.local/state" ]]; then
+    mkdir -p "$HOME/.local/state"
+    backup_dotfile_conflicts "$DOTFILES_SOURCE/.local/state" "$HOME/.local/state"
+
+    cp -r "$DOTFILES_SOURCE/.local/state/." "$HOME/.local/state/"
+
+    success "Estado de apps copiado."
+  fi
+
   # Pictures
   if [[ -d "$DOTFILES_SOURCE/Pictures" ]]; then
     mkdir -p "$HOME/Pictures"

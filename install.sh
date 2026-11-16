@@ -488,7 +488,7 @@ ensure_user_service() {
     return 0
   fi
 
-  info "Ativando serviço de áudio do usuário: $unit..."
+  info "Ativando serviço de usuário: $unit..."
   if systemctl --user enable --now "$unit"; then
     success "$unit habilitado e ativo para o usuário."
   else
@@ -506,6 +506,18 @@ ensure_essential_services() {
   ensure_user_service pipewire.socket
   ensure_user_service pipewire-pulse.socket
   ensure_user_service wireplumber.service
+
+  # Agente de polkit: janela de senha quando um app pede permissão de admin
+  # (Partition Manager, kio-admin no Dolphin...). Só habilita, sem --now:
+  # ele precisa da sessão gráfica e sobe com o graphical-session.target.
+  if systemctl --user is-enabled --quiet hyprpolkitagent.service; then
+    success "hyprpolkitagent já está habilitado."
+  elif systemctl --user enable hyprpolkitagent.service; then
+    success "hyprpolkitagent habilitado (sobe no próximo login)."
+  else
+    WARNINGS+=("Não foi possível habilitar o hyprpolkitagent. Rode: systemctl --user enable hyprpolkitagent.service")
+    warn "Não foi possível habilitar o hyprpolkitagent; confira manualmente."
+  fi
 
   # ufw é instalado mas não é ativado automaticamente
   # (mexe no firewall). Para ativar: sudo systemctl enable --now ufw && sudo ufw enable

@@ -1,0 +1,5 @@
+[user]
+	email = justomlo@proton.me
+	name = Justo
+[core]
+	hooksPath = /home/ely/.local/share/ggshield/git-hooks

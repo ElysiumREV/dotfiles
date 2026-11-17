@@ -23,6 +23,8 @@ ShellRoot {
         // Called by scripts/browser-chooser.sh, the default handler for web links.
         function openBrowserChooser(url: string): void { Services.WindowControl.openBrowserChooser(url); }
         function toggleBrowserChooser(): void { Services.WindowControl.toggleBrowserChooser(); }
+        // Called by ~/.config/hypr/scripts/gdrive.sh (Google Drive desktop entry).
+        function toggleGoogleDrive(): void { Services.WindowControl.toggleGoogleDrive(); }
         function screenshotRegion(): void { screenshotSelector.open("region"); }
         function screenshotWindow(): void { screenshotSelector.open("window"); }
         function cancelScreenshot(): void { screenshotSelector.close(); }

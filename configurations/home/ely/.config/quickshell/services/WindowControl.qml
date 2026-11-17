@@ -16,6 +16,8 @@ Singleton {
     property bool browserChooserVisible: false
     property var browserChooserMonitor: null
     property string browserChooserUrl: ""
+    property bool googleDriveVisible: false
+    property var googleDriveMonitor: null
 
     function closeOverlays(): void {
         launcherVisible = false;
@@ -29,6 +31,8 @@ Singleton {
         clipboardMonitor = null;
         browserChooserVisible = false;
         browserChooserMonitor = null;
+        googleDriveVisible = false;
+        googleDriveMonitor = null;
     }
 
     function openLauncher(monitor): void {
@@ -95,6 +99,17 @@ Singleton {
             closeOverlays();
         else
             openBrowserChooser("");
+    }
+
+    // Google Drive account chooser (hypr/scripts/gdrive.sh).
+    function toggleGoogleDrive(): void {
+        if (googleDriveVisible) {
+            closeOverlays();
+        } else {
+            closeOverlays();
+            googleDriveMonitor = Hyprland.focusedMonitor;
+            googleDriveVisible = true;
+        }
     }
 
     function toggleClipboardHistory(monitor): void {

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Google Drive
+Comment=Choose a Google account and open its Drive in Dolphin (rclone)
+Exec=sh -c "\\$HOME/.config/hypr/scripts/gdrive.sh"
+Icon=folder-gdrive
+Terminal=false
+Categories=System;FileTools;FileManager;
+Actions=unmount;
+
+[Desktop Action unmount]
+Name=Unmount all Google Drive accounts
+Exec=sh -c "\\$HOME/.config/hypr/scripts/gdrive.sh unmount"

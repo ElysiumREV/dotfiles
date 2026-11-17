@@ -99,6 +99,12 @@ Variants {
                         }
 
                         Widgets.PopupLoadState {
+                            id: googleDrivePopupState
+                            requested: Services.WindowControl.googleDriveVisible
+                                && Hyprland.monitorFor(modelData) === Services.WindowControl.googleDriveMonitor
+                        }
+
+                        Widgets.PopupLoadState {
                             id: clipboardPopupState
                             requested: Services.WindowControl.clipboardVisible
                                 && Hyprland.monitorFor(modelData) === Services.WindowControl.clipboardMonitor
@@ -163,6 +169,15 @@ Variants {
                             QsModules.BrowserChooser {
                                 targetScreen: modelData
                                 keepVisible: browserChooserPopupState.active
+                            }
+                        }
+
+                        LazyLoader {
+                            activeAsync: googleDrivePopupState.active
+
+                            QsModules.GoogleDriveChooser {
+                                targetScreen: modelData
+                                keepVisible: googleDrivePopupState.active
                             }
                         }
 

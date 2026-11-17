@@ -225,7 +225,7 @@ PKGS_FILES=(
   purpose
   kimageformats
   qt6-imageformats
-  kio-gdrive # gdrive:/ no Dolphin; AG_PROVIDERS/AG_SERVICES em uwsm/env
+  rclone # Google Drive: ~/.config/hypr/scripts/gdrive.sh (login na primeira vez)
 )
 
 # Ferramentas de desenvolvimento esperadas pelo Neovim (LazyVim, Telescope,

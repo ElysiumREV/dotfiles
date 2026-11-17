@@ -11,7 +11,7 @@ import "../widgets" as Widgets
 
 // Asks which browser opens a link (or a new window). Links arrive through
 // scripts/browser-chooser.sh, registered as the default browser; the
-// SUPER+SHIFT+B bind opens it without a URL.
+// SUPER+B bind opens it without a URL.
 // Options: every Firefox profile from profiles.ini (default profile first),
 // then the extra browsers below that are installed.
 PanelWindow {

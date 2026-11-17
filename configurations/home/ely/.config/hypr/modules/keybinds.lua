@@ -4,7 +4,6 @@
 
 local terminal = "kitty"
 local fileManager = "dolphin"
-local browser = "firefox"
 local mainMod = "SUPER"
 
 -- Apps
@@ -40,9 +39,8 @@ hl.bind(
 	{ description = "Windows: Toggle fullscreen" }
 )
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo(), { description = "Windows: Toggle pseudo mode" })
-hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser), { description = "Apps: Open browser" })
 hl.bind(
-	mainMod .. " + SHIFT + B",
+	mainMod .. " + B",
 	hl.dsp.exec_cmd("qs ipc call shell toggleBrowserChooser"),
 	{ description = "Apps: Choose browser / Firefox profile" }
 )

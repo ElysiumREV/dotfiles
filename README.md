@@ -14,10 +14,13 @@
 ### How it works
 
 - `configurations/` mirrors the files listed in `backup.conf` (paths relative to `$HOME`). Run `./backup.sh` to copy the current system files into it; generated files (see `backup.exclude`) keep their last committed version unless you pass `--all`.
-- `install.sh` (Arch/CachyOS) and `install_fedora.sh` (Fedora, secondary) install the packages and copy `configurations/` into `$HOME`.
+- `install.sh` (Arch/CachyOS) installs the packages and copies `configurations/` into `$HOME`. `install_fedora.sh` and `install_debian.sh` are secondary ports of it.
+- `system/` holds root-owned tweaks (`/etc` files): `system/common/apply.sh` plus `system/desktop/apply.sh` or `system/laptop/apply.sh` depending on the machine.
+- `nix/` is a Home Manager flake (experimental).
+- `bspwm/`, `sxhkd/` and `picom/` are a work-in-progress X11 fallback session meant to mirror the Hyprland setup.
 - Changing the wallpaper in Quickshell (`SUPER+W`) runs `~/.config/quickshell/scripts/apply_colors.sh`: Matugen only generates the color files, and that script reloads every application.
 - The Quickshell UI, logs and code comments are in English. Its design notes live in `configurations/home/ely/.config/quickshell/DIARIO_DO_QUICKSHELL.md` (Portuguese).
-- After changing the Quickshell config, run `~/.config/quickshell/scripts/smoke-test.sh` inside the session: it opens every panel and fails if the log shows QML errors.
+- After changing the Quickshell config, check `qs log` for QML errors. `~/.config/quickshell/scripts/smoke-test.sh` does a full pass (opens every panel), but it takes over the desktop while it runs.
 
 ### License
 

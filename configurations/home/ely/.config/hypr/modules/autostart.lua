@@ -3,15 +3,6 @@
 --------------------
 
 hl.on("hyprland.start", function()
-	-- Session Environment
-	-- Old fix i made, the new one is from omarchy config
-	-- hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-	-- hl.exec_cmd("systemctl --user import-environment $(env | cut -d'=' -f 1)")
-	-- hl.exec_cmd("dbus-update-activation-environment --systemd --all")
-
-	-- check whether this is needed
-	-- hl.exec_cmd("gnome-keyring-daemon --start")
-
 	-- Panel / system tray / notifications
 	-- QS_ICON_THEME pins the icon theme (read from kdeglobals at startup) so the
 	-- KDE platform theme can't swap it at runtime; app icons used to vanish
@@ -25,7 +16,6 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("uwsm app -- hypridle")
 	-- Eco visuals on battery / power-saver (no-op on the desktop)
 	hl.exec_cmd("uwsm app -- ~/.config/hypr/scripts/power-watch.sh")
-	-- hl.exec_cmd("systemctl --user start hyprpolkitagent")
 
 	-- Apps / services
 	hl.exec_cmd("uwsm app -- awww-daemon")

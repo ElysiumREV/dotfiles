@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # This script copy files mentioned inside `backup.conf` to the root of the project.
 #
@@ -10,52 +10,48 @@
 #   ./backup.sh          normal backup (keeps generated files as committed)
 #   ./backup.sh --all    also refresh the generated files (new baseline)
 
+set -u
+
+cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
+
 # file to look for the paths to backup.
 backupPaths="./backup.conf"
 # file with generated paths (relative to the home directory) to keep as committed.
 excludePaths="./backup.exclude"
-# home directory path.
-homeDirectory=~
-# same line identifier to echo in the same line.
-sameLine="\e[1A\e[K"
 
 refreshGenerated=0
-if [ "$1" = "--all" ]; then
+if [[ "${1:-}" == "--all" ]]; then
   refreshGenerated=1
 fi
 
+# prints the non-empty, non-comment lines of a file
+entries() {
+  sed -e '/^[ \t]*#/d' -e '/^[ \t]*$/d' "$1"
+}
+
 echo "🛑 Clearing configurations directory..."
-# removing the folder with exsiting contents. we have git version anyway!
+# removing the folder with existing contents. we have git version anyway!
 rm -rf configurations
-# creating it again for backup.
 mkdir configurations
-sleep 1
-echo -e "$sameLine✅ Configurations directory cleared."
-sleep 1
 
-echo -e "$sameLine🏁 Starting backup..."
-sleep 1
+echo "🏁 Starting backup..."
 
-# looping through the list & avoiding the empty spaces
-sed '/^[ \t]*$/d' $backupPaths | while read filePath; do
-  echo -e "$sameLine⏳ Copying: $filePath"
+failed=0
+while IFS= read -r filePath; do
+  # expand the leading ~ to the home directory
+  originalFile="${filePath/#\~/$HOME}"
 
-  # find & replace for ~ with home path
-  findThis="~/"
-  replaceWith="$homeDirectory/"
-  originalFile="${filePath//${findThis}/${replaceWith}}"
-
-  # copying the files
-  cp --parents --recursive $originalFile ./configurations
-  sleep 0.05
-done
+  if ! cp --parents --recursive "$originalFile" ./configurations; then
+    failed=1
+  fi
+done < <(entries "$backupPaths")
 
 # restoring generated files from the last commit (skipped with --all)
-if [ "$refreshGenerated" -eq 0 ] && [ -f "$excludePaths" ]; then
-  echo -e "$sameLine♻️  Keeping generated files as committed..."
+if [[ "$refreshGenerated" -eq 0 && -f "$excludePaths" ]]; then
+  echo "♻️  Keeping generated files as committed..."
 
-  sed -e '/^[ \t]*#/d' -e '/^[ \t]*$/d' "$excludePaths" | while read -r relPath; do
-    target="configurations${homeDirectory}/${relPath}"
+  while IFS= read -r relPath; do
+    target="configurations${HOME}/${relPath}"
 
     if git cat-file -e "HEAD:$target" 2>/dev/null; then
       # already in the repo: bring back the committed version
@@ -64,9 +60,14 @@ if [ "$refreshGenerated" -eq 0 ] && [ -f "$excludePaths" ]; then
       # never committed: do not add it now
       rm -f "$target"
     fi
-  done
+  done < <(entries "$excludePaths")
 fi
 
-git add .
+echo
+git status --short -- configurations
 
-echo -e "$sameLine🎉 Backup finished! You can review & commit your changes."
+if [[ "$failed" -eq 1 ]]; then
+  echo "⚠️  Backup finished with errors (see above)."
+  exit 1
+fi
+echo "🎉 Backup finished! Review the changes above, then git add & commit."

@@ -8,7 +8,6 @@ require("modules.input")
 require("modules.keybinds")
 require("modules.workspaces")
 require("modules.looknfeel")
--- require("modules.colors")
 
 --------------------
 -- MONITORS
@@ -21,7 +20,7 @@ hl.monitor({
 	position = "auto-right",
 	scale = 1,
 	cm = "auto",
-	icc = "/home/ely/.config/hypr/icc/lg-24gl600f-rtings.icm", -- LG 24GL600F, RTINGS calibration
+	icc = os.getenv("HOME") .. "/.config/hypr/icc/lg-24gl600f-rtings.icm", -- LG 24GL600F, RTINGS calibration
 })
 -- hl.monitor({ output = "DP-2", mode = "1920x1080@144", position = "auto-right", scale = 1, cm = "auto" })
 -- Notebook

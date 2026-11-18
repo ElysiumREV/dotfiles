@@ -4,9 +4,13 @@
 set -e
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-echo "==> Copiando regra polkit e hook do pacman para /etc"
+echo "==> Copiando regra polkit para /etc"
 sudo install -Dm644 etc/polkit-1/rules.d/50-vpn-on-demand.rules /etc/polkit-1/rules.d/50-vpn-on-demand.rules
-sudo install -Dm644 etc/pacman.d/hooks/proton-vpn-on-demand.hook /etc/pacman.d/hooks/proton-vpn-on-demand.hook
+# Hook só existe no pacman (Arch); em outras distros o Proton é desabilitado
+# de novo a cada execução deste script.
+if command -v pacman >/dev/null; then
+  sudo install -Dm644 etc/pacman.d/hooks/proton-vpn-on-demand.hook /etc/pacman.d/hooks/proton-vpn-on-demand.hook
+fi
 
 echo "==> Políticas do Chrome/Chromium (privacidade e Memory Saver)"
 # Mesmo arquivo para os dois; cada um lê o seu diretório.

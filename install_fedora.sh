@@ -160,6 +160,7 @@ PKGS_BASE=(
   fish
   neovim
   vim-enhanced
+  uwsm # autostart.lua starts everything with `uwsm app --`
   kitty
   fastfetch
   btop
@@ -194,6 +195,7 @@ PKGS_SESSION=(
   wl-clipboard
   playerctl
   libnotify
+  gpu-screen-recorder # Quickshell screen recording (Terra)
 )
 
 # Serviços de sistema que o Quickshell consulta
@@ -245,6 +247,7 @@ PKGS_THEME=(
   papirus-icon-theme
   dconf
   gsettings-desktop-schemas
+  kf6-kconfig # kreadconfig6: Quickshell reads the icon theme from kdeglobals at startup
 )
 
 # JetBrainsMono Nerd Font e Material Symbols não têm pacote oficial:
@@ -271,6 +274,8 @@ PKGS_FILES=(
   kf6-purpose
   kf6-kimageformats
   qt6-qtimageformats
+  rclone # Google Drive: ~/.config/hypr/scripts/gdrive.sh (login na primeira vez)
+  fuse3  # rclone mount
 )
 
 # Ferramentas de desenvolvimento esperadas pelo Neovim (LazyVim, Telescope,
@@ -1113,6 +1118,49 @@ configure_flatpak() {
   success "Flatpak pronto para instalar aplicativos do Flathub."
 }
 
+# Google Chrome: navegador de estudos/trabalho. Vem do RPM oficial (não do
+# Flathub) porque as políticas em /etc/opt/chrome (system/common) só valem
+# para a versão nativa. O RPM também cadastra o repositório do Google, então
+# as atualizações chegam pelo dnf.
+install_google_chrome() {
+  if rpm -q google-chrome-stable &>/dev/null; then
+    success "Google Chrome já está instalado."
+    return 0
+  fi
+
+  info "Instalando o Google Chrome..."
+  if sudo dnf install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm; then
+    success "Google Chrome instalado."
+  else
+    WARNINGS+=("Falha ao instalar o Google Chrome. Baixe o .rpm em google.com/chrome.")
+    warn "Falha ao instalar o Google Chrome."
+  fi
+}
+
+# Ajustes de /etc em system/. common e laptop não dependem da distro;
+# desktop instala pacotes com pacman (scx, ananicy-cpp do CachyOS) e ainda
+# não foi portado.
+run_system_tweaks() {
+  local name="$1" label="$2"
+
+  info "Aplicando ajustes de $label..."
+  if "$DOTFILES_DIR/system/$name/apply.sh"; then
+    success "Ajustes de $label aplicados."
+  else
+    WARNINGS+=("Falha ao aplicar system/$name/apply.sh.")
+    warn "Falha ao aplicar os ajustes de $label; rode system/$name/apply.sh manualmente."
+  fi
+}
+
+setup_system_tweaks() {
+  run_system_tweaks common "serviços sob demanda e políticas do Chrome"
+  if ls /sys/class/power_supply/BAT* >/dev/null 2>&1; then
+    run_system_tweaks laptop "bateria (notebook)"
+  else
+    WARNINGS+=("Ajustes de desempenho do desktop (system/desktop: scx_lavd, ananicy-cpp, gamemode) ainda não foram portados para o Fedora.")
+  fi
+}
+
 install_apps() {
   classify_packages "${FEDORA_APPS[@]}"
 
@@ -1331,6 +1379,20 @@ ensure_essential_services() {
   ensure_user_service pipewire.socket
   ensure_user_service pipewire-pulse.socket
   ensure_user_service wireplumber.service
+
+  # Agente de polkit: janela de senha quando um app pede permissão de admin
+  # (Partition Manager, kio-admin no Dolphin...). Só habilita, sem --now:
+  # ele precisa da sessão gráfica e sobe com o graphical-session.target.
+  if ! systemctl --user cat hyprpolkitagent.service &>/dev/null; then
+    WARNINGS+=("hyprpolkitagent não está instalado: apps que pedem senha de admin não vão mostrar a janela.")
+  elif systemctl --user is-enabled --quiet hyprpolkitagent.service; then
+    success "hyprpolkitagent já está habilitado."
+  elif systemctl --user enable hyprpolkitagent.service; then
+    success "hyprpolkitagent habilitado (sobe no próximo login)."
+  else
+    WARNINGS+=("Não foi possível habilitar o hyprpolkitagent. Rode: systemctl --user enable hyprpolkitagent.service")
+    warn "Não foi possível habilitar o hyprpolkitagent; confira manualmente."
+  fi
 
   # O Fedora já usa firewalld; ele não é alterado por este script.
 }
@@ -1686,21 +1748,69 @@ install_dependencies() {
 
   configure_flatpak
   install_apps
+  install_google_chrome
 
   install_optional_fedora_packages
   install_gpu_drivers
 
   ensure_essential_services
+  setup_system_tweaks
   setup_display_manager
 
   install_kde_material_you_colors
   install_pywalfox
   report_aur_only_packages
+  check_session_essentials
+}
+
+# Sem estes comandos a sessão sobe quebrada (sem barra, idle, wallpaper),
+# então avisa no fim mesmo que o pacote tenha virado só uma pendência.
+check_session_essentials() {
+  local cmd missing=()
+
+  for cmd in Hyprland uwsm quickshell matugen awww kreadconfig6 hypridle hyprlock; do
+    command -v "$cmd" &>/dev/null || missing+=("$cmd")
+  done
+
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    WARNINGS+=("Comandos essenciais da sessão não encontrados: ${missing[*]}. O Hyprland pode subir sem barra/idle/wallpaper até instalá-los.")
+    warn "Faltando para a sessão: ${missing[*]}"
+  else
+    success "Todos os componentes essenciais da sessão estão instalados."
+  fi
+}
+
+setup_git_identity() {
+  command -v git >/dev/null 2>&1 || return 0
+
+  local name email
+  name="$(git config --global user.name || true)"
+  email="$(git config --global user.email || true)"
+
+  if [[ -n "$name" && -n "$email" ]]; then
+    success "Identidade do git já configurada ($name)."
+    return 0
+  fi
+
+  info "Configurando a identidade do git (usada nos commits)."
+  [[ -n "$name" ]] || read -rp "Nome: " name
+  [[ -n "$email" ]] || read -rp "E-mail: " email
+
+  if [[ -z "$name" || -z "$email" ]]; then
+    WARNINGS+=("Identidade do git não configurada. Rode: git config --file ~/.gitconfig user.name \"Seu Nome\" && git config --file ~/.gitconfig user.email voce@exemplo.com")
+    warn "Nome ou e-mail vazio; identidade do git não configurada."
+    return 0
+  fi
+
+  git config --file "$HOME/.gitconfig" user.name "$name"
+  git config --file "$HOME/.gitconfig" user.email "$email"
+  success "Identidade do git salva em ~/.gitconfig."
 }
 
 update_configuration() {
   copy_dotfiles
   seed_wallpaper
+  setup_git_identity
 
   setup_fish
 

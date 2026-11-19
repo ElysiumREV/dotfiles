@@ -187,6 +187,12 @@ PanelWindow {
     }
 
     function launchSelected() {
+        // Enter pressed right after typing: apply the pending query first,
+        // otherwise the results of the previous query would be launched.
+        if (searchDebounce.running) {
+            searchDebounce.stop();
+            appliedSearchText = searchText;
+        }
         const entry = filteredApplications[selectedIndex];
         if (!entry)
             return;
@@ -402,7 +408,7 @@ PanelWindow {
                                 font.family: "Material Symbols Rounded"
                                 font.pixelSize: Config.Theme.iconSizeSm
                                 color: Config.Theme.colTextSec
-                        visible: index === root.selectedIndex
+                                visible: index === root.selectedIndex
                             }
                         }
 

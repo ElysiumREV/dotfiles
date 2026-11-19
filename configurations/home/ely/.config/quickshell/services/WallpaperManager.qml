@@ -36,7 +36,7 @@ Singleton {
         status = "Applying colors…";
         applyColorsProcess.exec([
                                     "bash",
-                                    Quickshell.env("HOME") + "/.config/quickshell/scripts/apply_colors.sh",
+                                    Quickshell.shellPath("scripts/apply_colors.sh"),
                                     pendingPath,
                                     Config.Preferences.theme.mode
                                 ]);
@@ -110,7 +110,7 @@ fi`,
             }
             applyColorsProcess.exec([
                                     "bash",
-                                    Quickshell.env("HOME") + "/.config/quickshell/scripts/apply_colors.sh",
+                                    Quickshell.shellPath("scripts/apply_colors.sh"),
                                     root.pendingPath,
                                     Config.Preferences.theme.mode
                                 ]);

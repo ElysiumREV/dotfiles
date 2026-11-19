@@ -2,12 +2,7 @@ import "../.." as Config
 import "../../services" as Services
 import "../../widgets" as Widgets
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
-import Quickshell
-import Quickshell.Bluetooth
-import Quickshell.Networking
-import Quickshell.Services.Pipewire
 
 ColumnLayout {
     required property var menu

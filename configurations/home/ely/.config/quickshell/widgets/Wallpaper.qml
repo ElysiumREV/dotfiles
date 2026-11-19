@@ -128,7 +128,10 @@ PanelWindow {
     }
 
     function scanDirectory(path) {
-        const cleanPath = (path ?? "").trim();
+        // Expand "~" ourselves: find receives the path literally, without a shell.
+        let cleanPath = (path ?? "").trim();
+        if (cleanPath === "~" || cleanPath.startsWith("~/"))
+            cleanPath = Quickshell.env("HOME") + cleanPath.slice(1);
         if (cleanPath === "") {
             folderExists = false;
             wallpapers = [];

@@ -175,7 +175,7 @@ Item {
                             delegate: Text {
                                 required property string modelData
                                 width: (weekdays.width - weekdays.columnSpacing * 6) / 7
-                            height: root.compact ? 15 : 18
+                                height: root.compact ? 15 : 18
                                 text: modelData
                                 color: Config.Theme.colMuted
                                 font.family: Config.Theme.fontFamily

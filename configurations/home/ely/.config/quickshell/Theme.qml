@@ -25,10 +25,6 @@ Singleton {
     property color colOsdBg: Colors.md3.surface_container_high
     property color colOsdMuted: Colors.md3.outline
     property color colOsdBorder: Colors.md3.outline_variant
-    property color colWlogoutBg: Colors.md3.surface_dim
-    property color colWlogoutButton: Colors.md3.surface_container
-    property color colWlogoutButtonHover: Colors.md3.primary_container
-    property color colWlogoutText: Colors.md3.on_surface
     property color colBorder: Colors.md3.outline
 
     // Semantic surfaces to keep the visual hierarchy between panels and cards.
@@ -42,7 +38,7 @@ Singleton {
         return Qt.rgba(color.r, color.g, color.b, opacity);
     }
 
-    // Fontes
+    // Fonts
     property string fontFamily: "JetBrainsMono Nerd Font"
     property int fontSizeCaption: 11
     property int fontSizeSmall: 12

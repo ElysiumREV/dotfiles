@@ -6,86 +6,110 @@ import Quickshell.Bluetooth
 import Quickshell.Io
 
 // State and operations behind the Bluetooth section of the Arch Menu.
-// The menu only renders this state; commands run through bluetoothctl.
+// Devices, connections and pairing go through the native Quickshell/BlueZ API,
+// which updates by events (no polling). bluetoothctl is only used by
+// BluetoothPairingAgent to answer PIN/confirmation requests.
 Singleton {
     id: root
 
-    // Set by the Arch Menu while it is visible; gates polling and agent cleanup.
+    // Set by the Arch Menu while it is visible; gates agent cleanup.
     property bool menuVisible: false
     property bool expanded: false
 
     readonly property var adapter: Bluetooth.defaultAdapter
     readonly property bool enabled: adapter?.enabled ?? false
-    readonly property bool blocked: adapter?.state === BluetoothAdapterState.Blocked
+    // While rfkill soft-blocks the radio BlueZ may expose no adapter at all; treat
+    // that as blocked too so the power button still tries to unblock it.
+    readonly property bool blocked: !adapter || adapter.state === BluetoothAdapterState.Blocked
+    // Set when the adapter must be powered on as soon as rfkill releases it.
+    property bool enableWhenReady: false
     readonly property bool scanning: adapter?.discovering ?? false
+    readonly property int connectedCount: Bluetooth.devices.values.filter(device => device.connected).length
 
-    property var devices: []
-    property var connected: []
-    property var pairedDevices: []
-    property var knownDevices: []
+    // BluetoothDevice objects: connected first, then paired, then named, then by name.
+    readonly property var devices: {
+        if (!enabled)
+            return [];
+        const list = (adapter?.devices?.values ?? []).slice();
+        list.sort((a, b) => {
+            if (a.connected !== b.connected)
+                return a.connected ? -1 : 1;
+            if (a.paired !== b.paired)
+                return a.paired ? -1 : 1;
+            const aNamed = hasName(a);
+            const bNamed = hasName(b);
+            if (aNamed !== bNamed)
+                return aNamed ? -1 : 1;
+            return displayName(a).localeCompare(displayName(b), undefined, { sensitivity: "base" });
+        });
+        return list;
+    }
+
     property string actionMessage: ""
     property string busyAddress: ""
     property string busyAction: ""
+    property var busyDevice: null
+    // True once BlueZ reported the operation in progress, so a later idle state means failure.
+    property bool busyStarted: false
     property string pendingForgetAddress: ""
+
+    // A forgotten device usually disappears from the list instead of changing state.
+    onDevicesChanged: {
+        if (busyAction === "forget" && !deviceFor(busyAddress))
+            finishAction("");
+    }
 
     onEnabledChanged: {
         if (!enabled) {
             expanded = false;
-            pairedDevices = [];
-            knownDevices = [];
-            devices = [];
-            connected = [];
             scanTimer.stop();
+            finishAction("");
             BluetoothPairingAgent.release();
         } else if (expanded) {
             BluetoothPairingAgent.ensureStarted();
-            devicesProcess.running = true;
-            knownDevicesProcess.running = true;
-            connectedProcess.running = true;
         }
+    }
+
+    function hasName(device) {
+        const name = device?.name ?? "";
+        return name !== "" && !/^([0-9A-F]{2}[:-]){5}[0-9A-F]{2}$/i.test(name);
+    }
+
+    function displayName(device) {
+        return device?.name || device?.deviceName || device?.address || "Unknown device";
+    }
+
+    function deviceFor(address) {
+        return (adapter?.devices?.values ?? []).find(device => device.address === address) ?? null;
     }
 
     // Releases the pairing agent unless a pairing is still in progress.
     function releaseAgentIfIdle() {
-        if (busyAction !== "pair" && busyAction !== "trust"
-                && BluetoothPairingAgent.promptType === "")
+        if (busyAction !== "pair" && BluetoothPairingAgent.promptType === "")
             BluetoothPairingAgent.release();
     }
 
     function cleanup() {
-        scanTimer.stop();
         stopScan();
         releaseAgentIfIdle();
     }
 
-    function refresh() {
-        if (enabled && expanded) {
-            devicesProcess.running = true;
-            knownDevicesProcess.running = true;
-            connectedProcess.running = true;
+    onAdapterChanged: {
+        if (adapter && enableWhenReady) {
+            enableWhenReady = false;
+            adapter.enabled = true;
         }
     }
 
-    function updateDevices() {
-        const result = pairedDevices.slice();
-        for (const device of knownDevices) {
-            if (!result.some(paired => paired.address === device.address))
-                result.push({ address: device.address, name: device.name, paired: false });
+    Connections {
+        target: root.adapter
+        ignoreUnknownSignals: true
+        function onStateChanged() {
+            if (root.enableWhenReady && root.adapter.state !== BluetoothAdapterState.Blocked) {
+                root.enableWhenReady = false;
+                root.adapter.enabled = true;
+            }
         }
-        result.sort((a, b) => {
-            const aConnected = isConnected(a.address);
-            const bConnected = isConnected(b.address);
-            if (aConnected !== bConnected)
-                return aConnected ? -1 : 1;
-            if (a.paired !== b.paired)
-                return a.paired ? -1 : 1;
-            const aHasName = a.name !== a.address;
-            const bHasName = b.name !== b.address;
-            if (aHasName !== bHasName)
-                return aHasName ? -1 : 1;
-            return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
-        });
-        devices = result;
     }
 
     function toggle() {
@@ -106,11 +130,10 @@ Singleton {
     }
 
     function toggleExpanded() {
-        if (expanded) {
+        if (expanded)
             setExpanded(false);
-        } else if (enabled) {
+        else if (enabled)
             setExpanded(true);
-        }
     }
 
     function setExpanded(value) {
@@ -123,104 +146,92 @@ Singleton {
             if (!enabled)
                 return;
             BluetoothPairingAgent.ensureStarted();
-            devicesProcess.running = true;
-            knownDevicesProcess.running = true;
-            connectedProcess.running = true;
             startScan();
-        } else if (busyAction !== "pair" && busyAction !== "trust"
-                && BluetoothPairingAgent.promptType === "") {
-            stopScan();
-            BluetoothPairingAgent.release();
         } else {
             stopScan();
+            releaseAgentIfIdle();
         }
     }
 
-    function connectDevice(address) {
-        if (busyAction !== "") return;
+    function beginAction(action, device, timeoutMs) {
         actionMessage = "";
-        busyAddress = address;
-        busyAction = "connect";
-        connectProcess.exec(["bluetoothctl", "connect", address]);
+        busyDevice = device;
+        busyAddress = device.address;
+        busyAction = action;
+        busyStarted = false;
+        actionTimeout.interval = timeoutMs;
+        actionTimeout.restart();
+    }
+
+    // message === "" means success (or nothing to report).
+    function finishAction(message) {
+        actionTimeout.stop();
+        busyDevice = null;
+        busyAddress = "";
+        busyAction = "";
+        busyStarted = false;
+        actionMessage = message;
+        if (!menuVisible)
+            releaseAgentIfIdle();
+    }
+
+    function failureMessage(action) {
+        return action === "pair" ? "Could not pair. Check that the device is in pairing mode."
+            : action === "connect" ? "Could not connect to the device."
+            : action === "disconnect" ? "Could not disconnect the device."
+            : "Could not remove the paired device.";
+    }
+
+    function connectDevice(address) {
+        const device = deviceFor(address);
+        if (busyAction !== "" || !device)
+            return;
+        beginAction("connect", device, 20000);
+        device.connect();
     }
 
     function disconnectDevice(address) {
-        if (busyAction !== "") return;
-        actionMessage = "";
-        busyAddress = address;
-        busyAction = "disconnect";
-        disconnectProcess.exec(["bluetoothctl", "disconnect", address]);
+        const device = deviceFor(address);
+        if (busyAction !== "" || !device)
+            return;
+        beginAction("disconnect", device, 10000);
+        device.disconnect();
     }
 
     function pairDevice(address) {
-        if (busyAction !== "") return;
-        actionMessage = "";
-        busyAddress = address;
-        busyAction = "pair";
+        const device = deviceFor(address);
+        if (busyAction !== "" || !device)
+            return;
+        beginAction("pair", device, 60000);
         BluetoothPairingAgent.ensureStarted();
+        // Give the agent a moment to register before BlueZ asks it anything.
         pairStartTimer.restart();
     }
 
     function forgetDevice(address) {
-        if (busyAction !== "") return;
+        if (busyAction !== "")
+            return;
         pendingForgetAddress = address;
     }
 
     function confirmForget() {
-        if (pendingForgetAddress === "") return;
-        actionMessage = "";
-        busyAddress = pendingForgetAddress;
-        busyAction = "forget";
-        forgetProcess.exec(["bluetoothctl", "remove", pendingForgetAddress]);
+        const device = deviceFor(pendingForgetAddress);
         pendingForgetAddress = "";
+        if (!device)
+            return;
+        beginAction("forget", device, 5000);
+        device.forget();
     }
 
     function deviceName(address) {
-        const device = devices.find(entry => entry.address === address);
-        return device?.name ?? address;
-    }
-
-    function refreshDevices() {
-        if (!devicesProcess.running)
-            devicesProcess.running = true;
-        if (!knownDevicesProcess.running)
-            knownDevicesProcess.running = true;
-        if (!connectedProcess.running)
-            connectedProcess.running = true;
-    }
-
-    function completeAction(action, address, code) {
-        busyAddress = "";
-        busyAction = "";
-        if (code !== 0) {
-            actionMessage = action === "pair"
-                ? "Could not pair. Check that the device is in pairing mode."
-                : action === "connect" ? "Could not connect to the device."
-                : action === "disconnect" ? "Could not disconnect the device."
-                : "Could not remove the paired device.";
-            if (!menuVisible && BluetoothPairingAgent.promptType === "")
-                BluetoothPairingAgent.release();
-            return;
-        }
-        actionMessage = "";
-        if (action === "pair") {
-            busyAddress = address;
-            busyAction = "trust";
-            trustProcess.exec(["bluetoothctl", "trust", address]);
-            return;
-        }
-        refreshDevices();
-        if (!menuVisible && BluetoothPairingAgent.promptType === "")
-            BluetoothPairingAgent.release();
+        const device = deviceFor(address);
+        return device ? displayName(device) : address;
     }
 
     function startScan() {
-        if (!enabled)
+        if (!enabled || !adapter)
             return;
-
-        if (adapter)
-            adapter.discovering = true;
-        knownDevicesProcess.running = true;
+        adapter.discovering = true;
         scanTimer.restart();
     }
 
@@ -231,25 +242,77 @@ Singleton {
     }
 
     function isConnected(address) {
-        return connected.indexOf(address) !== -1;
+        return deviceFor(address)?.connected ?? false;
     }
 
     function batteryLabel(address) {
-        const liveDevices = Bluetooth.devices.values;
-        const device = liveDevices.find(entry => entry.address === address);
+        const device = deviceFor(address);
         return device?.batteryAvailable ? Math.round(device.battery * 100) + "%" : "";
     }
 
+    // Follows the device being operated on to know when the operation ends.
+    Connections {
+        target: root.busyDevice
+        ignoreUnknownSignals: true
+
+        function onStateChanged() {
+            const device = root.busyDevice;
+            if (root.busyAction === "connect") {
+                if (device.state === BluetoothDeviceState.Connecting)
+                    root.busyStarted = true;
+                else if (device.state === BluetoothDeviceState.Connected)
+                    root.finishAction("");
+                else if (device.state === BluetoothDeviceState.Disconnected && root.busyStarted)
+                    root.finishAction(root.failureMessage("connect"));
+            } else if (root.busyAction === "disconnect") {
+                if (device.state === BluetoothDeviceState.Disconnected)
+                    root.finishAction("");
+            }
+        }
+
+        function onPairingChanged() {
+            const device = root.busyDevice;
+            if (root.busyAction !== "pair")
+                return;
+            if (device.pairing)
+                root.busyStarted = true;
+            else if (root.busyStarted && !device.paired)
+                root.finishAction(root.failureMessage("pair"));
+        }
+
+        function onPairedChanged() {
+            const device = root.busyDevice;
+            if (root.busyAction === "pair" && device.paired) {
+                // Trusted devices reconnect on their own later.
+                device.trusted = true;
+                root.finishAction("");
+            } else if (root.busyAction === "forget" && !device.paired) {
+                root.finishAction("");
+            }
+        }
+    }
+
     Timer {
-        interval: 15000
-        repeat: true
-        running: root.menuVisible && root.expanded && root.enabled
-        onTriggered: root.refresh()
+        id: actionTimeout
+        repeat: false
+        onTriggered: {
+            const action = root.busyAction;
+            const device = root.busyDevice;
+            if (action === "")
+                return;
+            // A forgotten device may simply vanish from the list: that is success.
+            if (action === "forget" && (!device || !root.deviceFor(root.busyAddress)?.paired)) {
+                root.finishAction("");
+                return;
+            }
+            if (action === "pair" && device?.pairing)
+                device.cancelPair();
+            root.finishAction(root.failureMessage(action));
+        }
     }
 
     Timer {
         id: scanTimer
-
         interval: 8000
         repeat: false
         onTriggered: root.stopScan()
@@ -260,23 +323,11 @@ Singleton {
         interval: 800
         repeat: false
         onTriggered: {
-            if (BluetoothPairingAgent.ready && root.busyAddress !== "") {
-                pairProcess.exec(["bluetoothctl", "pair", root.busyAddress]);
+            if (BluetoothPairingAgent.ready && root.busyDevice) {
+                root.busyDevice.pair();
             } else {
-                root.busyAddress = "";
-                root.busyAction = "";
-                root.actionMessage = BluetoothPairingAgent.status || "Pairing agent unavailable.";
+                root.finishAction(BluetoothPairingAgent.status || "Pairing agent unavailable.");
             }
-        }
-    }
-
-    Timer {
-        interval: 4000
-        repeat: true
-        running: root.menuVisible && root.scanning
-        onTriggered: {
-            if (!knownDevicesProcess.running)
-                knownDevicesProcess.running = true;
         }
     }
 
@@ -285,110 +336,16 @@ Singleton {
 
         command: ["rfkill", "unblock", "bluetooth"]
 
-        onExited: (code) => {
+        onExited: code => {
             if (code === 0) {
-                Qt.callLater(() => {
-                    if (root.adapter)
-                        root.adapter.enabled = true;
-                });
+                // The adapter may only appear after the unblock; onAdapterChanged finishes it.
+                if (root.adapter && root.adapter.state !== BluetoothAdapterState.Blocked)
+                    Qt.callLater(() => root.adapter.enabled = true);
+                else
+                    root.enableWhenReady = true;
             } else {
                 root.actionMessage = "The system did not allow unblocking Bluetooth (rfkill).";
             }
         }
-    }
-
-    Process {
-        id: devicesProcess
-
-        command: ["bluetoothctl", "devices", "Paired"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const result = [];
-                for (let line of text.trim().split("\n")) {
-                    const match = line.trim().match(/^Device\s+([0-9A-Fa-f:]{17})\s+(.+)$/);
-                    if (match)
-                        result.push({ address: match[1], name: match[2], paired: true });
-                }
-                root.pairedDevices = result;
-                root.updateDevices();
-            }
-        }
-    }
-
-    Process {
-        id: knownDevicesProcess
-
-        command: ["bluetoothctl", "devices"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const result = [];
-                for (const line of text.trim().split("\n")) {
-                    const match = line.trim().match(/^Device\s+([0-9A-Fa-f:]{17})\s+(.+)$/);
-                    if (match)
-                        result.push({ address: match[1], name: match[2] });
-                }
-                root.knownDevices = result;
-                root.updateDevices();
-            }
-        }
-    }
-
-    Process {
-        id: connectedProcess
-
-        command: ["bluetoothctl", "devices", "Connected"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const result = [];
-                for (const line of text.trim().split("\n")) {
-                    const match = line.match(/^Device\s+([0-9A-Fa-f:]{17})/);
-                    if (match)
-                        result.push(match[1]);
-                }
-                root.connected = result;
-                root.updateDevices();
-            }
-        }
-    }
-
-    Process {
-        id: connectProcess
-
-        onExited: (code) => root.completeAction("connect", root.busyAddress, code)
-    }
-
-    Process {
-        id: pairProcess
-
-        onExited: (code) => root.completeAction("pair", root.busyAddress, code)
-    }
-
-    Process {
-        id: disconnectProcess
-
-        onExited: (code) => root.completeAction("disconnect", root.busyAddress, code)
-    }
-
-    Process {
-        id: trustProcess
-
-        onExited: (code) => {
-            root.busyAddress = "";
-            root.busyAction = "";
-            if (code !== 0)
-                root.actionMessage = "Paired, but could not mark the device as trusted.";
-            root.refreshDevices();
-            if (!root.menuVisible && BluetoothPairingAgent.promptType === "")
-                BluetoothPairingAgent.release();
-        }
-    }
-
-    Process {
-        id: forgetProcess
-
-        onExited: (code) => root.completeAction("forget", root.busyAddress, code)
     }
 }

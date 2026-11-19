@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import ".." as Config
 import "." as QsWidgets
 import "../services" as QsServices
@@ -38,7 +39,9 @@ Scope {
     readonly property var volume: QsServices.Volume
     readonly property int percentage: volume?.percentage ?? 0
     readonly property bool muted: volume?.effectivelyMuted ?? true
-    readonly property string icon: volume?.icon ?? "󰕾"
+    // Same Material Symbols names as the bar volume module.
+    readonly property string icon: muted || percentage <= 0 ? "volume_off"
+        : (percentage < 35 ? "volume_down" : "volume_up")
 
     Timer {
         id: hideTimer
@@ -46,10 +49,16 @@ Scope {
         onTriggered: root.shouldShowOsd = false
     }
 
+    readonly property var focusedScreen: Quickshell.screens.find(
+        screen => Hyprland.monitorFor(screen) === Hyprland.focusedMonitor
+    ) ?? Quickshell.screens[0] ?? null
+
     LazyLoader {
         active: root.shouldShowOsd
 
         PanelWindow {
+            // Shown on the monitor that has focus, like the notification popups.
+            screen: root.focusedScreen
             anchors.bottom: true
             margins.bottom: screen.height / 5
             exclusiveZone: 0

@@ -19,7 +19,6 @@ Item {
     readonly property bool isLow: BatteryRules.isLow(batteryLevel, isPluggedIn)
     readonly property bool isCritical: BatteryRules.isCritical(batteryLevel, isPluggedIn)
     property bool groupHighlighted: false
-    property bool hovered: false
 
     implicitWidth: batteryPresent ? batteryIndicatorRow.implicitWidth : 22
     implicitHeight: Config.Theme.moduleHeight
@@ -48,7 +47,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.isCharging && root.batteryLevel < 100
             text: "bolt"
-            color: Config.Theme.colFg
+            color: root.groupHighlighted ? Config.Theme.colOnHighlightContainer : Config.Theme.colFg
             font.family: "Material Symbols Rounded"
             font.pixelSize: Config.Theme.fontSizeSmall
             verticalAlignment: Text.AlignVCenter
@@ -57,7 +56,7 @@ Item {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: root.batteryLevel
-            color: Config.Theme.colFg
+            color: root.groupHighlighted ? Config.Theme.colOnHighlightContainer : Config.Theme.colFg
             font.family: Config.Theme.fontFamily
             font.pixelSize: Config.Theme.fontSizeSmall
             verticalAlignment: Text.AlignVCenter
@@ -103,8 +102,6 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onEntered: root.hovered = true
-        onExited: root.hovered = false
         onClicked: root.requestMenu()
     }
 }

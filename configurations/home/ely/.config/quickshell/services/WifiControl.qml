@@ -156,6 +156,13 @@ Singleton {
         pendingNetwork = null;
     }
 
+    function cancelPassword() {
+        showPassword = false;
+        password = "";
+        pendingSsid = "";
+        pendingNetwork = null;
+    }
+
     function refreshNetworks() {
         if (!device)
             return;

@@ -97,7 +97,7 @@ PanelWindow {
 
     function startAdding() {
         adding = true;
-        nameField.text = root.accounts.length === 0 ? "pessoal" : "";
+        nameField.text = root.accounts.length === 0 ? "personal" : "";
         Qt.callLater(() => {
             nameField.forceActiveFocus();
             nameField.selectAll();

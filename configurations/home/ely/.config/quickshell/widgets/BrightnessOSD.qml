@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import ".." as Config
 import "." as QsWidgets
 import "../services" as QsServices
@@ -22,10 +23,9 @@ Scope {
     }
 
     readonly property string icon: {
-        if (percentage >= 75) return "󰃠"
-        if (percentage >= 50) return "󰃟"
-        if (percentage >= 25) return "󰃞"
-        return "󰃝"
+        if (percentage >= 66) return "brightness_high"
+        if (percentage >= 33) return "brightness_medium"
+        return "brightness_low"
     }
 
     onPercentageChanged: {
@@ -43,10 +43,16 @@ Scope {
         onTriggered: root.shouldShowOsd = false
     }
 
+    readonly property var focusedScreen: Quickshell.screens.find(
+        screen => Hyprland.monitorFor(screen) === Hyprland.focusedMonitor
+    ) ?? Quickshell.screens[0] ?? null
+
     LazyLoader {
         active: root.shouldShowOsd
 
         PanelWindow {
+            // Shown on the monitor that has focus, like the notification popups.
+            screen: root.focusedScreen
             anchors.bottom: true
             margins.bottom: screen.height / 5
             exclusiveZone: 0

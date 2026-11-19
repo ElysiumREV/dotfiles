@@ -82,12 +82,6 @@ ShellRoot {
         activeAsync: Services.WindowControl.logoutVisible
 
         WLogout {
-            backgroundColor: Config.Theme.colWlogoutBg
-            buttonColor: Config.Theme.colWlogoutButton
-            buttonHoverColor: Config.Theme.colWlogoutButtonHover
-            textColor: Config.Theme.colWlogoutText
-            borderColor: Config.Theme.colBorder
-
             LogoutButton {
                 command: "hyprlock"
                 keybind: Qt.Key_L
@@ -100,34 +94,37 @@ ShellRoot {
                 keybind: Qt.Key_E
                 text: "Logout"
                 icon: "logout"
+                danger: true
             }
 
             LogoutButton {
                 command: "hyprshutdown -t 'Sleeping...' --post-cmd 'systemctl suspend'"
                 keybind: Qt.Key_U
                 text: "Suspend"
-                icon: "suspend"
+                icon: "bedtime"
             }
 
             LogoutButton {
                 command: "hyprshutdown -t 'Hibernating...' --post-cmd 'systemctl hibernate'"
                 keybind: Qt.Key_H
                 text: "Hibernate"
-                icon: "hibernate"
+                icon: "mode_standby"
             }
 
             LogoutButton {
                 command: "hyprshutdown -t 'Shutting down...' --post-cmd 'shutdown -P 0'"
                 keybind: Qt.Key_S
                 text: "Shutdown"
-                icon: "shutdown"
+                icon: "power_settings_new"
+                danger: true
             }
 
             LogoutButton {
                 command: "hyprshutdown -t 'Restarting...' --post-cmd 'reboot'"
                 keybind: Qt.Key_R
                 text: "Reboot"
-                icon: "reboot"
+                icon: "restart_alt"
+                danger: true
             }
         }
     }

@@ -7,7 +7,6 @@ import "../services" as QsServices
 Item {
     id: root
 
-    property var barWindow
     property bool groupHighlighted: false
     signal requestMenu()
 

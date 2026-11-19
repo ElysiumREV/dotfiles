@@ -372,7 +372,7 @@ Variants {
                                         readonly property var connectedDevice: Bluetooth.devices.values.find(device => device.connected) ?? null
                                         Accessible.role: Accessible.StaticText
                                         Accessible.name: (connectedDevice
-                                            ? "Bluetooth connected to " + (connectedDevice.name || "dispositivo")
+                                            ? "Bluetooth connected to " + (connectedDevice.name || "device")
                                             : (Bluetooth.defaultAdapter?.enabled ? "Bluetooth on, not connected" : "Bluetooth off"))
                                             + (Services.Notifications.doNotDisturb ? "; Do Not Disturb on" : "")
 

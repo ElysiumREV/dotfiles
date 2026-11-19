@@ -58,7 +58,6 @@ Singleton {
     property bool muted: false
     property real lastAudibleVolume: 0.5
     property int percentage: 0
-    property string icon: "󰕾"
     readonly property bool effectivelyMuted: muted || percentage <= 0
 
     Component.onCompleted: bindDefaultSink()
@@ -73,7 +72,6 @@ Singleton {
                 volume = 0
                 percentage = 0
                 muted = false
-                icon = "󰕾"
             }
         }
     }
@@ -106,12 +104,6 @@ Singleton {
 
             if (!muted && percentage > 0)
                 lastAudibleVolume = volume
-
-            if (muted) icon = "󰝟"
-            else if (percentage >= 66) icon = "󰕾"
-            else if (percentage >= 33) icon = "󰖀"
-            else if (percentage > 0) icon = "󰕿"
-            else icon = "󰝟"
         }
     }
 

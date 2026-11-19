@@ -13,6 +13,18 @@ Item {
     readonly property var notificationService: Services.Notifications
     property bool panelActive: false
     property bool showHeader: true
+    // Expanded groups by app name. The groups model is rebuilt on every new
+    // notification, so the state cannot live in the delegates.
+    property var expandedApps: ({})
+
+    function toggleGroup(appName) {
+        const next = Object.assign({}, expandedApps);
+        if (next[appName])
+            delete next[appName];
+        else
+            next[appName] = true;
+        expandedApps = next;
+    }
     implicitWidth: 382
     implicitHeight: centerContent.implicitHeight
     focus: panelActive
@@ -118,7 +130,6 @@ Item {
                 spacing: Config.Theme.spaceSm
                 boundsBehavior: Flickable.StopAtBounds
                 activeFocusOnTab: true
-                reuseItems: true
                 model: notificationService.historyGroups
                 add: Transition {
                     ParallelAnimation {
@@ -167,7 +178,7 @@ Item {
                     width: ListView.view.width
                     implicitHeight: groupColumn.implicitHeight
                     height: implicitHeight
-                    property bool expanded: false
+                    readonly property bool expanded: root.expandedApps[modelData.appName] === true
                     Behavior on implicitHeight {
                         NumberAnimation {
                             duration: Config.Theme.motionDefault
@@ -187,7 +198,7 @@ Item {
                             Accessible.name: groupDelegate.modelData.appName + ", "
                                 + groupDelegate.modelData.notifications.length + " notifications. "
                                 + (groupDelegate.expanded ? "Collapse group" : "Expand group")
-                            onClicked: groupDelegate.expanded = !groupDelegate.expanded
+                            onClicked: root.toggleGroup(groupDelegate.modelData.appName)
 
                             contentItem: RowLayout {
                                 spacing: Config.Theme.spaceSm

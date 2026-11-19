@@ -7,6 +7,8 @@ Singleton {
     property bool launcherVisible: false
     property var launcherMonitor: null
     property bool logoutVisible: false
+    // Monitor that shows the session card; the other monitors are only dimmed.
+    property var logoutMonitor: null
     property bool wallpaperVisible: false
     property var wallpaperMonitor: null
     property bool wallhavenVisible: false
@@ -23,6 +25,7 @@ Singleton {
         launcherVisible = false;
         launcherMonitor = null;
         logoutVisible = false;
+        logoutMonitor = null;
         wallpaperVisible = false;
         wallpaperMonitor = null;
         wallhavenVisible = false;
@@ -54,6 +57,7 @@ Singleton {
             closeOverlays();
         } else {
             closeOverlays();
+            logoutMonitor = Hyprland.focusedMonitor;
             logoutVisible = true;
         }
     }

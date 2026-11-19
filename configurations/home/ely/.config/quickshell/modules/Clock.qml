@@ -96,11 +96,18 @@ Item {
         id: clock
         property date currentDate: new Date()
 
+        // Fires right after each minute boundary instead of polling, so the
+        // displayed time never lags behind the real one.
         Timer {
-            interval: 15000
+            id: minuteTimer
+            interval: 60000 - (Date.now() % 60000) + 50
             running: true
-            repeat: true
-            onTriggered: clock.currentDate = new Date()
+            repeat: false
+            onTriggered: {
+                clock.currentDate = new Date();
+                interval = 60000 - (Date.now() % 60000) + 50;
+                restart();
+            }
         }
     }
 }

@@ -118,6 +118,18 @@ Singleton {
         }
     }
 
+    // Popup X: take it off the screen but keep it (alive, read) in the center.
+    function archive(id) {
+        const notification = findActive(id);
+        if (notification?.transient) {
+            expirePopup(id);
+            return;
+        }
+        removePopup(id);
+        history = history.map(item => item.id !== id || !item.unread
+            ? item : Object.assign({}, item, { unread: false }));
+    }
+
     // The "default" action is what a click on the notification itself should do;
     // the remaining actions are shown as buttons.
     function defaultActionOf(notification) {

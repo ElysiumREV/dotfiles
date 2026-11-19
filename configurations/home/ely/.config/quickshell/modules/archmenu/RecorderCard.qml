@@ -2,7 +2,6 @@ import "../.." as Config
 import "../../services" as Services
 import "../../widgets" as Widgets
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 Rectangle {
@@ -11,9 +10,16 @@ Rectangle {
     readonly property var recorder: Services.ScreenRecorder
     readonly property var microphoneNodes: Services.Volume.inputDevices
     // Values stored in settings.json: "" = none, "default_input", or a PipeWire source name.
-    readonly property var microphoneValues: ["", "default_input"].concat(microphoneNodes.map(node => node.name))
+    // A saved source that is not plugged in stays listed (marked unavailable) instead of
+    // the combo silently showing "No microphone".
+    readonly property string savedMicrophone: Config.Preferences.recorder.microphone
+    readonly property bool savedMicrophoneMissing: !card.recorder.microphoneAvailable(savedMicrophone)
+    readonly property var microphoneValues: ["", "default_input"]
+        .concat(microphoneNodes.map(node => node.name))
+        .concat(savedMicrophoneMissing ? [savedMicrophone] : [])
     readonly property var microphoneLabels: ["No microphone", "Default microphone"]
         .concat(microphoneNodes.map(node => node.nickname || node.description || node.name))
+        .concat(savedMicrophoneMissing ? [savedMicrophone + " (unavailable)"] : [])
 
     Layout.fillWidth: true
     implicitHeight: column.implicitHeight + 2 * Config.Theme.spaceMd

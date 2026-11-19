@@ -22,6 +22,8 @@ PANELS=(
     toggleKeybindCheatsheet
     toggleWallpaper
     toggleWallhaven
+    toggleBrowserChooser
+    toggleGoogleDrive
     toggleLogout
 )
 # Known harmless noise from the environment, not from the shell code.

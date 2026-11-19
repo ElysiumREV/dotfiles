@@ -304,180 +304,181 @@ Scope {
                             surfaceColor: Config.Theme.colBg
                             cornerRadius: Config.Theme.radiusPanel
 
-                        ColumnLayout {
-                            anchors.fill: parent
-                            anchors.margins: 20
-                            spacing: Config.Theme.spaceMd
-                            RowLayout {
-                                Layout.fillWidth: true
-
-                                ColumnLayout {
+                            ColumnLayout {
+                                anchors.fill: parent
+                                anchors.margins: 20
+                                spacing: Config.Theme.spaceMd
+                                RowLayout {
                                     Layout.fillWidth: true
-                                    spacing: 2
 
-                                    Text {
-                                        text: "Hyprland shortcuts"
-                                        color: Config.Theme.colFg
-                                        font.family: Config.Theme.fontFamily
-                                        font.pixelSize: Config.Theme.fontSizeLarge
-                                        font.bold: true
-                                    }
-
-                                    Text {
-                                        text: `${root.filteredBindings.length} atalhos · Esc para fechar`
-                                        color: Config.Theme.colTextSec
-                                        font.family: Config.Theme.fontFamily
-                                        font.pixelSize: Config.Theme.fontSizeSmall
-                                    }
-                                }
-
-                                Widgets.IconButton {
-                                    iconName: "close"
-                                    Accessible.name: "Close shortcut cheatsheet"
-                                    onClicked: root.close()
-                                }
-                            }
-
-                            Widgets.ThemedTextField {
-                                id: searchField
-                                Layout.fillWidth: true
-                                placeholderText: "Search shortcut or action..."
-                                horizontalTextPadding: 6
-                                selectByMouse: true
-                                activeFocusOnTab: true
-
-                                background: Widgets.SurfaceCard {
-                                    surfaceColor: Config.Theme.colSurface
-                                    outlineOpacity: searchField.activeFocus ? 0.8 : 0.25
-                                    cornerRadius: Config.Theme.radiusControl
-                                }
-
-                                onTextChanged: root.searchText = text
-                                Keys.onPressed: event => {
-                                    if (event.key === Qt.Key_Escape) {
-                                        root.close();
-                                        event.accepted = true;
-                                    } else if (event.key === Qt.Key_Down
-                                               && shortcutList.count > 0) {
-                                        shortcutList.currentIndex = 0;
-                                        shortcutList.forceActiveFocus();
-                                        event.accepted = true;
-                                    }
-                                }
-                            }
-
-                            Rectangle {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                radius: Config.Theme.radiusCard
-                                color: Config.Theme.colPanel
-                                clip: true
-
-                                ListView {
-                                    id: shortcutList
-                                    anchors.fill: parent
-                                    anchors.margins: Config.Theme.spaceSm
-                                    clip: true
-                                    spacing: 2
-                                    model: root.filteredBindings
-                                    activeFocusOnTab: true
-                                    keyNavigationEnabled: true
-                                    currentIndex: -1
-
-                                    delegate: Item {
-                                        required property var modelData
-                                        required property int index
-                                        width: shortcutList.width
-                                        readonly property bool categoryHeader: index === 0
-                                            || root.filteredBindings[index - 1]?.category
-                                                !== modelData.category
-                                        height: 52 + (categoryHeader ? 30 : 0)
+                                    ColumnLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 2
 
                                         Text {
-                                            visible: parent.categoryHeader
-                                            anchors.left: parent.left
-                                            anchors.top: parent.top
-                                            anchors.leftMargin: Config.Theme.spaceSm
-                                            text: modelData.category
-                                            color: Config.Theme.colHighlight
+                                            text: "Hyprland shortcuts"
+                                            color: Config.Theme.colFg
                                             font.family: Config.Theme.fontFamily
-                                            font.pixelSize: Config.Theme.fontSizeSmall
+                                            font.pixelSize: Config.Theme.fontSizeLarge
                                             font.bold: true
-                                            verticalAlignment: Text.AlignVCenter
                                         }
 
-                                        Rectangle {
-                                            anchors.left: parent.left
-                                            anchors.right: parent.right
-                                            anchors.bottom: parent.bottom
-                                            height: 48
-                                            radius: Config.Theme.radiusControl
-                                            color: shortcutList.currentIndex === index
-                                                ? Config.Theme.colHighlightContainer
-                                                : rowMouse.containsMouse
-                                                    ? Config.Theme.colSurface : "transparent"
-
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                anchors.leftMargin: 10
-                                                anchors.rightMargin: Config.Theme.spaceMd
-                                                spacing: Config.Theme.spaceMd
-                                                Text {
-                                                    Layout.minimumWidth: 0
-                                                    Layout.preferredWidth: Math.min(250, shortcutList.width * 0.42)
-                                                    text: modelData.shortcut
-                                                    color: shortcutList.currentIndex === index
-                                                        ? Config.Theme.colOnHighlightContainer
-                                                        : Config.Theme.colFg
-                                                    font.family: Config.Theme.fontFamily
-                                                    font.pixelSize: Config.Theme.fontSizeSmall
-                                                    font.bold: true
-                                                    elide: Text.ElideRight
-                                                    verticalAlignment: Text.AlignVCenter
-                                                }
-
-                                                Text {
-                                                    Layout.fillWidth: true
-                                                    text: modelData.action
-                                                    color: shortcutList.currentIndex === index
-                                                        ? Config.Theme.colOnHighlightContainer
-                                                        : Config.Theme.colTextSec
-                                                    font.family: Config.Theme.fontFamily
-                                                    font.pixelSize: Config.Theme.fontSizeSmall
-                                                    elide: Text.ElideRight
-                                                    verticalAlignment: Text.AlignVCenter
-                                                }
-                                            }
-
-                                            MouseArea {
-                                                id: rowMouse
-                                                anchors.fill: parent
-                                                hoverEnabled: true
-                                                onEntered: shortcutList.currentIndex = index
-                                                onClicked: shortcutList.forceActiveFocus()
-                                            }
+                                        Text {
+                                            text: `${root.filteredBindings.length} shortcuts · Esc to close`
+                                            color: Config.Theme.colTextSec
+                                            font.family: Config.Theme.fontFamily
+                                            font.pixelSize: Config.Theme.fontSizeSmall
                                         }
                                     }
 
-                                    ScrollBar.vertical: Widgets.ThemeScrollBar { policy: ScrollBar.AsNeeded }
+                                    Widgets.IconButton {
+                                        iconName: "close"
+                                        Accessible.name: "Close shortcut cheatsheet"
+                                        onClicked: root.close()
+                                    }
                                 }
 
-                                Column {
-                                    anchors.centerIn: parent
-                                    spacing: 6
-                                    visible: root.loadError !== ""
-                                        || root.loading
-                                        || (root.bindings.length > 0
-                                            && root.filteredBindings.length === 0)
+                                Widgets.ThemedTextField {
+                                    id: searchField
+                                    Layout.fillWidth: true
+                                    placeholderText: "Search shortcut or action..."
+                                    horizontalTextPadding: 6
+                                    selectByMouse: true
+                                    activeFocusOnTab: true
 
-                                    Text {
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        text: root.loadError || (root.loading
-                                            ? "Loading shortcuts..."
-                                            : "No shortcuts match the search.")
-                                        color: Config.Theme.colTextSec
-                                        font.family: Config.Theme.fontFamily
-                                        font.pixelSize: Config.Theme.fontSize
+                                    background: Widgets.SurfaceCard {
+                                        surfaceColor: Config.Theme.colSurface
+                                        outlineOpacity: searchField.activeFocus ? 0.8 : 0.25
+                                        cornerRadius: Config.Theme.radiusControl
+                                    }
+
+                                    onTextChanged: root.searchText = text
+                                    Keys.onPressed: event => {
+                                        if (event.key === Qt.Key_Escape) {
+                                            root.close();
+                                            event.accepted = true;
+                                        } else if (event.key === Qt.Key_Down
+                                                   && shortcutList.count > 0) {
+                                            shortcutList.currentIndex = 0;
+                                            shortcutList.forceActiveFocus();
+                                            event.accepted = true;
+                                        }
+                                    }
+                                }
+
+                                Rectangle {
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    radius: Config.Theme.radiusCard
+                                    color: Config.Theme.colPanel
+                                    clip: true
+
+                                    ListView {
+                                        id: shortcutList
+                                        anchors.fill: parent
+                                        anchors.margins: Config.Theme.spaceSm
+                                        clip: true
+                                        spacing: 2
+                                        model: root.filteredBindings
+                                        activeFocusOnTab: true
+                                        keyNavigationEnabled: true
+                                        currentIndex: -1
+
+                                        delegate: Item {
+                                            required property var modelData
+                                            required property int index
+                                            width: shortcutList.width
+                                            readonly property bool categoryHeader: index === 0
+                                                || root.filteredBindings[index - 1]?.category
+                                            !== modelData.category
+                                            height: 52 + (categoryHeader ? 30 : 0)
+
+                                            Text {
+                                                visible: parent.categoryHeader
+                                                anchors.left: parent.left
+                                                anchors.top: parent.top
+                                                anchors.leftMargin: Config.Theme.spaceSm
+                                                text: modelData.category
+                                                color: Config.Theme.colHighlight
+                                                font.family: Config.Theme.fontFamily
+                                                font.pixelSize: Config.Theme.fontSizeSmall
+                                                font.bold: true
+                                                verticalAlignment: Text.AlignVCenter
+                                            }
+
+                                            Rectangle {
+                                                anchors.left: parent.left
+                                                anchors.right: parent.right
+                                                anchors.bottom: parent.bottom
+                                                height: 48
+                                                radius: Config.Theme.radiusControl
+                                                color: shortcutList.currentIndex === index
+                                                    ? Config.Theme.colHighlightContainer
+                                                    : rowMouse.containsMouse
+                                                        ? Config.Theme.colSurface : "transparent"
+
+                                                RowLayout {
+                                                    anchors.fill: parent
+                                                    anchors.leftMargin: 10
+                                                    anchors.rightMargin: Config.Theme.spaceMd
+                                                    spacing: Config.Theme.spaceMd
+                                                    Text {
+                                                        Layout.minimumWidth: 0
+                                                        Layout.preferredWidth: Math.min(250, shortcutList.width * 0.42)
+                                                        text: modelData.shortcut
+                                                        color: shortcutList.currentIndex === index
+                                                            ? Config.Theme.colOnHighlightContainer
+                                                            : Config.Theme.colFg
+                                                        font.family: Config.Theme.fontFamily
+                                                        font.pixelSize: Config.Theme.fontSizeSmall
+                                                        font.bold: true
+                                                        elide: Text.ElideRight
+                                                        verticalAlignment: Text.AlignVCenter
+                                                    }
+
+                                                    Text {
+                                                        Layout.fillWidth: true
+                                                        text: modelData.action
+                                                        color: shortcutList.currentIndex === index
+                                                            ? Config.Theme.colOnHighlightContainer
+                                                            : Config.Theme.colTextSec
+                                                        font.family: Config.Theme.fontFamily
+                                                        font.pixelSize: Config.Theme.fontSizeSmall
+                                                        elide: Text.ElideRight
+                                                        verticalAlignment: Text.AlignVCenter
+                                                    }
+                                                }
+
+                                                MouseArea {
+                                                    id: rowMouse
+                                                    anchors.fill: parent
+                                                    hoverEnabled: true
+                                                    onEntered: shortcutList.currentIndex = index
+                                                    onClicked: shortcutList.forceActiveFocus()
+                                                }
+                                            }
+                                        }
+
+                                        ScrollBar.vertical: Widgets.ThemeScrollBar { policy: ScrollBar.AsNeeded }
+                                    }
+
+                                    Column {
+                                        anchors.centerIn: parent
+                                        spacing: 6
+                                        visible: root.loadError !== ""
+                                            || root.loading
+                                            || (root.bindings.length > 0
+                                                && root.filteredBindings.length === 0)
+
+                                        Text {
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            text: root.loadError || (root.loading
+                                                ? "Loading shortcuts..."
+                                                : "No shortcuts match the search.")
+                                            color: Config.Theme.colTextSec
+                                            font.family: Config.Theme.fontFamily
+                                            font.pixelSize: Config.Theme.fontSize
+                                        }
                                     }
                                 }
                             }
@@ -487,5 +488,4 @@ Scope {
             }
         }
     }
-}
 }

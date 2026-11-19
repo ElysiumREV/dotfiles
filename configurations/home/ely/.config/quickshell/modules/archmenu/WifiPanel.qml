@@ -4,10 +4,7 @@ import "../../widgets" as Widgets
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Quickshell
-import Quickshell.Bluetooth
 import Quickshell.Networking
-import Quickshell.Services.Pipewire
 
 Rectangle {
     required property var menu
@@ -58,82 +55,82 @@ Rectangle {
                 id: wifiHeader
                 anchors.fill: parent
 
-            Text {
-                text: Services.WifiControl.enabled ? "wifi" : "wifi_off"
-                color: Services.WifiControl.enabled ? Config.Theme.colHighlight : Config.Theme.colMuted
-
-                font {
-                    family: "Material Symbols Rounded"
-                    pixelSize: Config.Theme.iconSizeLg
-                }
-
-            }
-
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 0
-
                 Text {
-                    text: "Wi-Fi"
-                    color: Config.Theme.colFg
+                    text: Services.WifiControl.enabled ? "wifi" : "wifi_off"
+                    color: Services.WifiControl.enabled ? Config.Theme.colHighlight : Config.Theme.colMuted
 
                     font {
-                        family: Config.Theme.fontFamily
-                        pixelSize: Config.Theme.fontSize
-                        bold: true
+                        family: "Material Symbols Rounded"
+                        pixelSize: Config.Theme.iconSizeLg
                     }
 
                 }
 
-                Text {
+                ColumnLayout {
                     Layout.fillWidth: true
-                    text: Services.WifiControl.enabled ? Services.WifiControl.name : "Disabled"
-                    color: Config.Theme.colMuted
-                    elide: Text.ElideRight
+                    spacing: 0
 
-                    font {
-                        family: Config.Theme.fontFamily
-                        pixelSize: Config.Theme.fontSizeSmall
+                    Text {
+                        text: "Wi-Fi"
+                        color: Config.Theme.colFg
+
+                        font {
+                            family: Config.Theme.fontFamily
+                            pixelSize: Config.Theme.fontSize
+                            bold: true
+                        }
+
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: Services.WifiControl.enabled ? Services.WifiControl.name : "Disabled"
+                        color: Config.Theme.colMuted
+                        elide: Text.ElideRight
+
+                        font {
+                            family: Config.Theme.fontFamily
+                            pixelSize: Config.Theme.fontSizeSmall
+                        }
+
                     }
 
                 }
 
-            }
+                Text {
+                    text: Services.WifiControl.enabled ? (Services.WifiControl.expanded ? "expand_less" : "expand_more") : ""
+                    color: Config.Theme.colMuted
 
-            Text {
-                text: Services.WifiControl.enabled ? (Services.WifiControl.expanded ? "expand_less" : "expand_more") : ""
-                color: Config.Theme.colMuted
+                    font {
+                        family: "Material Symbols Rounded"
+                        pixelSize: Config.Theme.iconSizeMd
+                    }
 
-                font {
-                    family: "Material Symbols Rounded"
-                    pixelSize: Config.Theme.iconSizeMd
                 }
-
-            }
-
-            Rectangle {
-                id: wifiToggle
-                Layout.preferredWidth: 38
-                Layout.preferredHeight: 22
-                radius: height / 2
-                color: Services.WifiControl.enabled ? Config.Theme.alpha(Config.Theme.colHighlight, 0.45) : Config.Theme.alpha(Config.Theme.colTextSec, 0.35)
 
                 Rectangle {
-                    x: Services.WifiControl.enabled ? parent.width - width - 3 : 3
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 16
-                    height: 16
+                    id: wifiToggle
+                    Layout.preferredWidth: 38
+                    Layout.preferredHeight: 22
                     radius: height / 2
-                    color: Services.WifiControl.enabled ? Config.Theme.colHighlight : Config.Theme.colFg
-                    Behavior on x { NumberAnimation { duration: 140 } }
-                }
+                    color: Services.WifiControl.enabled ? Config.Theme.alpha(Config.Theme.colHighlight, 0.45) : Config.Theme.alpha(Config.Theme.colTextSec, 0.35)
 
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: Services.WifiControl.toggle()
+                    Rectangle {
+                        x: Services.WifiControl.enabled ? parent.width - width - 3 : 3
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 16
+                        height: 16
+                        radius: height / 2
+                        color: Services.WifiControl.enabled ? Config.Theme.colHighlight : Config.Theme.colFg
+                        Behavior on x { NumberAnimation { duration: 140 } }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Services.WifiControl.toggle()
+                    }
                 }
-            }
 
             }
 
@@ -315,136 +312,25 @@ Rectangle {
 
             }
 
-            Rectangle {
+            Widgets.ActionButton {
                 Layout.fillWidth: true
                 visible: Services.WifiControl.networks.length > menu.wifiInitialVisibleCount
-                implicitHeight: 34
-                radius: Config.Theme.radiusControl
-                activeFocusOnTab: visible
-                Accessible.role: Accessible.Button
+                label: Services.WifiControl.showAll ? "Show less" : "Show all networks"
+                iconName: Services.WifiControl.showAll ? "expand_less" : "expand_more"
                 Accessible.name: Services.WifiControl.showAll ? "Show fewer Wi-Fi networks" : "Show all Wi-Fi networks"
-                color: activeFocus
-                    ? Config.Theme.alpha(Config.Theme.colHighlight, Config.Theme.stateSelectedOpacity)
-                    : (wifiShowMoreMouse.containsMouse
-                        ? Config.Theme.alpha(Config.Theme.colTextSec, Config.Theme.stateHoverOpacity)
-                        : "transparent")
-                border.width: activeFocus ? 1 : 0
-                border.color: Config.Theme.colHighlight
-
-                Keys.onPressed: event => {
-                    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
-                            || event.key === Qt.Key_Space) {
-                        Services.WifiControl.showAll = !Services.WifiControl.showAll;
-                        if (!Services.WifiControl.showAll)
-                            wifiFlickable.contentY = 0;
-                        event.accepted = true;
-                    }
+                onClicked: {
+                    Services.WifiControl.showAll = !Services.WifiControl.showAll;
+                    if (!Services.WifiControl.showAll)
+                        wifiFlickable.contentY = 0;
                 }
-
-                RowLayout {
-                    anchors.centerIn: parent
-                    spacing: 6
-
-                    Text {
-                        text: Services.WifiControl.showAll ? "expand_less" : "expand_more"
-                        color: Config.Theme.colHighlight
-
-                        font {
-                            family: "Material Symbols Rounded"
-                            pixelSize: Config.Theme.iconSizeSm
-                        }
-
-                    }
-
-                    Text {
-                        text: Services.WifiControl.showAll ? "Show less" : "Show all networks"
-                        color: Config.Theme.colFg
-
-                        font {
-                            family: Config.Theme.fontFamily
-                            pixelSize: Config.Theme.fontSizeCaption
-                        }
-
-                    }
-
-                }
-
-                MouseArea {
-                    id: wifiShowMoreMouse
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        Services.WifiControl.showAll = !Services.WifiControl.showAll;
-                        if (!Services.WifiControl.showAll)
-                            wifiFlickable.contentY = 0;
-
-                    }
-                }
-
             }
 
-            Rectangle {
+            Widgets.ActionButton {
                 Layout.fillWidth: true
-                implicitHeight: 34
-                radius: Config.Theme.radiusControl
-                activeFocusOnTab: true
-                Accessible.role: Accessible.Button
+                label: "Refresh networks"
+                iconName: "refresh"
                 Accessible.name: "Refresh Wi-Fi networks"
-                color: activeFocus
-                    ? Config.Theme.alpha(Config.Theme.colHighlight, Config.Theme.stateSelectedOpacity)
-                    : (wifiRefreshMouse.containsMouse
-                        ? Config.Theme.alpha(Config.Theme.colTextSec, Config.Theme.stateHoverOpacity)
-                        : "transparent")
-                border.width: activeFocus ? 1 : 0
-                border.color: Config.Theme.colHighlight
-
-                Keys.onPressed: event => {
-                    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
-                            || event.key === Qt.Key_Space) {
-                        Services.WifiControl.refreshNetworks();
-                        event.accepted = true;
-                    }
-                }
-
-                RowLayout {
-                    anchors.centerIn: parent
-                    spacing: 6
-
-                    Text {
-                        text: "refresh"
-                        color: Config.Theme.colHighlight
-
-                        font {
-                            family: "Material Symbols Rounded"
-                            pixelSize: Config.Theme.iconSizeSm
-                        }
-
-                    }
-
-                    Text {
-                        text: "Refresh networks"
-                        color: Config.Theme.colFg
-
-                        font {
-                            family: Config.Theme.fontFamily
-                            pixelSize: Config.Theme.fontSizeCaption
-                        }
-
-                    }
-
-                }
-
-                MouseArea {
-                    id: wifiRefreshMouse
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: Services.WifiControl.refreshNetworks()
-                }
-
+                onClicked: Services.WifiControl.refreshNetworks()
             }
 
             Text {
@@ -517,76 +403,27 @@ Rectangle {
 
                         }
 
-                        Text {
-                            text: "arrow_forward"
-                            color: activeFocus || connectWifiMouse.containsMouse
-                                ? Config.Theme.colHighlight : Config.Theme.colTextSec
-                            activeFocusOnTab: true
-                            Accessible.role: Accessible.Button
+                        Widgets.IconButton {
+                            iconName: "arrow_forward"
+                            implicitWidth: Config.Theme.controlMinSize
+                            implicitHeight: Config.Theme.controlMinSize
                             Accessible.name: "Connect to Wi-Fi network " + Services.WifiControl.pendingSsid
-
-                            Keys.onPressed: event => {
-                                if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
-                                        || event.key === Qt.Key_Space) {
-                                    Services.WifiControl.connectSecured();
-                                    event.accepted = true;
-                                }
-                            }
-
-                            font {
-                                family: "Material Symbols Rounded"
-                                pixelSize: Config.Theme.iconSizeSm
-                            }
-
-                            MouseArea {
-                                id: connectWifiMouse
-                                anchors.fill: parent
-                                anchors.margins: -5
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: Services.WifiControl.connectSecured()
-                            }
-
+                            onClicked: Services.WifiControl.connectSecured()
                         }
 
                     }
 
-                    Text {
+                    Widgets.LabelButton {
+                        Layout.alignment: Qt.AlignLeft
                         text: "Cancel"
-                        color: cancelWifiMouse.containsMouse || activeFocus
-                            ? Config.Theme.colHighlight : Config.Theme.colMuted
-                        activeFocusOnTab: true
-                        Accessible.role: Accessible.Button
+                        labelFontSize: Config.Theme.fontSizeCaption
+                        cornerRadius: Config.Theme.radiusSmall
+                        outlineOnFocus: true
+                        idleTextColor: Config.Theme.colMuted
+                        hoverTextColor: Config.Theme.colHighlight
+                        hoverBackgroundColor: Config.Theme.alpha(Config.Theme.colTextSec, 0.12)
                         Accessible.name: "Cancel Wi-Fi connection"
-
-                        Keys.onPressed: event => {
-                            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
-                                    || event.key === Qt.Key_Space) {
-                                Services.WifiControl.showPassword = false;
-                                Services.WifiControl.password = "";
-                                Services.WifiControl.pendingSsid = "";
-                                event.accepted = true;
-                            }
-                        }
-
-                        font {
-                            family: Config.Theme.fontFamily
-                            pixelSize: Config.Theme.fontSizeCaption
-                        }
-
-                        MouseArea {
-                            id: cancelWifiMouse
-
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                Services.WifiControl.showPassword = false;
-                                Services.WifiControl.password = "";
-                                Services.WifiControl.pendingSsid = "";
-                            }
-                        }
-
+                        onClicked: Services.WifiControl.cancelPassword()
                     }
 
                 }

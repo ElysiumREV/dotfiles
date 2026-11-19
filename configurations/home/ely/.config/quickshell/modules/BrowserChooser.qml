@@ -44,6 +44,16 @@ PanelWindow {
                     newWindowFlag: "--new-window"
                 });
             }
+            // profiles.ini missing or unreadable: still offer Firefox so the link is not lost.
+            if (root.firefoxProfiles.length === 0) {
+                list.push({
+                    label: "Firefox",
+                    detail: "Default profile",
+                    icon: firefox.icon,
+                    command: ["firefox"],
+                    newWindowFlag: "--new-window"
+                });
+            }
         }
         for (const browser of root.extraBrowsers) {
             const entry = DesktopEntries.byId(browser.desktopId);

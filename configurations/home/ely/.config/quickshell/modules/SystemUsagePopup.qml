@@ -126,127 +126,127 @@ PanelWindow {
                 height: implicitHeight
                 spacing: 13
 
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 10
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
 
-                Text {
-                    text: "monitoring"
-                    font.family: "Material Symbols Rounded"
-                    font.pixelSize: Config.Theme.iconSizeLg
-                    color: Config.Theme.colHighlight
+                    Text {
+                        text: "monitoring"
+                        font.family: "Material Symbols Rounded"
+                        font.pixelSize: Config.Theme.iconSizeLg
+                        color: Config.Theme.colHighlight
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 2
+
+                        Text {
+                            text: "System usage"
+                            color: Config.Theme.colFg
+                            font.family: Config.Theme.fontFamily
+                            font.pixelSize: Config.Theme.fontSize + 1
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: "Updates every 5 seconds"
+                            color: Config.Theme.colTextSec
+                            font.family: Config.Theme.fontFamily
+                            font.pixelSize: Config.Theme.fontSize - 2
+                        }
+                    }
+
                 }
+
+                Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Config.Theme.alpha(Config.Theme.colTextSec, 0.25) }
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 2
+                    spacing: Config.Theme.spaceSm
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Text { text: "developer_board"; font.family: "Material Symbols Rounded"; font.pixelSize: Config.Theme.iconSizeSm; color: Config.Theme.colHighlight }
+                        Text { Layout.fillWidth: true; text: "Processor"; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize; font.bold: true }
+                        Text { text: Services.SystemStats.cpuUsage + "%"; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize; font.bold: true }
+                    }
 
-                    Text {
-                        text: "System usage"
-                        color: Config.Theme.colFg
-                        font.family: Config.Theme.fontFamily
-                        font.pixelSize: Config.Theme.fontSize + 1
-                        font.bold: true
+                    UsageBar {
+                        Layout.fillWidth: true
+                        value: Services.SystemStats.cpuUsage
+                    }
+
+                    GridLayout {
+                        Layout.fillWidth: true
+                        columns: root.width < 340 ? 2 : 3
+                        rowSpacing: 6
+                        columnSpacing: 6
+
+                        Repeater {
+                            model: Services.SystemStats.cpuCores.slice(0, 12)
+
+                            Rectangle {
+                                required property var modelData
+                                Layout.fillWidth: true
+                                implicitHeight: 45
+                                radius: Config.Theme.radiusControl
+                                color: Config.Theme.alpha(Config.Theme.colTextSec, 0.08)
+
+                                ColumnLayout {
+                                    anchors.fill: parent
+                                    anchors.margins: 6
+                                    spacing: 3
+                                    RowLayout {
+                                        Layout.fillWidth: true
+                                        Text { Layout.fillWidth: true; text: "Core " + (modelData.id + 1); color: Config.Theme.colTextSec; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize - 3 }
+                                        Text { text: modelData.usage + "%"; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize - 3 }
+                                    }
+                                    UsageBar {
+                                        Layout.fillWidth: true
+                                        Layout.minimumWidth: 0
+                                        value: modelData.usage
+                                        implicitHeight: 4
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     Text {
-                        text: "Updates every 5 seconds"
+                        Layout.fillWidth: true
+                        visible: Services.SystemStats.cpuCores.length > 12
+                        text: "+ " + (Services.SystemStats.cpuCores.length - 12) + " more cores"
                         color: Config.Theme.colTextSec
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSize - 2
                     }
                 }
 
-            }
+                Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Config.Theme.alpha(Config.Theme.colTextSec, 0.25) }
 
-            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Config.Theme.alpha(Config.Theme.colTextSec, 0.25) }
-
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: Config.Theme.spaceSm
-                RowLayout {
+                UsageSection {
                     Layout.fillWidth: true
-                    Text { text: "developer_board"; font.family: "Material Symbols Rounded"; font.pixelSize: Config.Theme.iconSizeSm; color: Config.Theme.colHighlight }
-                    Text { Layout.fillWidth: true; text: "Processor"; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize; font.bold: true }
-                    Text { text: Services.SystemStats.cpuUsage + "%"; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize; font.bold: true }
+                    icon: "memory"
+                    title: "Memory"
+                    percent: Services.SystemStats.memoryUsage
+                    details: root.formatMemory(Services.SystemStats.memoryTotalKb - Services.SystemStats.memoryAvailableKb)
+                        + " used of " + root.formatMemory(Services.SystemStats.memoryTotalKb)
+                    footnote: root.formatMemory(Services.SystemStats.memoryAvailableKb) + " available"
                 }
 
-                UsageBar {
+                UsageSection {
                     Layout.fillWidth: true
-                    value: Services.SystemStats.cpuUsage
+                    icon: "swap_horiz"
+                    title: "Swap"
+                    percent: Services.SystemStats.swapUsage
+                    details: Services.SystemStats.swapTotalKb > 0
+                        ? root.formatMemory(Services.SystemStats.swapTotalKb - Services.SystemStats.swapFreeKb) + " used of " + root.formatMemory(Services.SystemStats.swapTotalKb)
+                        : "Swap is not configured"
+                    footnote: Services.SystemStats.swapTotalKb > 0
+                        ? root.formatMemory(Services.SystemStats.swapFreeKb) + " free"
+                        : ""
+                    visible: true
                 }
-
-                GridLayout {
-                    Layout.fillWidth: true
-                    columns: root.width < 340 ? 2 : 3
-                    rowSpacing: 6
-                    columnSpacing: 6
-
-                    Repeater {
-                        model: Services.SystemStats.cpuCores.slice(0, 12)
-
-                        Rectangle {
-                            required property var modelData
-                            Layout.fillWidth: true
-                            implicitHeight: 45
-                            radius: Config.Theme.radiusControl
-                            color: Config.Theme.alpha(Config.Theme.colTextSec, 0.08)
-
-                            ColumnLayout {
-                                anchors.fill: parent
-                                anchors.margins: 6
-                                spacing: 3
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    Text { Layout.fillWidth: true; text: "Core " + (modelData.id + 1); color: Config.Theme.colTextSec; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize - 3 }
-                                    Text { text: modelData.usage + "%"; color: Config.Theme.colFg; font.family: Config.Theme.fontFamily; font.pixelSize: Config.Theme.fontSize - 3 }
-                                }
-                                UsageBar {
-                                    Layout.fillWidth: true
-                                    Layout.minimumWidth: 0
-                                    value: modelData.usage
-                                    implicitHeight: 4
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Text {
-                    Layout.fillWidth: true
-                    visible: Services.SystemStats.cpuCores.length > 12
-                    text: "+ " + (Services.SystemStats.cpuCores.length - 12) + " more cores"
-                    color: Config.Theme.colTextSec
-                    font.family: Config.Theme.fontFamily
-                    font.pixelSize: Config.Theme.fontSize - 2
-                }
-            }
-
-            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Config.Theme.alpha(Config.Theme.colTextSec, 0.25) }
-
-            UsageSection {
-                Layout.fillWidth: true
-                icon: "memory"
-                title: "Memory"
-                percent: Services.SystemStats.memoryUsage
-                details: root.formatMemory(Services.SystemStats.memoryTotalKb - Services.SystemStats.memoryAvailableKb)
-                    + " used of " + root.formatMemory(Services.SystemStats.memoryTotalKb)
-                footnote: root.formatMemory(Services.SystemStats.memoryAvailableKb) + " available"
-            }
-
-            UsageSection {
-                Layout.fillWidth: true
-                icon: "swap_horiz"
-                title: "Swap"
-                percent: Services.SystemStats.swapUsage
-                details: Services.SystemStats.swapTotalKb > 0
-                    ? root.formatMemory(Services.SystemStats.swapTotalKb - Services.SystemStats.swapFreeKb) + " used of " + root.formatMemory(Services.SystemStats.swapTotalKb)
-                    : "Swap is not configured"
-                footnote: Services.SystemStats.swapTotalKb > 0
-                    ? root.formatMemory(Services.SystemStats.swapFreeKb) + " free"
-                    : ""
-                visible: true
-            }
             }
         }
     }

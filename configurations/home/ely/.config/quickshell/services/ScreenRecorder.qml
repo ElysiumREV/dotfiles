@@ -52,13 +52,20 @@ Singleton {
         const sources = [];
         if (Config.Preferences.recorder.systemAudio)
             sources.push("default_output");
-        if (Config.Preferences.recorder.microphone !== "")
-            sources.push(Config.Preferences.recorder.microphone);
+        const microphone = Config.Preferences.recorder.microphone;
+        if (microphone !== "")
+            sources.push(microphoneAvailable(microphone) ? microphone : "default_input");
         if (sources.length > 0)
             args.push("-a", sources.join("|"));
 
         args.push("-o", path);
         return args;
+    }
+
+    // "" and "default_input" always work; a named source must currently exist in PipeWire.
+    function microphoneAvailable(name) {
+        return name === "" || name === "default_input"
+            || Volume.inputDevices.some(node => node.name === name);
     }
 
     function start() {
@@ -82,8 +89,10 @@ Singleton {
         stopping = false;
         elapsedSeconds = 0;
         starting = true;
-        message = Config.Preferences.recorder.captureMode === "window"
-            ? "Pick a window or monitor in the dialog…" : "Starting… (pick the monitor if asked)";
+        message = (microphoneAvailable(Config.Preferences.recorder.microphone)
+                ? "" : "Saved microphone not found; using the default one. ")
+            + (Config.Preferences.recorder.captureMode === "window"
+                ? "Pick a window or monitor in the dialog…" : "Starting… (pick the monitor if asked)");
         // exec keeps the same PID, so the stop signal reaches gpu-screen-recorder itself.
         recorder.exec(["sh", "-c", "mkdir -p \"$1\" && shift && exec \"$@\"", "recorder", directory].concat(args));
     }

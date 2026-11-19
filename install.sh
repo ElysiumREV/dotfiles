@@ -224,6 +224,7 @@ PKGS_FILES=(
   kde-cli-tools
   purpose
   kimageformats
+  libappimage # thumbnails de AppImage no Dolphin (plugin do kio-extras)
   qt6-imageformats
   rclone # Google Drive: ~/.config/hypr/scripts/gdrive.sh (login na primeira vez)
   jq     # gdrive.sh
@@ -239,6 +240,7 @@ PKGS_DEV=(
   tree-sitter-cli
   nodejs
   npm
+  shellcheck # lint dos scripts bash dos dotfiles
 )
 
 PACMAN_PKGS=(

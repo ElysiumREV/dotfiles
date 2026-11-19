@@ -1086,18 +1086,18 @@ install_fonts_extra() {
     info "Instalando Material Symbols (variable)..."
     mkdir -p "$font_dir/MaterialSymbols"
 
-    local style base failed=0
+    local style base download_failed=0
     base="https://github.com/google/material-design-icons/raw/master/variablefont"
 
     for style in Outlined Rounded Sharp; do
       if ! curl -fsSL \
         -o "$font_dir/MaterialSymbols/MaterialSymbols${style}[FILL,GRAD,opsz,wght].ttf" \
         "${base}/MaterialSymbols${style}%5BFILL%2CGRAD%2Copsz%2Cwght%5D.ttf"; then
-        failed=1
+        download_failed=1
       fi
     done
 
-    if [[ "$failed" == "1" ]]; then
+    if [[ "$download_failed" == "1" ]]; then
       WARNINGS+=("Material Symbols: falha no download (google/material-design-icons, pasta variablefont). Os ícones do Quickshell podem não aparecer.")
       warn "Falha ao baixar a Material Symbols."
     else

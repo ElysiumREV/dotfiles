@@ -226,6 +226,8 @@ PKGS_FILES=(
   kimageformats
   qt6-imageformats
   rclone # Google Drive: ~/.config/hypr/scripts/gdrive.sh (login na primeira vez)
+  jq     # gdrive.sh
+  psmisc # fuser, usado pelo gdrive.sh
 )
 
 # Ferramentas de desenvolvimento esperadas pelo Neovim (LazyVim, Telescope,

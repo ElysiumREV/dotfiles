@@ -6,8 +6,12 @@ Exec=sh -c "\\$HOME/.config/hypr/scripts/gdrive.sh"
 Icon=folder-gdrive
 Terminal=false
 Categories=System;FileTools;FileManager;
-Actions=unmount;
+Actions=unmount;client;
 
 [Desktop Action unmount]
 Name=Unmount all Google Drive accounts
 Exec=sh -c "\\$HOME/.config/hypr/scripts/gdrive.sh unmount"
+
+[Desktop Action client]
+Name=Use my own Google API client
+Exec=sh -c "\\$HOME/.config/hypr/scripts/gdrive.sh client"

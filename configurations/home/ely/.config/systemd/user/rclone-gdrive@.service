@@ -1,0 +1,34 @@
+# Google Drive account %i (an rclone remote) mounted at ~/GoogleDrive/%i.
+# Started and stopped by ~/.config/hypr/scripts/gdrive.sh; logs:
+#   journalctl --user -u rclone-gdrive@NAME
+# To mount an account at login: systemctl --user enable rclone-gdrive@NAME
+
+[Unit]
+Description=Google Drive (%i) via rclone
+
+[Service]
+Type=notify
+# A mount left behind by a crashed rclone ("Transport endpoint is not connected")
+# would make the new mount fail.
+ExecStartPre=-/usr/bin/fusermount3 -uz %h/GoogleDrive/%i
+ExecStartPre=/usr/bin/mkdir -p %h/GoogleDrive/%i
+ExecStartPre=/usr/bin/rm -f %t/rclone-gdrive-%i.sock
+# Writes go to the cache first and are uploaded in the background; the rc
+# socket lets gdrive.sh check for pending uploads before unmounting.
+ExecStart=/usr/bin/rclone mount %i: %h/GoogleDrive/%i \
+	--vfs-cache-mode full --cache-dir %C/rclone \
+	--vfs-cache-max-size 5G --vfs-cache-max-age 24h \
+	--dir-cache-time 1h --poll-interval 1m \
+	--volname "Google Drive (%i)" \
+	--rc --rc-no-auth --rc-addr unix://%t/rclone-gdrive-%i.sock \
+	--log-level NOTICE
+# rclone unmounts itself on SIGTERM; uploads still pending stay in the cache
+# and resume on the next mount.
+SuccessExitStatus=143
+ExecStopPost=-/usr/bin/rmdir %h/GoogleDrive/%i
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=30
+
+[Install]
+WantedBy=default.target

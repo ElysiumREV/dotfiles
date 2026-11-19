@@ -273,6 +273,7 @@ PKGS_FILES=(
   kde-cli-tools
   kf6-purpose
   kf6-kimageformats
+  libappimage # thumbnails de AppImage no Dolphin (plugin do kio-extras)
   qt6-qtimageformats
   rclone # Google Drive: ~/.config/hypr/scripts/gdrive.sh (login na primeira vez)
   fuse3  # rclone mount
@@ -288,6 +289,7 @@ PKGS_DEV=(
   tree-sitter-cli
   nodejs
   npm
+  ShellCheck # lint dos scripts bash dos dotfiles
 )
 
 FEDORA_PKGS=(

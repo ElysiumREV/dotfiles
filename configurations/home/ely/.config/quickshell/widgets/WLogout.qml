@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
-import Quickshell.Io
 import Quickshell.Wayland
 import ".." as Config
 import "../services" as Services
@@ -14,7 +13,6 @@ Variants {
 
     default property list<LogoutButton> buttons
     property int columns: 3
-    property string uptimeText: ""
 
     model: Quickshell.screens
 
@@ -26,29 +24,6 @@ Variants {
     function run(button) {
         button.exec();
         dismiss();
-    }
-
-    function formatUptime(seconds) {
-        const days = Math.floor(seconds / 86400);
-        const hours = Math.floor((seconds % 86400) / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        if (days > 0)
-            return "Up " + days + "d " + hours + "h";
-        if (hours > 0)
-            return "Up " + hours + "h " + minutes + " min";
-        return minutes > 0 ? "Up " + minutes + " min" : "Up less than 1 min";
-    }
-
-    property Process uptimeProcess: Process {
-        command: ["cat", "/proc/uptime"]
-        running: true
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const seconds = Number(text.trim().split(/\s+/)[0]);
-                if (Number.isFinite(seconds) && seconds >= 0)
-                    root.uptimeText = root.formatUptime(Math.floor(seconds));
-            }
-        }
     }
 
     delegate: Component {
@@ -80,6 +55,7 @@ Variants {
 
             Component.onCompleted: {
                 openAnimation.restart();
+                Services.Uptime.refresh();
                 if (hasCard)
                     Qt.callLater(() => buttonRepeater.itemAt(0)?.forceActiveFocus());
             }
@@ -185,7 +161,7 @@ Variants {
 
                             Text {
                                 Layout.fillWidth: true
-                                text: [Quickshell.env("USER"), root.uptimeText].filter(Boolean).join(" · ")
+                                text: [Quickshell.env("USER"), Services.Uptime.text].filter(Boolean).join(" · ")
                                 color: Config.Theme.colTextSec
                                 font.family: Config.Theme.fontFamily
                                 font.pixelSize: Config.Theme.fontSizeSmall
@@ -349,7 +325,7 @@ Variants {
             onVisibleChanged: {
                 if (visible) {
                     openAnimation.restart();
-                    root.uptimeProcess.running = true;
+                    Services.Uptime.refresh();
                     if (hasCard)
                         Qt.callLater(() => buttonRepeater.itemAt(0)?.forceActiveFocus());
                 }

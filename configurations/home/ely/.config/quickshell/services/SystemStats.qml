@@ -26,8 +26,17 @@ Singleton {
             return
 
         detailedViewActive = active
-        if (active && !statsProcess.running)
-            statsProcess.running = true
+        if (active)
+            sample()
+    }
+
+    // Reads /proc/stat, then /proc/meminfo, then parses both (no process spawned).
+    property bool sampling: false
+    function sample() {
+        if (sampling)
+            return
+        sampling = true
+        statFile.reload()
     }
 
     function parseStats(data) {
@@ -109,12 +118,21 @@ Singleton {
         }
     }
 
-    Process {
-        id: statsProcess
-        command: ["cat", "/proc/stat", "/proc/meminfo"]
-        stdout: StdioCollector {
-            onStreamFinished: root.parseStats(text)
+    FileView {
+        id: statFile
+        path: "/proc/stat"
+        onLoaded: memFile.reload()
+        onLoadFailed: root.sampling = false
+    }
+
+    FileView {
+        id: memFile
+        path: "/proc/meminfo"
+        onLoaded: {
+            root.parseStats(statFile.text() + "\n" + memFile.text())
+            root.sampling = false
         }
+        onLoadFailed: root.sampling = false
     }
 
     Timer {
@@ -123,9 +141,6 @@ Singleton {
         running: Config.Preferences.bar.showSystemStatus || root.detailedViewActive
         repeat: true
         triggeredOnStart: true
-        onTriggered: {
-            if (!statsProcess.running)
-                statsProcess.running = true
-        }
+        onTriggered: root.sample()
     }
 }

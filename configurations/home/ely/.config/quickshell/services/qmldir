@@ -14,3 +14,4 @@ singleton PrivacyIndicators 1.0 PrivacyIndicators.qml
 singleton BluetoothControl 1.0 BluetoothControl.qml
 singleton WifiControl 1.0 WifiControl.qml
 singleton ScreenRecorder 1.0 ScreenRecorder.qml
+singleton Uptime 1.0 Uptime.qml

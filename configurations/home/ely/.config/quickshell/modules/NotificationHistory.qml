@@ -17,6 +17,36 @@ Item {
     // notification, so the state cannot live in the delegates.
     property var expandedApps: ({})
 
+    // Keyboard navigation: Up/Down walk the group headers and cards (items marked
+    // with notificationNavStop) in focus-chain order, without wrapping around.
+    function moveFocus(from, forward) {
+        const start = from.mapToItem(historyList.contentItem, 0, 0).y;
+        let item = from;
+        for (let i = 0; i < 400; i++) {
+            item = item.nextItemInFocusChain(forward);
+            if (!item || item === from)
+                return false;
+            if (item.notificationNavStop !== true)
+                continue;
+            const y = item.mapToItem(historyList.contentItem, 0, 0).y;
+            if (forward ? y <= start : y >= start)
+                return false; // wrapped around
+            item.forceActiveFocus();
+            return true;
+        }
+        return false;
+    }
+
+    // Scrolls the list so a focused header/card is fully visible.
+    function reveal(item) {
+        const y = item.mapToItem(historyList.contentItem, 0, 0).y;
+        const maxY = Math.max(0, historyList.contentHeight - historyList.height);
+        if (y < historyList.contentY)
+            historyList.contentY = Math.max(0, y);
+        else if (y + item.height > historyList.contentY + historyList.height)
+            historyList.contentY = Math.min(maxY, y + item.height - historyList.height);
+    }
+
     function toggleGroup(appName) {
         const next = Object.assign({}, expandedApps);
         if (next[appName])
@@ -130,7 +160,15 @@ Item {
                 spacing: Config.Theme.spaceSm
                 boundsBehavior: Flickable.StopAtBounds
                 activeFocusOnTab: true
+                keyNavigationEnabled: false
                 model: notificationService.historyGroups
+                // From the list itself, Down/Tab enters the first group header.
+                Keys.onPressed: event => {
+                    if (event.key === Qt.Key_Down) {
+                        root.moveFocus(historyList, true);
+                        event.accepted = true;
+                    }
+                }
                 add: Transition {
                     ParallelAnimation {
                         NumberAnimation {
@@ -199,6 +237,21 @@ Item {
                                 + groupDelegate.modelData.notifications.length + " notifications. "
                                 + (groupDelegate.expanded ? "Collapse group" : "Expand group")
                             onClicked: root.toggleGroup(groupDelegate.modelData.appName)
+                            readonly property bool notificationNavStop: true
+                            onActiveFocusChanged: if (activeFocus) root.reveal(groupButton)
+                            Keys.onPressed: event => {
+                                if (event.key === Qt.Key_Down || event.key === Qt.Key_Up) {
+                                    root.moveFocus(groupButton, event.key === Qt.Key_Down);
+                                } else if (event.key === Qt.Key_Right && !groupDelegate.expanded
+                                        || event.key === Qt.Key_Left && groupDelegate.expanded) {
+                                    root.toggleGroup(groupDelegate.modelData.appName);
+                                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                                    root.toggleGroup(groupDelegate.modelData.appName);
+                                } else {
+                                    return;
+                                }
+                                event.accepted = true;
+                            }
 
                             contentItem: RowLayout {
                                 spacing: Config.Theme.spaceSm
@@ -255,9 +308,36 @@ Item {
                                 width: groupColumn.width
                                 implicitHeight: notificationCardContent.implicitHeight + 20
                                 height: implicitHeight
-                                surfaceColor: cardHover.hovered ? Config.Theme.colSurfaceRaised : Config.Theme.colSurface
-                                outlined: modelData.urgency === NotificationUrgency.Critical
-                                outlineColor: Config.Theme.colRed
+                                surfaceColor: cardHover.hovered || activeFocus
+                                    ? Config.Theme.colSurfaceRaised : Config.Theme.colSurface
+                                outlined: activeFocus || modelData.urgency === NotificationUrgency.Critical
+                                outlineColor: activeFocus ? Config.Theme.colHighlight : Config.Theme.colRed
+                                outlineOpacity: activeFocus ? 1 : 0.36
+
+                                readonly property bool notificationNavStop: true
+                                activeFocusOnTab: true
+                                Accessible.role: Accessible.Button
+                                Accessible.name: modelData.appName + ": " + modelData.summary
+                                    + (modelData.body !== "" ? ". " + modelData.body : "")
+                                onActiveFocusChanged: if (activeFocus) root.reveal(notificationCard)
+                                // Enter/Space open it, Delete removes it, Up/Down move between items.
+                                Keys.onPressed: event => {
+                                    if (event.key === Qt.Key_Down || event.key === Qt.Key_Up) {
+                                        root.moveFocus(notificationCard, event.key === Qt.Key_Down);
+                                    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                                            || event.key === Qt.Key_Space) {
+                                        notificationService.activate(notificationCard.modelData.id);
+                                    } else if (event.key === Qt.Key_Delete) {
+                                        // Keep the keyboard in the list: focus a neighbour first.
+                                        const id = notificationCard.modelData.id;
+                                        if (!root.moveFocus(notificationCard, true))
+                                            root.moveFocus(notificationCard, false);
+                                        notificationService.dismiss(id);
+                                    } else {
+                                        return;
+                                    }
+                                    event.accepted = true;
+                                }
 
                                 HoverHandler { id: cardHover }
 

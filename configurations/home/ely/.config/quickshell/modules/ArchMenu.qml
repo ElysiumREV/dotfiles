@@ -8,7 +8,6 @@ import "." as QsModules
 import "./archmenu" as ArchParts
 import "./PopupGeometry.js" as PopupGeometry
 import Quickshell
-import Quickshell.Io
 import Quickshell.Wayland
 
 PanelWindow {
@@ -18,7 +17,6 @@ PanelWindow {
     required property var positionProvider
     property real popupRight: 16
     property real enterProgress: 0
-    property string uptimeText: "Up …"
     property string activeTab: "notifications"
     readonly property bool compactLayout: (targetScreen?.height ?? 720) < 800
     readonly property bool compactWidth: implicitWidth < 360
@@ -53,7 +51,7 @@ PanelWindow {
         activeTab = Services.Notifications.centerRequestedTab || "notifications";
         Services.WifiControl.reset();
         Services.BluetoothControl.expanded = false;
-        uptimeProcess.exec(["cat", "/proc/uptime"]);
+        Services.Uptime.refresh();
         sidebarCalendar.showToday();
         visible = true;
     }
@@ -71,17 +69,6 @@ PanelWindow {
             if (root.visible)
                 root.activeTab = Services.Notifications.centerRequestedTab;
         }
-    }
-
-    function formatUptime(seconds) {
-        const days = Math.floor(seconds / 86400);
-        const hours = Math.floor((seconds % 86400) / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        if (days > 0)
-            return "Up " + days + "d " + hours + "h";
-        if (hours > 0)
-            return "Up " + hours + "h " + minutes + " min";
-        return minutes > 0 ? "Up " + minutes + " min" : "Up less than 1 min";
     }
 
     function audioNodeName(node) {
@@ -197,18 +184,6 @@ PanelWindow {
         Keys.onEscapePressed: root.visible = false
     }
 
-    Process {
-        id: uptimeProcess
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const seconds = Number(text.trim().split(/\s+/)[0]);
-                if (Number.isFinite(seconds) && seconds >= 0)
-                    root.uptimeText = root.formatUptime(Math.floor(seconds));
-            }
-        }
-    }
-
     Widgets.SurfaceCard {
         anchors.fill: parent
         opacity: root.enterProgress
@@ -254,7 +229,7 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: root.uptimeText
+                    text: Services.Uptime.text
                     color: Config.Theme.colFg
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSize

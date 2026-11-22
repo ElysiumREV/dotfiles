@@ -71,6 +71,12 @@ Antes de qualquer teste manual, rode `scripts/smoke-test.sh` (abre e fecha 9 pai
 - [X] **Screenshot, MPRIS/Spotifast e wlogout**: região/janela, metadados e controles do player, ações de sessão pelo teclado.
 
 ### Em validação ou polimento
+- Ajustes pequenos (2026-11-22):
+  - **Histórico do clipboard religa sozinho**: se o `wl-paste --watch` sair (por exemplo, ao reiniciar o Hyprland), o watcher é reiniciado após 2 s, com espera crescente até 30 s; um minuto rodando zera a espera. Antes o histórico parava sem aviso.
+  - **Navegação por teclado no histórico de notificações**: cartões e cabeçalhos de grupo recebem foco (anel na cor de destaque). ↑/↓ andam entre eles sem dar a volta; Enter/Espaço abrem a notificação; Delete apaga e passa o foco para a vizinha; ←/→ (ou Enter) no cabeçalho recolhem/expandem o grupo; a lista rola até o item focado. A partir da lista, ↓ entra no primeiro grupo. Não testado com teclas reais (não há `wtype`/`ydotool` para simular).
+  - **Bateria não se desloca ao carregar**: o raio fica sempre no layout e só muda de opacidade (item da auditoria de 2026-10-16).
+  - **`/proc` sem processos**: `SystemStats` lê `/proc/stat` e `/proc/meminfo` com `FileView` + `reload()` (encadeados pelo sinal `loaded`) em vez de rodar `cat` a cada amostra. O tempo ligado virou o serviço `services/Uptime.qml` (lido com `FileView` só quando o Arch Menu ou o menu de sessão abre), que substitui o `cat /proc/uptime` e a função de formatação duplicada nos dois. Testado à parte: `reload()` de um `FileView` em `/proc` traz valores novos de forma assíncrona; com `preload: false` o encadeamento não funcionou, por isso ficou o padrão.
+  - Smoke test: 11 painéis sem erros de QML.
 - Sugestões da revisão + novo wlogout (2026-11-19):
   - **Bluetooth nativo**: `services/BluetoothControl.qml` não usa mais `bluetoothctl` para listar dispositivos nem para conectar, desconectar, parear ou esquecer. Agora usa `Quickshell.Bluetooth` (`adapter.devices`, `connect()`, `disconnect()`, `pair()`, `forget()`, `trusted`), que atualiza por eventos; os timers de 15 s e 4 s e os processos `bluetoothctl devices` foram removidos. `devices` agora é uma lista de objetos `BluetoothDevice` (conectados → pareados → com nome → alfabético). O fim de cada operação é detectado por `state`/`pairing`/`paired`, com tempo limite (conectar 20 s, desconectar 10 s, parear 60 s com `cancelPair()`, esquecer 5 s). Depois de parear, o dispositivo é marcado como confiável. O `bluetoothctl` continua só no `BluetoothPairingAgent` (PIN/confirmação).
   - **Bluetooth bloqueado pelo rfkill**: nesse estado o BlueZ não expõe nenhum adaptador, e antes o botão de ligar não fazia nada (só tentava `rfkill unblock` se o adaptador existisse com estado `Blocked`). Agora a ausência de adaptador conta como bloqueado; depois do `rfkill unblock`, o adaptador é ligado assim que aparece (`enableWhenReady`). Não testado: o Bluetooth desta máquina estava bloqueado e não foi desbloqueado durante a revisão.
@@ -225,7 +231,7 @@ Leituras estáticas anteriores não foram medições de CPU/RAM. Os itens abaixo
 
 ### Revisão atual — 2026-10-16
 
-- **Bateria pode deslocar o ícone ao carregar:** `modules/Battery.qml` mostra o raio somente durante o carregamento e o `Row` é centralizado pela largura dinâmica. Reservar sempre o espaço do raio (ou removê-lo) para evitar que percentual e anel mudem de posição entre os estados.
+- **(Resolvido em 2026-11-22)** **Bateria pode deslocar o ícone ao carregar:** `modules/Battery.qml` mostra o raio somente durante o carregamento e o `Row` é centralizado pela largura dinâmica. Reservar sempre o espaço do raio (ou removê-lo) para evitar que percentual e anel mudem de posição entre os estados.
 - **Barra em telas estreitas:** `modules/Bar.qml` reduz alguns elementos por faixas de largura, mas mantém grupos ancorados em posições fixas. Validar especialmente telas abaixo dos limites de 1000 px e conferir colisões entre workspaces, status, relógio e bandeja; ajustar o layout se houver sobreposição.
 - **Código sem uso aparente:** `Battery.qml` atualiza `hovered`, mas nenhum comportamento consulta esse estado; `Theme.qml` declara `batteryTextSize`, sem uso aparente após a mudança visual. Confirmar com busca global e remover ou reutilizar esses itens na próxima limpeza.
 

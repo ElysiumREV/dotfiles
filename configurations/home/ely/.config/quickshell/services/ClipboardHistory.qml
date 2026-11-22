@@ -1,5 +1,6 @@
 pragma Singleton
 
+import QtQuick
 import Quickshell
 import Quickshell.Io
 
@@ -51,9 +52,31 @@ Singleton {
             onRead: data => ClipboardHistory.acceptCapture(data)
         }
 
+        // wl-paste exits when the Wayland connection goes away (e.g. compositor
+        // restart); without a restart the history would silently stop recording.
         onExited: (code, status) => {
-            if (code !== 0)
-                console.warn("Clipboard history watcher exited with code", code);
+            console.warn("[ClipboardHistory] Watcher exited with code", code, "- restarting in",
+                restartTimer.interval / 1000, "s");
+            restartTimer.restart();
         }
+    }
+
+    // Backs off up to 30 s so a missing wl-paste does not spin.
+    Timer {
+        id: restartTimer
+        interval: 2000
+        repeat: false
+        onTriggered: {
+            watcher.running = true;
+            interval = Math.min(interval * 2, 30000);
+        }
+    }
+
+    // A watcher that stays up for a minute resets the backoff.
+    Timer {
+        interval: 60000
+        running: watcher.running
+        repeat: false
+        onTriggered: restartTimer.interval = 2000
     }
 }

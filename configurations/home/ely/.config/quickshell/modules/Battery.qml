@@ -43,9 +43,15 @@ Item {
         anchors.centerIn: parent
         height: parent.height
         spacing: Config.Theme.spaceXs
+        // Always laid out (only faded) so plugging the charger does not shift
+        // the percentage and the ring sideways.
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            visible: root.isCharging && root.batteryLevel < 100
+            opacity: root.isCharging && root.batteryLevel < 100 ? 1 : 0
+            Accessible.ignored: true
+            Behavior on opacity {
+                NumberAnimation { duration: Config.Theme.motionFast }
+            }
             text: "bolt"
             color: root.groupHighlighted ? Config.Theme.colOnHighlightContainer : Config.Theme.colFg
             font.family: "Material Symbols Rounded"

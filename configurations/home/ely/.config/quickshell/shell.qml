@@ -9,8 +9,13 @@ import "services" as Services
 import "." as Config
 
 ShellRoot {
-    // Start the event-driven watcher with the shell; history itself stays in memory.
-    Component.onCompleted: Services.ClipboardHistory.entries
+    // Services that must run from startup (singletons are otherwise created on
+    // first use): the clipboard watcher (history stays in memory) and the DNS
+    // sync that gives newly joined networks the default DNS.
+    Component.onCompleted: {
+        Services.ClipboardHistory.entries;
+        Services.DnsControl.loaded;
+    }
 
     IpcHandler {
         target: "shell"

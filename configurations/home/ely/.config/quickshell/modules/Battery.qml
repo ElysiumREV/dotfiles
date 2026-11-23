@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import Quickshell.Services.UPower
 import ".." as Config
 import "../services/BatteryRules.js" as BatteryRules
@@ -19,6 +20,42 @@ Item {
     readonly property bool isLow: BatteryRules.isLow(batteryLevel, isPluggedIn)
     readonly property bool isCritical: BatteryRules.isCritical(batteryLevel, isPluggedIn)
     property bool groupHighlighted: false
+    readonly property color levelColor: isCharging ? Config.Theme.colGreen
+        : (isCritical ? Config.Theme.colBatteryCritical
+           : (isLow ? Config.Theme.colYellow : Config.Theme.colHighlight))
+
+    // Hover/focus summary card. A click opens the full panel, so it hides the
+    // card until the pointer leaves.
+    property bool summarySuppressed: false
+    readonly property bool summaryWanted: batteryPresent && !summarySuppressed
+        && (batteryMouse.containsMouse || activeFocus)
+    onSummaryWantedChanged: {
+        if (summaryWanted)
+            summaryDelay.restart();
+        else {
+            summaryDelay.stop();
+            summaryLoader.active = false;
+        }
+    }
+
+    Timer {
+        id: summaryDelay
+        interval: 400
+        onTriggered: summaryLoader.active = root.summaryWanted
+    }
+
+    LazyLoader {
+        id: summaryLoader
+
+        BatterySummaryPopup {
+            anchorItem: root
+            battery: root.battery
+            isCharging: root.isCharging
+            isFullyCharged: root.isFullyCharged
+            levelColor: root.levelColor
+            visible: true
+        }
+    }
 
     implicitWidth: batteryPresent ? batteryIndicatorRow.implicitWidth : 22
     implicitHeight: Config.Theme.moduleHeight
@@ -30,8 +67,10 @@ Item {
             + (isCharging ? ", charging" : (isFullyCharged ? ", fully charged" : ""))
         : "Desktop computer, no battery"
 
+    onActiveFocusChanged: if (!activeFocus) summarySuppressed = false
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+            summarySuppressed = true;
             requestMenu();
             event.accepted = true;
         }
@@ -43,22 +82,6 @@ Item {
         anchors.centerIn: parent
         height: parent.height
         spacing: Config.Theme.spaceXs
-        // Always laid out (only faded) so plugging the charger does not shift
-        // the percentage and the ring sideways.
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            opacity: root.isCharging && root.batteryLevel < 100 ? 1 : 0
-            Accessible.ignored: true
-            Behavior on opacity {
-                NumberAnimation { duration: Config.Theme.motionFast }
-            }
-            text: "bolt"
-            color: root.groupHighlighted ? Config.Theme.colOnHighlightContainer : Config.Theme.colFg
-            font.family: "Material Symbols Rounded"
-            font.pixelSize: Config.Theme.fontSizeSmall
-            verticalAlignment: Text.AlignVCenter
-        }
-
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: root.batteryLevel
@@ -74,11 +97,11 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             diameter: 26
             iconSize: Config.Theme.iconSizeXs
-            iconName: "battery_android_full"
+            // Charging is shown inside the ring (and by its green color), so the
+            // row width never changes and there is no gap when unplugged.
+            iconName: root.isCharging && root.batteryLevel < 100 ? "bolt" : "battery_android_full"
             progress: root.percentage
-            ringColor: root.isCharging ? Config.Theme.colGreen
-                : (root.isCritical ? Config.Theme.colBatteryCritical
-                   : (root.isLow ? Config.Theme.colYellow : Config.Theme.colHighlight))
+            ringColor: root.levelColor
             iconColor: root.groupHighlighted
                 ? Config.Theme.colOnHighlightContainer : Config.Theme.colFg
         }
@@ -105,9 +128,14 @@ Item {
     }
 
     MouseArea {
+        id: batteryMouse
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: root.requestMenu()
+        onExited: root.summarySuppressed = false
+        onClicked: {
+            root.summarySuppressed = true;
+            root.requestMenu();
+        }
     }
 }

@@ -7,6 +7,13 @@
         "showSystemStatus": true,
         "showTray": true
     },
+    "dns": {
+        "defaultIpv4": "",
+        "defaultIpv6": "",
+        "defaultMode": "cloudflare",
+        "overrides": {
+        }
+    },
     "launcher": {
         "prioritizeUsage": true
     },

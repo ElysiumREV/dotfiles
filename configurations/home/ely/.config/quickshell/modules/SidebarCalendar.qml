@@ -18,6 +18,13 @@ Item {
     ).getDay()
     signal collapseToggled(bool collapsed)
 
+    readonly property bool viewingCurrentMonth: viewedMonth.getFullYear() === today.getFullYear()
+        && viewedMonth.getMonth() === today.getMonth()
+
+    function changeMonth(offset) {
+        viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() + offset, 1);
+    }
+
     function showToday() {
         today = new Date();
         viewedMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -32,12 +39,60 @@ Item {
         }
     }
 
+    // "today" only changes at midnight: refresh on open and right after midnight,
+    // instead of every second (each change re-evaluates the 42 day cells).
+    function msUntilMidnight() {
+        const now = new Date();
+        const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        return midnight.getTime() - now.getTime() + 500;
+    }
+
+    onActiveChanged: {
+        if (active) {
+            today = new Date();
+            midnightTimer.interval = msUntilMidnight();
+            midnightTimer.restart();
+        } else {
+            midnightTimer.stop();
+        }
+    }
+
     Timer {
-        interval: 1000
-        running: root.active
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: root.today = new Date()
+        id: midnightTimer
+        repeat: false
+        onTriggered: {
+            root.today = new Date();
+            interval = root.msUntilMidnight();
+            restart();
+        }
+    }
+
+    Widgets.WheelAccumulator { id: wheelSteps }
+
+    // Wheel over the calendar changes the month (down = next), like end-4's.
+    WheelHandler {
+        enabled: !root.collapsed
+        onWheel: event => {
+            const steps = wheelSteps.feed(event.angleDelta.y);
+            if (steps !== 0)
+                root.changeMonth(-steps);
+        }
+    }
+
+    // Page Up/Down work while focus is anywhere in the calendar (e.g. its buttons).
+    Keys.onPressed: event => {
+        if (root.collapsed)
+            return;
+        if (event.key === Qt.Key_PageUp) {
+            root.changeMonth(-1);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_PageDown) {
+            root.changeMonth(1);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Home) {
+            root.showToday();
+            event.accepted = true;
+        }
     }
 
     Widgets.SurfaceCard {
@@ -70,7 +125,9 @@ Item {
 
                     Text {
                         anchors.fill: parent
+                        // "•" marks that another month is shown; clicking returns to today.
                         text: root.viewedMonth.toLocaleDateString(Qt.locale(), "MMMM yyyy")
+                            + (root.viewingCurrentMonth ? "" : "  •")
                         color: Config.Theme.colFg
                         font.family: Config.Theme.fontFamily
                         font.pixelSize: Config.Theme.fontSize
@@ -105,6 +162,13 @@ Item {
                             }
                         }
                     }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        enabled: !root.collapsed && !root.viewingCurrentMonth
+                        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        onClicked: root.showToday()
+                    }
                 }
 
                 RowLayout {
@@ -126,9 +190,7 @@ Item {
                         implicitWidth: Config.Theme.controlMinSize
                         implicitHeight: Config.Theme.controlMinSize
                         Accessible.name: "Previous month"
-                        onClicked: root.viewedMonth = new Date(
-                            root.viewedMonth.getFullYear(), root.viewedMonth.getMonth() - 1, 1
-                        )
+                        onClicked: root.changeMonth(-1)
                     }
 
                     Widgets.IconButton {
@@ -138,9 +200,7 @@ Item {
                         implicitWidth: Config.Theme.controlMinSize
                         implicitHeight: Config.Theme.controlMinSize
                         Accessible.name: "Next month"
-                        onClicked: root.viewedMonth = new Date(
-                            root.viewedMonth.getFullYear(), root.viewedMonth.getMonth() + 1, 1
-                        )
+                        onClicked: root.changeMonth(1)
                     }
                 }
             }

@@ -324,17 +324,7 @@ Variants {
                                         Accessible.name: !Networking.wifiEnabled ? "Wi-Fi off"
                                             : (connectedWifi ? "Wi-Fi connected to " + connectedWifi.name : "Wi-Fi disconnected")
 
-                                        readonly property var wifiDevice: {
-                                            for (const device of Networking.devices.values) {
-                                                if (device.type === DeviceType.Wifi)
-                                                    return device;
-                                            }
-                                            return null;
-                                        }
-                                        readonly property var connectedWifi: {
-                                            const networks = wifiDevice?.networks?.values ?? [];
-                                            return networks.find(network => network.connected) ?? null;
-                                        }
+                                        readonly property var connectedWifi: Services.WifiControl.activeNetwork
                                         readonly property string iconName: {
                                             if (!Networking.wifiEnabled)
                                                 return "wifi_off";

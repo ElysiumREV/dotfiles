@@ -49,6 +49,15 @@ PanelWindow {
         closeMenu();
     }
 
+    // Removes the selected entry and keeps the selection on its neighbour.
+    function removeSelected(): void {
+        const entry = filteredEntries[selectedIndex];
+        if (!entry)
+            return;
+        Services.ClipboardHistory.remove(entry.id);
+        selectedIndex = Math.max(0, Math.min(selectedIndex, filteredEntries.length - 1));
+    }
+
     function moveSelection(offset): void {
         if (filteredEntries.length === 0) {
             selectedIndex = 0;
@@ -191,6 +200,10 @@ PanelWindow {
                             if (entry)
                                 root.copyEntry(entry.text);
                             event.accepted = true;
+                        } else if (event.key === Qt.Key_Delete && (event.modifiers & Qt.ShiftModifier)) {
+                            // Plain Delete keeps editing the search text.
+                            root.removeSelected();
+                            event.accepted = true;
                         }
                     }
                 }
@@ -235,6 +248,11 @@ PanelWindow {
                                 if (nextItem)
                                     nextItem.forceActiveFocus();
                                 event.accepted = true;
+                            } else if (event.key === Qt.Key_Delete) {
+                                root.selectedIndex = index;
+                                root.removeSelected();
+                                Qt.callLater(() => historyList.itemAtIndex(root.selectedIndex)?.forceActiveFocus());
+                                event.accepted = true;
                             }
                         }
                         background: Rectangle {
@@ -249,7 +267,7 @@ PanelWindow {
                         Text {
                             id: preview
                             anchors.fill: parent
-                            anchors.margins: 0
+                            anchors.rightMargin: Config.Theme.controlMinSize + Config.Theme.spaceXs
                             text: modelData.text.replace(/[\r\n\t]+/g, " ")
                             color: Config.Theme.colFg
                             font.family: Config.Theme.fontFamily
@@ -260,12 +278,28 @@ PanelWindow {
                             verticalAlignment: Text.AlignVCenter
                         }
 
+                        Widgets.IconButton {
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            visible: itemDelegate.hovered || itemDelegate.highlighted || itemDelegate.activeFocus
+                                || hovered || activeFocus
+                            iconName: "close"
+                            iconSize: Config.Theme.iconSizeXs
+                            implicitWidth: Config.Theme.controlMinSize
+                            implicitHeight: Config.Theme.controlMinSize
+                            focusPolicy: Qt.NoFocus
+                            Accessible.name: "Remove from clipboard history"
+                            onClicked: {
+                                root.selectedIndex = itemDelegate.index;
+                                root.removeSelected();
+                            }
+                        }
                     }
                 }
 
                 Text {
                     Layout.fillWidth: true
-                    text: "↑ ↓ select · Enter copy · Tab actions · Esc close · up to 50 items"
+                    text: "↑ ↓ select · Enter copy · Shift+Del remove · Esc close · up to 50 items"
                     color: Config.Theme.colTextSec
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSizeSmall

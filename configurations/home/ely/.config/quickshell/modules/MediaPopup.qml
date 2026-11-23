@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Services.Mpris
 import QtQuick
 import QtQuick.Layouts
 import ".." as Config
@@ -23,7 +24,8 @@ PanelWindow {
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
     implicitWidth: PopupGeometry.widthForScreen(targetScreen, 360, 24)
     implicitHeight: PopupGeometry.heightForScreen(
-        targetScreen, compactLayout ? 190 : 210, Config.Theme.barHeight + 8, 16
+        targetScreen, (compactLayout ? 190 : 210) + (media.hasProgress ? 44 : 0),
+        Config.Theme.barHeight + 8, 16
     )
     exclusionMode: ExclusionMode.Ignore
     exclusiveZone: 0
@@ -40,6 +42,7 @@ PanelWindow {
     }
 
     function openPopup() {
+        media.refreshLiked()
         popupX = positionProvider(implicitWidth).x
         enterProgress = 0
         visible = true
@@ -65,6 +68,47 @@ PanelWindow {
     contentItem {
         focus: root.visible
         Keys.onEscapePressed: root.visible = false
+        // Space plays/pauses; Left/Right seek 5 s (or change track without seeking).
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Space) {
+                root.media.togglePlayPause();
+            } else if (event.key === Qt.Key_S && root.media.shuffleSupported) {
+                root.media.toggleShuffle();
+            } else if (event.key === Qt.Key_R && root.media.loopSupported) {
+                root.media.cycleLoop();
+            } else if (event.key === Qt.Key_L && root.media.likeSupported) {
+                root.media.toggleLike();
+            } else if (event.key === Qt.Key_Left || event.key === Qt.Key_Right) {
+                const forward = event.key === Qt.Key_Right;
+                if (root.media.canSeek && root.media.hasProgress)
+                    root.media.seekTo(root.media.position + (forward ? 5 : -5));
+                else if (forward)
+                    root.media.next();
+                else
+                    root.media.previous();
+            } else {
+                return;
+            }
+            event.accepted = true;
+        }
+    }
+
+    Connections {
+        target: root.media
+        function onTitleChanged() {
+            if (root.visible)
+                root.media.refreshLiked();
+        }
+    }
+
+    // MPRIS does not push position updates; poll only while this card is open
+    // and the track is playing.
+    Timer {
+        interval: 1000
+        repeat: true
+        triggeredOnStart: true
+        running: root.visible && root.media.playing && root.media.hasProgress
+        onTriggered: root.media.refreshPosition()
     }
 
     Rectangle {
@@ -176,11 +220,79 @@ PanelWindow {
                         visible: root.media.album !== ""
                     }
                 }
+
+                // Save to / remove from the library (Spotifast only; L on the keyboard).
+                ControlButton {
+                    Layout.alignment: Qt.AlignTop
+                    visible: root.media.likeSupported
+                    iconName: "favorite"
+                    filledIcon: root.media.likedKnown && root.media.liked
+                    active: root.media.likedKnown && root.media.liked
+                    small: true
+                    available: true
+                    label: root.media.liked ? "Remove from your library" : "Save to your library"
+                    onClicked: root.media.toggleLike()
+                }
+            }
+
+            // Progress: drag or click to seek (when the player allows it).
+            ColumnLayout {
+                Layout.fillWidth: true
+                visible: root.media.hasProgress
+                spacing: 0
+
+                Widgets.ThemedSlider {
+                    id: progressSlider
+                    Layout.fillWidth: true
+                    from: 0
+                    to: Math.max(1, root.media.length)
+                    value: root.media.position
+                    // Only seek on release, so the 1 s position updates do not fight the drag.
+                    live: false
+                    enabled: root.media.canSeek
+                    trackThickness: 4
+                    thumbSize: root.media.canSeek ? 12 : 0
+                    Accessible.name: "Track position"
+                    onMoved: {
+                        root.media.seekTo(value);
+                        value = Qt.binding(() => root.media.position);
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: root.media.formatTime(progressSlider.pressed
+                            ? progressSlider.valueAt(progressSlider.position) : root.media.position)
+                        color: Config.Theme.colTextSec
+                        font.family: Config.Theme.fontFamily
+                        font.pixelSize: Config.Theme.fontSizeCaption
+                    }
+
+                    Text {
+                        text: root.media.formatTime(root.media.length)
+                        color: Config.Theme.colTextSec
+                        font.family: Config.Theme.fontFamily
+                        font.pixelSize: Config.Theme.fontSizeCaption
+                    }
+                }
             }
 
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: 14
+
+                ControlButton {
+                    visible: root.media.shuffleSupported
+                    iconName: "shuffle"
+                    active: root.media.shuffle
+                    small: true
+                    available: true
+                    label: root.media.shuffle ? "Turn off shuffle" : "Turn on shuffle"
+                    onClicked: root.media.toggleShuffle()
+                }
 
                 ControlButton {
                     iconName: "skip_previous"
@@ -200,6 +312,17 @@ PanelWindow {
                     available: root.media.canNext
                     onClicked: root.media.next()
                 }
+
+                ControlButton {
+                    visible: root.media.loopSupported
+                    iconName: root.media.loopState === MprisLoopState.Track ? "repeat_one" : "repeat"
+                    active: root.media.loopState !== MprisLoopState.None
+                    small: true
+                    available: true
+                    label: root.media.loopState === MprisLoopState.None ? "Repeat playlist"
+                        : root.media.loopState === MprisLoopState.Playlist ? "Repeat this track" : "Turn off repeat"
+                    onClicked: root.media.cycleLoop()
+                }
             }
         }
     }
@@ -210,12 +333,20 @@ PanelWindow {
         required property string iconName
         required property bool available
         property bool emphasized: false
+        // Toggle that is on (shuffle, repeat, liked): accent color and a dot below.
+        property bool active: false
+        property bool small: false
+        property bool filledIcon: false
+        property string label: iconName
         signal clicked()
 
-        implicitWidth: 36
-        implicitHeight: 36
-        width: 36
-        height: 36
+        readonly property int size: small ? 30 : 36
+        implicitWidth: size
+        implicitHeight: size
+        width: size
+        height: size
+        Accessible.role: Accessible.Button
+        Accessible.name: label
         radius: width / 2
         color: emphasized
             ? Config.Theme.colHighlight
@@ -227,9 +358,23 @@ PanelWindow {
         Text {
             anchors.centerIn: parent
             text: control.iconName
-            color: control.emphasized ? Config.Theme.colBg : Config.Theme.colFg
+            color: control.emphasized ? Config.Theme.colBg
+                : (control.active ? Config.Theme.colHighlight : Config.Theme.colFg)
             font.family: "Material Symbols Rounded"
-            font.pixelSize: control.emphasized ? 22 : 20
+            font.pixelSize: control.emphasized ? 22 : (control.small ? 18 : 20)
+            // Material Symbols variable fill axis: a solid heart when liked.
+            font.variableAxes: ({ "FILL": control.filledIcon ? 1 : 0 })
+        }
+
+        Rectangle {
+            visible: control.active && !control.filledIcon
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 1
+            width: 4
+            height: 4
+            radius: 2
+            color: Config.Theme.colHighlight
         }
 
         MouseArea {

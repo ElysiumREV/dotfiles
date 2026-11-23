@@ -178,8 +178,12 @@ Singleton {
         const toplevel = Hyprland.toplevels.values.find(window =>
             matches(window.wayland?.appId) || matches(window.lastIpcObject?.class)) ?? null;
         if (toplevel) {
-            const address = String(toplevel.address);
-            Hyprland.dispatch(`hl.dsp.focus({ window = "address:${address.startsWith("0x") ? address : "0x" + address}" })`);
+            const raw = String(toplevel.address);
+            const address = "address:" + (raw.startsWith("0x") ? raw : "0x" + raw);
+            // Lua configs use hl.dsp.*; classic configs use the plain dispatcher.
+            Hyprland.dispatch(Hyprland.usingLua
+                ? `hl.dsp.focus({ window = "${address}" })`
+                : "focuswindow " + address);
             return true;
         }
 

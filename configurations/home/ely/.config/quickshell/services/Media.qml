@@ -1,6 +1,7 @@
 pragma Singleton
 
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Mpris
 import QtQuick
 
@@ -24,6 +25,27 @@ Singleton {
     readonly property bool canToggle: activePlayer?.canTogglePlaying ?? false
     readonly property bool canPrevious: activePlayer?.canGoPrevious ?? false
     readonly property bool canNext: activePlayer?.canGoNext ?? false
+    // Track progress, in seconds. MPRIS does not push position updates while
+    // playing: whoever shows it calls refreshPosition() on a timer.
+    readonly property real position: activePlayer?.position ?? 0
+    readonly property real length: activePlayer?.length ?? 0
+    readonly property bool hasProgress: (activePlayer?.positionSupported ?? false)
+        && (activePlayer?.lengthSupported ?? false) && length > 0
+    readonly property bool canSeek: activePlayer?.canSeek ?? false
+
+    // Shuffle and repeat go through MPRIS, so they work with any player that supports them.
+    readonly property bool shuffleSupported: activePlayer?.shuffleSupported ?? false
+    readonly property bool shuffle: activePlayer?.shuffle ?? false
+    readonly property bool loopSupported: activePlayer?.loopSupported ?? false
+    readonly property int loopState: activePlayer?.loopState ?? MprisLoopState.None
+
+    // "Like" is not part of MPRIS: only Spotifast offers it, through its CLI
+    // (`spotifast like` toggles, `spotifast now-playing --raw` reports "saved").
+    readonly property bool likeSupported: isSpotifast(activePlayer)
+    property bool liked: false
+    // Title the `liked` value belongs to, so a stale answer is not shown for another track.
+    property string likedTitle: ""
+    readonly property bool likedKnown: likeSupported && likedTitle !== "" && likedTitle === title
 
     readonly property string displayTitle: title || "Unknown Title"
     readonly property string displayArtist: artist || "Unknown Artist"
@@ -118,10 +140,78 @@ Singleton {
             activePlayer.previous()
     }
 
+    function refreshPosition() {
+        activePlayer?.positionChanged()
+    }
+
+    function seekTo(seconds) {
+        if (!canSeek || !activePlayer)
+            return
+        activePlayer.position = Math.max(0, Math.min(length, seconds))
+    }
+
+    // 3:07, or 1:02:45 for long tracks
+    function formatTime(seconds) {
+        const total = Math.max(0, Math.floor(seconds))
+        const hours = Math.floor(total / 3600)
+        const minutes = Math.floor((total % 3600) / 60)
+        const secs = String(total % 60).padStart(2, "0")
+        return hours > 0 ? hours + ":" + String(minutes).padStart(2, "0") + ":" + secs
+                         : minutes + ":" + secs
+    }
+
+    function toggleShuffle() {
+        if (shuffleSupported)
+            activePlayer.shuffle = !activePlayer.shuffle
+    }
+
+    // Off -> repeat playlist -> repeat track -> off, like most players.
+    function cycleLoop() {
+        if (!loopSupported)
+            return
+        activePlayer.loopState = loopState === MprisLoopState.None ? MprisLoopState.Playlist
+            : loopState === MprisLoopState.Playlist ? MprisLoopState.Track
+            : MprisLoopState.None
+    }
+
+    function refreshLiked() {
+        if (likeSupported && !likeQuery.running)
+            likeQuery.exec(["spotifast", "now-playing", "--raw"])
+    }
+
+    function toggleLike() {
+        if (!likeSupported || likeToggle.running)
+            return
+        // Optimistic: flip now, then confirm with Spotifast once the command ends.
+        if (likedKnown)
+            liked = !liked
+        likeToggle.exec(["spotifast", "like"])
+    }
+
     function setVolume(value) {
         if (!activePlayer?.volumeSupported) return
 
         const clamped = Math.max(0, Math.min(100, value))
         activePlayer.volume = clamped / 100
+    }
+
+    // now-playing --raw: state, title, artists, album, position_ms, duration_ms,
+    // volume, shuffle, repeat, art_url, saved, device (tab-separated)
+    Process {
+        id: likeQuery
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const fields = text.replace(/\n$/, "").split("\t")
+                if (fields.length < 11)
+                    return
+                root.liked = fields[10] === "yes"
+                root.likedTitle = fields[1]
+            }
+        }
+    }
+
+    Process {
+        id: likeToggle
+        onExited: root.refreshLiked()
     }
 }

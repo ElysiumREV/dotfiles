@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import ".." as Config
+import "../widgets" as Widgets
 import "../services" as QsServices
 
 Item {
@@ -25,6 +26,46 @@ Item {
             easing.type: Easing.BezierSpline
             easing.bezierCurve: Config.Theme.curveEffects
         }
+    }
+
+    activeFocusOnTab: true
+    Accessible.role: Accessible.Button
+    Accessible.name: media.connected
+        ? media.displayName + ": " + media.displayArtist + " — " + media.displayTitle
+            + (media.playing ? ", playing" : ", paused")
+        : "No media playing"
+
+    function togglePopup() {
+        if (mediaPopupLoader.activeAsync) {
+            mediaPopupLoader.item.visible = false
+            mediaPopupLoader.activeAsync = false
+        } else {
+            mediaPopupLoader.activeAsync = true
+        }
+    }
+
+    // Enter/Space open the player card; Left/Right change track.
+    Keys.onPressed: event => {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+            root.togglePopup()
+        } else if (event.key === Qt.Key_Left) {
+            media.previous()
+        } else if (event.key === Qt.Key_Right) {
+            media.next()
+        } else {
+            return
+        }
+        event.accepted = true
+    }
+
+    Rectangle {
+        anchors.centerIn: parent
+        width: mediaRow.implicitWidth + 8
+        height: Config.Theme.moduleHeight - 4
+        radius: height / 2
+        color: "transparent"
+        border.width: root.activeFocus ? 1 : 0
+        border.color: Config.Theme.colHighlight
     }
 
     function popupPosition(width) {
@@ -101,6 +142,8 @@ Item {
         }
     }
 
+    Widgets.WheelAccumulator { id: wheelSteps }
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -108,29 +151,22 @@ Item {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
 
-        onClicked: {
-            if (mediaPopupLoader.activeAsync) {
-                mediaPopupLoader.item.visible = false
-                mediaPopupLoader.activeAsync = false
-            }
-            else
-                mediaPopupLoader.activeAsync = true
-        }
+        onClicked: root.togglePopup()
 
         // Scroll for volume (Shift + scroll) or navigation (normal)
         WheelHandler {
             onWheel: event => {
+                const steps = wheelSteps.feed(event.angleDelta.y)
+                if (steps === 0)
+                    return
                 if (event.modifiers & Qt.ShiftModifier) {
-                    // Shift + scroll = volume
-                    var delta = event.angleDelta.y > 0 ? 5 : -5
-                    media.setVolume(media.volume + delta)
+                    // Shift + scroll = volume, 5% per step
+                    media.setVolume(media.volume + steps * 5)
+                } else if (steps > 0) {
+                    // Scroll = next/previous, one track per gesture step
+                    media.next()
                 } else {
-                    // Scroll normal = next/prev
-                    if (event.angleDelta.y > 0) {
-                        media.next()
-                    } else {
-                        media.previous()
-                    }
+                    media.previous()
                 }
             }
         }

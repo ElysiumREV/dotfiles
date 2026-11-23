@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Hyprland
 import QtQuick
 import ".." as Config
+import "../widgets" as Widgets
 import "." as QsModules
 
 Item {
@@ -12,6 +13,8 @@ Item {
     property real spacing: 4
     // Set to true to show urgency alerts on workspaces.
     property bool showUrgencyAlerts: false
+    // Shared by all buttons so a swipe that crosses buttons keeps its progress.
+    readonly property var wheelSteps: Widgets.WheelAccumulator {}
 
     readonly property var monitor:
         Hyprland.monitorFor(root.QsWindow.window?.screen)
@@ -249,15 +252,14 @@ Item {
                     }
 
                     onWheel: event => {
-                        Hyprland.dispatch(
-                            Hyprland.usingLua
-                            ? event.angleDelta.y < 0
-                              ? 'hl.dsp.focus({ workspace = "r+1" })'
-                              : 'hl.dsp.focus({ workspace = "r-1" })'
-                            : event.angleDelta.y < 0
-                              ? "workspace r+1"
-                              : "workspace r-1"
-                        )
+                        // Scrolling down moves forward; whole steps only (see WheelAccumulator).
+                        const steps = root.wheelSteps.feed(event.angleDelta.y);
+                        if (steps === 0)
+                            return;
+                        const target = (steps < 0 ? "r+" : "r-") + Math.abs(steps);
+                        Hyprland.dispatch(Hyprland.usingLua
+                            ? `hl.dsp.focus({ workspace = "${target}" })`
+                            : "workspace " + target);
                     }
                 }
 

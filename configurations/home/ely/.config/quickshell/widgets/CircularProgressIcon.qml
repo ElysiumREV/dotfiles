@@ -51,6 +51,13 @@ Item {
             function onProgressChanged() { ring.requestPaint(); }
             function onRingColorChanged() { ring.requestPaint(); }
         }
+
+        // The track uses the theme color; repaint when the palette changes
+        // (wallpaper or light/dark switch), or it keeps the old shade.
+        Connections {
+            target: Config.Theme
+            function onColMutedChanged() { ring.requestPaint(); }
+        }
     }
 
     Text {

@@ -12,6 +12,9 @@ Singleton {
     property alias notifications: settingsAdapter.notifications
     property alias theme: settingsAdapter.theme
     property alias recorder: settingsAdapter.recorder
+    property alias dns: settingsAdapter.dns
+    // True once settings.json was read (values are the defaults before that).
+    property bool loaded: false
 
     FileView {
         id: settingsFile
@@ -19,9 +22,11 @@ Singleton {
         watchChanges: true
         onFileChanged: reload()
         onAdapterUpdated: writeAdapter()
+        onLoaded: root.loaded = true
         onLoadFailed: error => {
             if (error === FileViewError.FileNotFound)
                 writeAdapter()
+            root.loaded = true
         }
 
         JsonAdapter {
@@ -58,6 +63,17 @@ Singleton {
                 property bool systemAudio: true
                 // Empty = ~/Videos
                 property string directory: ""
+            }
+
+            property JsonObject dns: JsonObject {
+                // DNS for every network: "auto" (the network's own), a provider id
+                // from DnsControl.providers, or "custom" with the servers below.
+                property string defaultMode: "auto"
+                property string defaultIpv4: ""
+                property string defaultIpv6: ""
+                // Per-network exceptions by connection UUID:
+                // { name, mode, ipv4, ipv6 } (e.g. a campus Wi-Fi that needs its own DNS).
+                property var overrides: ({})
             }
 
             property JsonObject theme: JsonObject {

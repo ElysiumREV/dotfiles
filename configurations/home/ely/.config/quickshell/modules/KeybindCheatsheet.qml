@@ -112,7 +112,18 @@ Scope {
                 decreaseVolume: "Decrease volume",
                 toggleMute: "Toggle audio mute",
                 increaseBrightness: "Increase brightness",
-                decreaseBrightness: "Decrease brightness"
+                decreaseBrightness: "Decrease brightness",
+                syncBrightness: "Sync brightness",
+                toggleKeybindCheatsheet: "Toggle shortcut cheatsheet",
+                toggleShortcutHub: "Toggle quick shortcuts",
+                toggleVolumeMixer: "Toggle volume mixer",
+                toggleDoNotDisturb: "Toggle Do Not Disturb",
+                toggleColorMode: "Toggle light/dark mode",
+                toggleScreenRecording: "Start/stop screen recording",
+                toggleBrowserChooser: "Toggle browser chooser",
+                openBrowserChooser: "Choose a browser for a link",
+                toggleGoogleDrive: "Toggle Google Drive accounts",
+                cancelScreenshot: "Cancel screenshot"
             };
             return labels[ipcAction[1]] ?? `QuickShell action: ${ipcAction[1]}`;
         }

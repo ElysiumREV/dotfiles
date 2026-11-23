@@ -37,6 +37,14 @@ Singleton {
         entries = bounded;
     }
 
+    function remove(id): void {
+        // The newest entry is what the clipboard holds now; removing it (usually
+        // something sensitive) clears the clipboard too, so it cannot be pasted.
+        if (entries.length > 0 && entries[0].id === id && Quickshell.clipboardText === entries[0].text)
+            Quickshell.clipboardText = "";
+        entries = entries.filter(entry => entry.id !== id);
+    }
+
     function clear(): void {
         entries = [];
     }

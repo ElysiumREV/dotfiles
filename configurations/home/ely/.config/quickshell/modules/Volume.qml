@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import ".." as Config
+import "../widgets" as Widgets
 import "../services" as QsServices
 
 Item {
@@ -71,6 +72,8 @@ Item {
         }
     }
 
+    Widgets.WheelAccumulator { id: wheelSteps }
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -81,11 +84,9 @@ Item {
         onClicked: root.requestMenu()
 
         onWheel: wheel => {
-            if (wheel.angleDelta.y > 0) {
-                volume.increaseVolume()
-            } else {
-                volume.decreaseVolume()
-            }
+            const steps = wheelSteps.feed(wheel.angleDelta.y)
+            if (steps !== 0)
+                volume.setVolume(volume.volume + steps * 0.05)
         }
     }
 }

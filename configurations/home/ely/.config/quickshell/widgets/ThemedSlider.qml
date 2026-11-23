@@ -36,5 +36,8 @@ Slider {
         height: root.thumbSize
         radius: width / 2
         color: Config.Theme.colFg
+        // Visible keyboard focus (the arrow keys move the slider).
+        border.width: root.activeFocus ? 2 : 0
+        border.color: Config.Theme.colHighlight
     }
 }

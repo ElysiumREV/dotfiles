@@ -1,4 +1,5 @@
 import ".." as Config
+import "../widgets" as Widgets
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -123,6 +124,8 @@ Item {
                     }
                 }
 
+                Widgets.WheelAccumulator { id: wheelSteps }
+
                 MouseArea {
                     id: mouseArea
 
@@ -138,16 +141,12 @@ Item {
                         else
                             trayItem.openMenu();
                     }
-                    // scroll() takes whole steps; touchpads send small deltas, so accumulate.
-                    property real pendingScroll: 0
+                    // scroll() takes whole steps; touchpads send small deltas.
                     onWheel: wheel => {
                         const horizontal = wheel.angleDelta.y === 0;
-                        pendingScroll += horizontal ? wheel.angleDelta.x : wheel.angleDelta.y;
-                        const steps = Math.trunc(pendingScroll / 120);
-                        if (steps !== 0) {
-                            pendingScroll -= steps * 120;
+                        const steps = wheelSteps.feed(horizontal ? wheel.angleDelta.x : wheel.angleDelta.y);
+                        if (steps !== 0)
                             trayItem.modelData.scroll(steps, horizontal);
-                        }
                     }
                 }
             }

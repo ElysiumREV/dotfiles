@@ -71,10 +71,48 @@ Antes de qualquer teste manual, rode `scripts/smoke-test.sh` (abre e fecha 9 pai
 - [X] **Screenshot, MPRIS/Spotifast e wlogout**: região/janela, metadados e controles do player, ações de sessão pelo teclado.
 
 ### Em validação ou polimento
+- Aleatório, repetir e like no cartão do player (2026-11-22):
+  - **Aleatório e repetir** via MPRIS (`shuffle`, `loopState`), então funcionam em qualquer player que os suporte; os botões só aparecem quando o player suporta. Repetir alterna desligado → playlist → faixa (ícone `repeat_one` na faixa). Ativos ficam na cor de destaque com um ponto embaixo. O MPRIS do Spotifast expõe `LoopStatus` e `Shuffle` graváveis (conferido com `busctl`).
+  - **Like** (`favorite`) só para o Spotifast, porque não existe no MPRIS: `spotifast like` alterna e `spotifast now-playing --raw` informa o campo `saved`. O estado é lido ao abrir o cartão e a cada troca de faixa (sem polling); o botão muda na hora e é confirmado depois que o comando termina. Coração cheio quando salvo, usando o eixo `FILL` da fonte variável Material Symbols (`font.variableAxes`). Spotify oficial ficaria só com a Web API (login), não implementado.
+  - Teclado no cartão: S aleatório, R repetir, L like.
+  - Conferido por captura com o Spotifast aberto: coração vazado (não salva), progresso 0:00/4:55, aleatório e repetir visíveis. Like, aleatório e repetir não foram clicados no teste para não mexer na conta/reprodução do usuário.
+- Melhorias pequenas + progresso da música (2026-11-22):
+  - **Calendário**: roda do mouse troca o mês (para baixo = próximo; usa o `WheelAccumulator`); PageUp/PageDown trocam o mês e Home volta para hoje com o foco em qualquer botão do calendário; "•" no título quando outro mês está aberto, e clicar no título volta ao mês atual (ideias anotadas do end-4).
+  - **Clipboard**: remover um item só, pelo X que aparece no item (hover, seleção ou foco), por Delete no item focado ou por Shift+Delete no campo de busca (Delete sozinho continua apagando texto). Se o item removido for o conteúdo atual do clipboard, o clipboard também é esvaziado, para não dar para colar algo sensível que foi removido. Nova função `ClipboardHistory.remove(id)`.
+  - **Mídia na barra pelo teclado**: entra no Tab, com anel de foco; Enter/Espaço abrem o cartão do player e ←/→ trocam de faixa.
+  - **Barra de progresso da música** (`MediaPopup`): slider com tempo decorrido e duração, visível quando o player informa posição e duração. Arrastar ou clicar avança (só se o player permitir `canSeek`; sem isso a barra só mostra e não tem handle). O seek acontece ao soltar (`live: false`), para a atualização da posição não brigar com o arrasto. O MPRIS não envia a posição sozinho durante a reprodução: um timer de 1 s chama `positionChanged()` apenas com o cartão aberto e a música tocando. No cartão, Espaço toca/pausa e ←/→ avançam/voltam 5 s (ou trocam de faixa se o player não permitir seek). `Media` ganhou `position`, `length`, `hasProgress`, `canSeek`, `refreshPosition()`, `seekTo()` e `formatTime()`.
+  - Smoke test: 11 painéis sem erros de QML. Não testado com player real (nenhum tocando durante a mudança): validar a barra no Spotify/YouTube Music, o calendário com a roda e o X do clipboard.
+- Segunda revisão geral (2026-11-22), correções aplicadas:
+  - **Roda do mouse no touchpad**: volume, mídia, workspaces e bandeja agiam a cada evento; um gesto de touchpad (muitos deltas pequenos) pulava vários workspaces ou músicas, ou disparava o volume. Novo `widgets/WheelAccumulator.qml` converte os deltas em passos inteiros (120 = um clique da roda) e descarta a sobra ao inverter o sentido. Testado à parte: roda = 1 passo por clique; 30 deltas de -15 = 3 passos (antes 30).
+  - **Anel da bateria no tema novo**: o `CircularProgressIcon` só redesenhava com a carga ou a cor do anel; o trilho cinza ficava com a cor do tema anterior ao trocar wallpaper ou modo claro/escuro. Agora redesenha quando `Theme.colMuted` muda.
+  - **Calendário**: um timer de 1 s reatribuía `today` com o painel aberto, reavaliando as 42 células por segundo; agora atualiza ao abrir e logo após a meia-noite.
+  - **Aviso de página de login do DNS**: só aparece (com a notificação) se a falta de internet durar 6 s, porque a conectividade fica "limited" por instantes enquanto qualquer rede conecta.
+  - **Sliders** (`ThemedSlider`): anel de foco no handle ao navegar pelo teclado.
+  - `Notifications.focusApplication` usa `focuswindow` quando o Hyprland não está em Lua, como os workspaces já faziam.
+  - Indicador de Wi-Fi da barra usa `WifiControl.activeNetwork` em vez de repetir a busca do dispositivo e da rede.
+  - Cheatsheet: rótulos para todas as ações de IPC do `shell.qml` (usados quando um bind não tem descrição).
+  - Smoke test: 11 painéis sem erros de QML.
+- DNS padrão para todas as redes, com exceções por rede (2026-11-22, pedido do usuário: um DNS para tudo, mas a Wi-Fi da faculdade, `WIFI-UNISAGRADO`, precisa do DNS da própria rede para abrir a página de login com o ID de universitário):
+  - O DNS global do NetworkManager foi descartado: ele se sobrepõe a todas as conexões, não aceita exceção e pede senha a cada troca (`settings.modify.global-dns: auth`).
+  - **Modelo**: `settings.json` → `dns.defaultMode` (`auto`, id de provedor ou `custom` com `defaultIpv4`/`defaultIpv6`) e `dns.overrides` (por UUID da conexão: `{ name, mode, ipv4, ipv6 }`). A escolha efetiva de uma rede é a exceção dela, ou então o padrão. Tudo é gravado no perfil de cada rede no NetworkManager, então continua valendo sem o shell.
+  - **Seção DNS do Wi-Fi** (`modules/archmenu/DnsChoice.qml`, usado duas vezes): "All networks" (Automatic, Cloudflare, Quad9, Google, AdGuard, Custom…) e "This network · <nome>" (mesmas opções + "Use the default · <padrão>"). Embaixo, os servidores em uso.
+  - **Aplicação**: trocar o padrão grava em todos os perfis Wi-Fi/Ethernet salvos sem exceção (`dns.sh profiles` + `set`/`reset <uuid>`; só o perfil ativo recebe `reapply`). Ao conectar numa rede (inclusive nova), o serviço compara o perfil com a escolha efetiva e corrige se precisar; tenta uma vez por escolha, para não repetir em loop se falhar. Com o padrão em "auto", uma rede sem exceção que já tenha DNS fixo (configurado antes ou à mão) vira exceção em vez de ser apagada. Foi o que aconteceu com `Desktop_F2017128` (Cloudflare).
+  - **Página de login**: se a rede usa DNS fixo e o NetworkManager indica `Portal` ou `Limited` (`Networking.connectivity`), aparece um aviso na seção com o botão "Use this network's DNS here" (cria a exceção "auto" e aplica), e uma notificação com a ação "Use network DNS", uma vez por rede.
+  - `DnsControl` é criado na inicialização (`shell.qml`), senão o singleton só existiria depois de abrir o Arch Menu e as redes novas não receberiam o padrão.
+  - `Preferences.loaded` indica quando o `settings.json` terminou de carregar (leitura assíncrona; antes disso os valores são os padrões).
+  - Testado: a escolha atual virou exceção sem alterar o NetworkManager; `set`/`reset` por UUID num perfil inativo (`MBUX 44411`) ida e volta. Não testado de ponta a ponta "All networks", porque `Eletronica Melao-5G` tem Cloudflare configurado à mão (somado ao DNS da rede) e trocar o padrão sobrescreveria isso, a menos que essa rede vire exceção antes. Validar na sessão: escolher o padrão e conectar na faculdade.
+- Resumo da bateria e DNS no menu de Wi-Fi (2026-11-22):
+  - **Resumo da bateria na barra** (`modules/BatterySummaryPopup.qml`): cartão que aparece após 400 ms de hover no anel da bateria, ou com foco do teclado, e some ao clicar (o clique abre o Arch Menu). Mostra porcentagem com barra, estado ("On battery", "Charging", "Fully charged"), tempo restante ou até carregar, consumo em W (`changeRate`), saúde (`healthPercentage` da bateria do notebook, quando suportado) e o perfil de energia. Usa só propriedades do UPower que já são acompanhadas: nenhum processo ou timer extra. Conferido por captura de tela (36 %, 3 h 11 min, 4,4 W, saúde 100 %, Balanced).
+  - **DNS no menu de Wi-Fi** (primeira versão, só por rede; substituída no mesmo dia pelo padrão + exceções, ver acima): seção "DNS" abaixo de "Refresh networks", visível com uma rede conectada. O combo oferece "Automatic (from the network)", Cloudflare (1.1.1.1), Quad9 (9.9.9.9, bloqueia malware), Google (8.8.8.8), AdGuard (94.140.14.14, bloqueia anúncios) e "Custom…", que abre campos de IPv4 e IPv6 (opcional) com validação, mais Apply/Cancel. Mostra os servidores em uso e avisa que a configuração vale só para aquela rede.
+    - `scripts/dns.sh` (`status` / `set <ipv4> <ipv6>` / `reset`) usa `nmcli connection modify` no perfil da conexão Wi-Fi ativa e aplica na hora com `nmcli device reapply` (sem desconectar; se for recusado, cai para `nmcli connection up`). DNS fixo liga `ignore-auto-dns` em IPv4 e IPv6, para o DNS do roteador não ser usado junto; o IPv6 só é alterado se o método não for `ignore`/`disabled`. "Automatic" limpa os servidores e desliga o `ignore-auto-dns`.
+    - `services/DnsControl.qml` guarda provedores, modo atual (detectado comparando os servidores salvos), servidores em uso e erros; relê o estado ao expandir o Wi-Fi e ao trocar de rede.
+    - Testado pelo terminal na rede atual: Cloudflare aplicado (o `/etc/resolv.conf` mudou e a resolução funcionou) e depois "reset", que devolveu exatamente o estado original. O usuário tem `settings.modify.system: yes` no NetworkManager, então não pede senha. Observação: com 4 servidores o glibc só usa os 3 primeiros (aviso do próprio NetworkManager no `resolv.conf`); não atrapalha.
+    - Falta testar na sessão: trocar pelo combo, o modo Custom (campos, validação, Enter/Esc) e o Apply.
+  - Smoke test: 11 painéis sem erros de QML.
 - Ajustes pequenos (2026-11-22):
   - **Histórico do clipboard religa sozinho**: se o `wl-paste --watch` sair (por exemplo, ao reiniciar o Hyprland), o watcher é reiniciado após 2 s, com espera crescente até 30 s; um minuto rodando zera a espera. Antes o histórico parava sem aviso.
   - **Navegação por teclado no histórico de notificações**: cartões e cabeçalhos de grupo recebem foco (anel na cor de destaque). ↑/↓ andam entre eles sem dar a volta; Enter/Espaço abrem a notificação; Delete apaga e passa o foco para a vizinha; ←/→ (ou Enter) no cabeçalho recolhem/expandem o grupo; a lista rola até o item focado. A partir da lista, ↓ entra no primeiro grupo. Não testado com teclas reais (não há `wtype`/`ydotool` para simular).
-  - **Bateria não se desloca ao carregar**: o raio fica sempre no layout e só muda de opacidade (item da auditoria de 2026-10-16).
+  - **Bateria não se desloca ao carregar** (item da auditoria de 2026-10-16): o raio separado saiu da barra; ao carregar, o ícone dentro do anel vira `bolt` (e o anel fica verde). A primeira tentativa (raio sempre no layout, só invisível) deixava um buraco entre o microfone e o número fora do carregador; o usuário notou e foi trocada.
   - **`/proc` sem processos**: `SystemStats` lê `/proc/stat` e `/proc/meminfo` com `FileView` + `reload()` (encadeados pelo sinal `loaded`) em vez de rodar `cat` a cada amostra. O tempo ligado virou o serviço `services/Uptime.qml` (lido com `FileView` só quando o Arch Menu ou o menu de sessão abre), que substitui o `cat /proc/uptime` e a função de formatação duplicada nos dois. Testado à parte: `reload()` de um `FileView` em `/proc` traz valores novos de forma assíncrona; com `preload: false` o encadeamento não funcionou, por isso ficou o padrão.
   - Smoke test: 11 painéis sem erros de QML.
 - Sugestões da revisão + novo wlogout (2026-11-19):
@@ -144,17 +182,17 @@ Antes de qualquer teste manual, rode `scripts/smoke-test.sh` (abre e fecha 9 pai
 ### Ideias ainda em aberto
 0. **Calendário com eventos (planejado, 2026-11-11; adiado pelo usuário)**, em fases: (1) unificar os calendários — feito; (2) eventos locais: criar, editar e marcar dias no calendário do Arch Menu; (3) por último, integrar contas externas (Gmail/Google via CalDAV; Proton parece oferecer só link `.ics` de leitura — confirmar).
    - Referência end-4 (`~/Downloads/end-4-dotfiles`, commit `cb1c428b`): não tem eventos nem integração de calendário. O calendário dele é só a grade do mês; ao lado há uma lista de tarefas separada (`services/Todo.qml` + `modules/ii/sidebarRight/todo/`): itens com texto e "feito", sem data/lembrete, salvos em `~/.local/state/quickshell/user/todo.json` via `FileView`, abas Unfinished/Done e tecla **N**/botão flutuante para adicionar.
-   - Aproveitar do end-4: roda do mouse e Page Up/Down trocam o mês; clicar no título volta ao mês atual (com "•" quando fora dele); serviço com `FileView` em `~/.local/state/quickshell/`.
+   - Aproveitar do end-4: roda do mouse e Page Up/Down trocam o mês; clicar no título volta ao mês atual (com "•" quando fora dele) — feito em 2026-11-22; serviço com `FileView` em `~/.local/state/quickshell/`.
    - Proposta: guardar eventos num `.ics` local (formato que Google e Proton importam/exportam), facilitando a fase 3.
    - Perguntas em aberto para retomar: (a) clicar num dia abre a lista abaixo do calendário ou uma janela separada? (b) eventos só de dia inteiro ou com horário? (c) lembrete por notificação? (d) também uma lista de tarefas como a do end-4?
 
 1. **Central de atalhos:** implementada e confirmada em uso; ações no ArchMenu e binds `SUPER+O`/`SUPER+N` funcionando.
 2. **Busca ampliada no launcher:** avaliar busca de arquivos, ações e comandos. Definir dependências e custo de indexação antes de escolher estratégia; preservar busca sob demanda.
-3. **Resumo de bateria/energia na barra:** usar informações que já estão disponíveis no menu da bateria, sem consultas adicionais contínuas.
+3. **Resumo de bateria/energia na barra:** implementado em 2026-11-22 como cartão de hover no anel da bateria.
 4. **Perfis de contexto:** agrupar opções como Não Perturbe, perfil de energia e wallpaper. Começar por alternância manual; automações ficam para depois.
 5. **Tela de configurações da shell:** controles da barra, ranking por uso no launcher e pasta de wallpapers estão implementados. Próximos candidatos: preferências adicionais do launcher e opções que ainda estejam fixas; defaults seguros para instalação nova. A revisão de telas menores fica para depois, conforme preferência do usuário.
 6. **Gravação de tela:** escolher ferramenta e formatos antes de fechar dependências.
-7. **DNS manual IPv4/IPv6 no menu de rede:** permitir retornar ao DNS automático, exibir estado atual e validar dados; avaliar integração NetworkManager e custo de dependência.
+7. **DNS manual IPv4/IPv6 no menu de rede:** implementado em 2026-11-22 (provedores, manual e automático; ver "Em validação").
 
 ## Recomendações inspiradas no end-4
 
@@ -277,6 +315,7 @@ Dependências são necessárias para as features correspondentes, não necessari
 | `power-profiles-daemon` | Perfis de energia | Necessário; `services/PowerProfiles.qml` usa a API nativa `Quickshell.Services.UPower` (o `powerprofilesctl` não é mais chamado). O estado fica `balanced` por instantes até o D-Bus responder. |
 | `brightnessctl` | Alterar brilho | Necessário em hardware compatível; conferir permissões. |
 | `curl` | Busca/download Wallhaven | Necessário para Wallhaven. |
+| `nmcli` (NetworkManager) | DNS por rede no menu de Wi-Fi (`scripts/dns.sh`) | Necessário só para a seção de DNS; vem com o NetworkManager. |
 | `grim` e ImageMagick (`magick`) | Screenshot e recorte em pixels | Necessários para o seletor integrado. |
 | `wl-clipboard` (`wl-copy`) | Copiar screenshot | Necessário para enviar captura à área de transferência. |
 | `libnotify` (`notify-send`) | Confirmação após screenshot/teste de notificações | Opcional para screenshot; útil para validação. |

@@ -2,13 +2,14 @@
 # DNS servers of NetworkManager connection profiles (nmcli).
 # Used by services/DnsControl.qml; also handy from a terminal.
 #
-#   dns.sh status                         active Wi-Fi connection, key=value lines
+#   dns.sh status                         main active connection (Wi-Fi or wired), key=value lines
 #   dns.sh profiles                       saved Wi-Fi/Ethernet profiles: uuid<TAB>type<TAB>name
 #   dns.sh set "<ipv4>" "<ipv6>" [uuid]   fixed servers (comma or space separated);
 #                                         the DNS announced by the network is ignored
 #   dns.sh reset [uuid]                   back to the DNS provided by the network
 #
-# Without a uuid, set/reset target the active Wi-Fi connection. The change is
+# Without a uuid, set/reset target the main active connection: the Wi-Fi or
+# wired connection that carries the default route (lowest metric). The change is
 # saved in the profile; if that profile is active it is applied right away with
 # `nmcli device reapply` (no disconnection).
 set -u
@@ -21,9 +22,21 @@ command -v nmcli >/dev/null 2>&1 || die "nmcli is not installed."
 clean_list() { sed -e 's/\\:/:/g' -e 's/ | /,/g' | paste -sd, - | sed -e 's/,,*/,/g' -e 's/^,//' -e 's/,$//'; }
 normalize() { echo "${1:-}" | tr ' ;' ',,' | sed -e 's/,,*/,/g' -e 's/^,//' -e 's/,$//'; }
 
-active_wifi() {
-    nmcli -t -f UUID,TYPE,DEVICE connection show --active \
-        | awk -F: '$2 == "802-11-wireless" { print $1, $3; exit }'
+# Prints "uuid device type" of the main active connection.
+active_main() {
+    local candidates route_dev
+    candidates=$(nmcli -t -f UUID,TYPE,DEVICE connection show --active \
+        | awk -F: '$2 == "802-11-wireless" || $2 == "802-3-ethernet" { print $1, $3, $2 }')
+    [ -n "$candidates" ] || return 0
+    # Device of the default route with the lowest metric (e.g. cable over Wi-Fi).
+    route_dev=$(ip -o route show default 2>/dev/null \
+        | awk '{ m = 0; for (i = 1; i < NF; i++) { if ($i == "dev") d = $(i + 1); if ($i == "metric") m = $(i + 1) }
+                 print m, d }' | sort -n | awk 'NR == 1 { print $2 }')
+    if [ -n "$route_dev" ] && echo "$candidates" | awk -v d="$route_dev" '$2 == d { found = 1 } END { exit !found }'; then
+        echo "$candidates" | awk -v d="$route_dev" '$2 == d { print; exit }'
+    else
+        echo "$candidates" | head -n 1
+    fi
 }
 
 # Device of a profile if it is active, empty otherwise.
@@ -58,18 +71,19 @@ target() {
     if [ -n "${1:-}" ]; then
         echo "$1"
     else
-        read -r uuid _ < <(active_wifi)
-        [ -n "${uuid:-}" ] || die "No active Wi-Fi connection."
+        read -r uuid _ _ < <(active_main)
+        [ -n "${uuid:-}" ] || die "No active network connection."
         echo "$uuid"
     fi
 }
 
 case "${1:-status}" in
     status)
-        read -r uuid device < <(active_wifi)
-        [ -n "${uuid:-}" ] || die "No active Wi-Fi connection."
+        read -r uuid device type < <(active_main)
+        [ -n "${uuid:-}" ] || die "No active network connection."
         echo "uuid=$uuid"
         echo "device=$device"
+        echo "type=$([ "$type" = "802-3-ethernet" ] && echo wired || echo wifi)"
         echo "name=$(get "$uuid" connection.id)"
         echo "ipv4_dns=$(get "$uuid" ipv4.dns | clean_list)"
         echo "ipv4_ignore_auto=$(get "$uuid" ipv4.ignore-auto-dns)"

@@ -321,11 +321,19 @@ Variants {
                                         width: 18
                                         height: Config.Theme.moduleHeight
                                         Accessible.role: Accessible.StaticText
-                                        Accessible.name: !Networking.wifiEnabled ? "Wi-Fi off"
-                                            : (connectedWifi ? "Wi-Fi connected to " + connectedWifi.name : "Wi-Fi disconnected")
+                                        Accessible.name: wiredConnected
+                                            ? "Wired connection" + (connectedWifi ? ", Wi-Fi also connected to " + connectedWifi.name : "")
+                                            : (!Networking.wifiEnabled ? "Wi-Fi off"
+                                               : (connectedWifi ? "Wi-Fi connected to " + connectedWifi.name : "Wi-Fi disconnected"))
 
                                         readonly property var connectedWifi: Services.WifiControl.activeNetwork
+                                        // A connected cable wins: it is normally the main connection
+                                        // (lower route metric), even with Wi-Fi also connected.
+                                        readonly property bool wiredConnected: Networking.devices.values
+                                            .some(device => device.type === DeviceType.Wired && device.connected)
                                         readonly property string iconName: {
+                                            if (wiredConnected)
+                                                return "lan";
                                             if (!Networking.wifiEnabled)
                                                 return "wifi_off";
                                             if (!connectedWifi)
@@ -341,7 +349,7 @@ Variants {
                                             anchors.centerIn: parent
                                             text: networkIndicator.iconName
                                             color: deviceGroup.highlighted ? Config.Theme.colOnHighlightContainer
-                                                : (networkIndicator.connectedWifi
+                                                : (networkIndicator.wiredConnected || networkIndicator.connectedWifi
                                                     ? Config.Theme.colHighlight : Config.Theme.colMuted)
                                             font.family: "Material Symbols Rounded"
                                             font.pixelSize: Config.Theme.iconSizeSm

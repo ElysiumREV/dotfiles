@@ -6,7 +6,8 @@ import Quickshell.Io
 import Quickshell.Networking
 import ".." as Config
 
-// DNS for NetworkManager connections, used by the Wi-Fi panel.
+// DNS for NetworkManager connections (Wi-Fi and wired), used by the Wi-Fi
+// panel and the Settings tab.
 //
 // A default (Preferences.dns.defaultMode) applies to every saved Wi-Fi/Ethernet
 // profile; per-network exceptions (`overrides`, by connection
@@ -67,6 +68,8 @@ Singleton {
     property bool loaded: false
     property string activeUuid: ""
     property string connectionName: ""
+    // "wifi" or "wired": the main connection (the one with the default route).
+    property string connectionType: ""
     property var configuredIpv4: []
     property var configuredIpv6: []
     property bool ignoresNetworkDns: false
@@ -208,7 +211,7 @@ Singleton {
     // mode "default" removes this network's exception.
     function setNetworkChoice(mode, ipv4Text, ipv6Text) {
         if (activeUuid === "")
-            return "No active Wi-Fi connection.";
+            return "No active network connection.";
         if (mode === "custom") {
             const error = validate(ipv4Text, ipv6Text);
             if (error !== "")
@@ -341,6 +344,36 @@ Singleton {
 
     Component.onCompleted: refresh()
 
+    // NetworkManager events (cable plugged in, network switched, ...): a stream,
+    // not polling. Bursts of lines are debounced into one status read.
+    Process {
+        id: networkMonitor
+        command: ["nmcli", "monitor"]
+        running: true
+        stdout: SplitParser {
+            onRead: line => {
+                if (/connected|disconnected|primary connection|connectivity/i.test(line))
+                    monitorDebounce.restart();
+            }
+        }
+        // nmcli exits if NetworkManager restarts; start it again shortly after.
+        onExited: monitorRestart.restart()
+    }
+
+    Timer {
+        id: monitorDebounce
+        interval: 1200
+        repeat: false
+        onTriggered: root.refresh()
+    }
+
+    Timer {
+        id: monitorRestart
+        interval: 5000
+        repeat: false
+        onTriggered: networkMonitor.running = true
+    }
+
     Process {
         id: statusProcess
         stdout: StdioCollector {
@@ -350,6 +383,7 @@ Singleton {
                 if (status.error) {
                     root.activeUuid = "";
                     root.connectionName = "";
+                    root.connectionType = "";
                     root.configuredIpv4 = [];
                     root.configuredIpv6 = [];
                     root.ignoresNetworkDns = false;
@@ -358,6 +392,7 @@ Singleton {
                 }
                 root.activeUuid = status.uuid ?? "";
                 root.connectionName = status.name ?? "";
+                root.connectionType = status.type ?? "wifi";
                 root.configuredIpv4 = root.splitList(status.ipv4_dns);
                 root.configuredIpv6 = root.splitList(status.ipv6_dns);
                 root.ignoresNetworkDns = status.ipv4_ignore_auto === "yes";

@@ -21,7 +21,7 @@ ColumnLayout {
 
     Text {
         Layout.fillWidth: true
-        text: "Customize the bar, launcher and notifications. Changes are saved automatically."
+        text: "Customize the bar, launcher, notifications and DNS. Changes are saved automatically."
         color: Config.Theme.colTextSec
         wrapMode: Text.Wrap
         font.family: Config.Theme.fontFamily
@@ -121,5 +121,10 @@ ColumnLayout {
         value: Config.Preferences.notifications.defaultTimeoutSeconds
         Accessible.name: "Default notification duration in seconds"
         onMoved: Config.Preferences.notifications.defaultTimeoutSeconds = Math.round(value)
+    }
+
+    // DNS for the main connection, Wi-Fi or wired (the Wi-Fi panel only shows it on Wi-Fi).
+    DnsSection {
+        Layout.topMargin: Config.Theme.spaceSm
     }
 }

@@ -118,7 +118,11 @@ PanelWindow {
             cleanupTransientActions();
         } else {
             openAnimation.restart();
-            Qt.callLater(() => wifiPowerButton.forceActiveFocus());
+            // Focus the panel itself, never a control: the panel can open (IPC,
+            // keybind) while someone is typing elsewhere, and an Enter/Space meant
+            // for that window once landed on the Wi-Fi power button and turned
+            // Wi-Fi off. Tab still reaches every control.
+            Qt.callLater(() => root.contentItem.forceActiveFocus());
         }
     }
 

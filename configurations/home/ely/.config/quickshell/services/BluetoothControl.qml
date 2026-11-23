@@ -237,7 +237,8 @@ Singleton {
 
     function stopScan() {
         scanTimer.stop();
-        if (adapter)
+        // Only stop a running discovery (BlueZ warns about stopping none).
+        if (adapter?.discovering)
             adapter.discovering = false;
     }
 

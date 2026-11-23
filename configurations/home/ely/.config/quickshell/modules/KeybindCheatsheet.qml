@@ -123,7 +123,9 @@ Scope {
                 toggleBrowserChooser: "Toggle browser chooser",
                 openBrowserChooser: "Choose a browser for a link",
                 toggleGoogleDrive: "Toggle Google Drive accounts",
-                cancelScreenshot: "Cancel screenshot"
+                cancelScreenshot: "Cancel screenshot",
+                toggleProfile: "Toggle a context profile",
+                clearProfile: "Turn off the context profile"
             };
             return labels[ipcAction[1]] ?? `QuickShell action: ${ipcAction[1]}`;
         }

@@ -8,6 +8,7 @@ import Quickshell.Widgets
 import Quickshell.Hyprland
 import "../services" as Services
 import "../widgets" as Widgets
+import "./Calculator.js" as Calculator
 
 PanelWindow {
     id: root
@@ -90,7 +91,39 @@ PanelWindow {
         return weight + Math.max(1, 30 - gaps);
     }
 
+    // Special first result: "> command" runs a shell command; a math expression
+    // ("2+2*3", "15% * 80", "sqrt(2)") shows its result. Enter acts on it unless
+    // the selection was moved down into the applications.
+    readonly property bool commandMode: searchText.replace(/^\s+/, "").startsWith(">")
+    readonly property string commandText: commandMode ? searchText.replace(/^\s+/, "").slice(1).trim() : ""
+    readonly property var calcValue: commandMode ? null : Calculator.evaluate(searchText)
+    readonly property string calcText: calcValue === null ? "" : Calculator.format(calcValue)
+    readonly property string specialKind: commandMode ? "command" : (calcValue !== null ? "calc" : "")
+    property bool specialSelected: false
+    onSpecialKindChanged: specialSelected = specialKind !== ""
+
+    function runSpecial(inTerminal) {
+        if (specialKind === "calc") {
+            Quickshell.clipboardText = calcText;
+            closeLauncher();
+        } else if (specialKind === "command" && commandText !== "") {
+            const command = commandText;
+            closeLauncher();
+            if (inTerminal) {
+                // kitty keeps the window open after the command (--hold).
+                Quickshell.execDetached(["kitty", "--hold", "sh", "-c", command]);
+            } else {
+                // Runs in the background; a failure is reported with its last output lines.
+                Quickshell.execDetached(["sh", "-c",
+                    'out=$(sh -c "$1" 2>&1) || notify-send -a Launcher -i dialog-error "Command failed: $1" "$(printf %s "$out" | tail -n 3)"',
+                    "launcher-command", command]);
+            }
+        }
+    }
+
     readonly property var filteredApplications: {
+        if (root.commandMode)
+            return [];
         // Depend on usage changes only while usage-based ordering is enabled.
         const prioritizeUsage = Config.Preferences.launcher.prioritizeUsage;
         const usageRevision = prioritizeUsage ? Services.ApplicationUsage.revision : 0;
@@ -310,6 +343,8 @@ PanelWindow {
                             text: root.searchText
                             onTextChanged: {
                                 root.searchText = text;
+                                // Typing puts the selection back on the calculator/command result.
+                                root.specialSelected = root.specialKind !== "";
                                 root.selectedIndex = 0;
                                 searchDebounce.restart();
                             }
@@ -335,19 +370,106 @@ PanelWindow {
                                     event.accepted = true;
                                 } else if (event.key === Qt.Key_Down) {
                                     root.keyboardNavigationActive = true;
-                                    root.selectedIndex = Math.min(root.selectedIndex + 1,
-                                        Math.max(0, root.filteredApplications.length - 1));
+                                    if (root.specialSelected) {
+                                        // From the special result into the applications.
+                                        if (root.filteredApplications.length > 0) {
+                                            root.specialSelected = false;
+                                            root.selectedIndex = 0;
+                                        }
+                                    } else {
+                                        root.selectedIndex = Math.min(root.selectedIndex + 1,
+                                            Math.max(0, root.filteredApplications.length - 1));
+                                    }
                                     event.accepted = true;
                                 } else if (event.key === Qt.Key_Up) {
                                     root.keyboardNavigationActive = true;
-                                    root.selectedIndex = Math.max(0, root.selectedIndex - 1);
+                                    if (!root.specialSelected && root.selectedIndex === 0 && root.specialKind !== "")
+                                        root.specialSelected = true;
+                                    else
+                                        root.selectedIndex = Math.max(0, root.selectedIndex - 1);
                                     event.accepted = true;
                                 } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                    root.launchSelected();
+                                    if (root.specialSelected)
+                                        root.runSpecial((event.modifiers & Qt.ShiftModifier) !== 0);
+                                    else
+                                        root.launchSelected();
                                     event.accepted = true;
                                 }
                             }
                         }
+                    }
+                }
+
+                // Calculator result or "> command"
+                Rectangle {
+                    Layout.fillWidth: true
+                    visible: root.specialKind !== ""
+                    implicitHeight: 56
+                    radius: Config.Theme.radiusCard
+                    color: root.specialSelected
+                        ? Config.Theme.alpha(Config.Theme.colHighlight, 0.16)
+                        : (specialMouse.containsMouse ? Config.Theme.alpha(Config.Theme.colTextSec, 0.08) : "transparent")
+                    border.width: 1
+                    border.color: root.specialSelected
+                        ? Config.Theme.alpha(Config.Theme.colHighlight, 0.5)
+                        : Config.Theme.alpha(Config.Theme.colTextSec, 0.18)
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: Config.Theme.spaceMd
+                        anchors.rightMargin: 14
+                        spacing: Config.Theme.spaceMd
+
+                        Rectangle {
+                            Layout.preferredWidth: 32
+                            Layout.preferredHeight: 32
+                            radius: Config.Theme.radiusControl
+                            color: Config.Theme.colHighlightContainer
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: root.specialKind === "command" ? "terminal" : "calculate"
+                                color: Config.Theme.colOnHighlightContainer
+                                font.family: "Material Symbols Rounded"
+                                font.pixelSize: Config.Theme.iconSizeMd
+                            }
+                        }
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 2
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: root.specialKind === "command"
+                                    ? (root.commandText !== "" ? root.commandText : "Type a command after >")
+                                    : "= " + root.calcText
+                                color: Config.Theme.colFg
+                                font.family: Config.Theme.fontFamily
+                                font.pixelSize: root.specialKind === "calc" ? Config.Theme.fontSizeLarge : Config.Theme.fontSize
+                                font.bold: root.specialKind === "calc"
+                                elide: Text.ElideRight
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: root.specialKind === "command"
+                                    ? "↵ run in the background     ⇧↵ run in a terminal"
+                                    : "↵ copy the result"
+                                color: Config.Theme.colTextSec
+                                font.family: Config.Theme.fontFamily
+                                font.pixelSize: Config.Theme.fontSizeSmall
+                                elide: Text.ElideRight
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: specialMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.runSpecial(false)
                     }
                 }
 
@@ -367,7 +489,7 @@ PanelWindow {
                         width: appList.width
                         height: 56
                         radius: Config.Theme.radiusCard
-                        color: index === root.selectedIndex
+                        color: index === root.selectedIndex && !root.specialSelected
                                ? Config.Theme.alpha(Config.Theme.colHighlight, 0.16)
                                : rowMouse.containsMouse
                                  ? Config.Theme.alpha(Config.Theme.colTextSec, 0.08)
@@ -408,7 +530,7 @@ PanelWindow {
                                 font.family: "Material Symbols Rounded"
                                 font.pixelSize: Config.Theme.iconSizeSm
                                 color: Config.Theme.colTextSec
-                                visible: index === root.selectedIndex
+                                visible: index === root.selectedIndex && !root.specialSelected
                             }
                         }
 
@@ -429,7 +551,7 @@ PanelWindow {
 
                     Text {
                         anchors.centerIn: parent
-                        visible: appList.count === 0
+                        visible: appList.count === 0 && root.specialKind === ""
                         text: "No applications found"
                         color: Config.Theme.colTextSec
                         font.family: Config.Theme.fontFamily
@@ -439,7 +561,7 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "↑ ↓ navigate     ↵ open     ESC close"
+                    text: "= math     > command     ↑ ↓ navigate     ↵ open     ESC close"
                     color: Config.Theme.colMuted
                     font.family: Config.Theme.fontFamily
                     font.pixelSize: Config.Theme.fontSizeSmall

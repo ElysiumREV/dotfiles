@@ -30,6 +30,51 @@ ColumnLayout {
         wrapMode: Text.WordWrap
     }
 
+    // Context profiles (services/ContextProfiles.qml): toggles that change
+    // Do Not Disturb, power profile and brightness together.
+    Text {
+        Layout.fillWidth: true
+        Layout.topMargin: Config.Theme.spaceXs
+        text: "Profiles"
+        color: Config.Theme.colFg
+        font.family: Config.Theme.fontFamily
+        font.pixelSize: Config.Theme.fontSizeSmall
+        font.bold: true
+    }
+
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: Config.Theme.spaceXs
+
+        Repeater {
+            model: Services.ContextProfiles.profiles
+
+            delegate: Widgets.SegmentedTabButton {
+                required property var modelData
+                Layout.fillWidth: true
+                text: modelData.label
+                iconName: modelData.icon
+                selected: Services.ContextProfiles.active === modelData.id
+                Accessible.name: (selected ? "Turn off " : "Turn on ") + modelData.label + " profile: "
+                    + Services.ContextProfiles.summary(modelData.id)
+                onClicked: Services.ContextProfiles.toggle(modelData.id)
+            }
+        }
+    }
+
+    Text {
+        Layout.fillWidth: true
+        text: Services.ContextProfiles.activeProfile
+            ? Services.ContextProfiles.activeProfile.label + ": "
+                + Services.ContextProfiles.summary(Services.ContextProfiles.active)
+                + ". Click it again to restore your previous settings."
+            : "Each profile changes several settings at once; turning it off restores them."
+        color: Config.Theme.colTextSec
+        wrapMode: Text.Wrap
+        font.family: Config.Theme.fontFamily
+        font.pixelSize: Config.Theme.fontSizeCaption
+    }
+
     GridLayout {
         Layout.fillWidth: true
         columns: 2

@@ -69,8 +69,9 @@ Singleton {
         settingTimer.restart()
 
         // brightnessctl changes the hardware; exec accepts repeated slider updates.
+        // round, not floor: 0.15 * 100 is 14.999… in floating point.
         const valuePercentNumber =
-            Math.floor(value * 100)
+            Math.round(value * 100)
 
         // Avoids leaving the screen completely black.
         const valuePercent =

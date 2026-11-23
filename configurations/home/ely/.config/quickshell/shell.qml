@@ -55,6 +55,13 @@ ShellRoot {
             Services.WallpaperManager.setColorMode(
                 Config.Preferences.theme.mode === "light" ? "dark" : "light");
         }
+        // Context profiles: focus, gaming, battery (toggle; clearProfile restores).
+        function toggleProfile(name: string): void {
+            Services.ContextProfiles.toggle(name);
+        }
+        function clearProfile(): void {
+            Services.ContextProfiles.deactivate();
+        }
         function toggleDoNotDisturb(): void {
             Services.Notifications.doNotDisturb = !Services.Notifications.doNotDisturb;
         }

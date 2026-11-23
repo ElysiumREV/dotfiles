@@ -7,6 +7,9 @@ ScrollBar {
 
     implicitWidth: 6
     implicitHeight: 6
+    // Hidden when there is nothing to scroll. An empty list reports size 0 (not
+    // 1), which would otherwise draw a full-height bar next to "no results".
+    visible: policy === ScrollBar.AlwaysOn || (policy === ScrollBar.AsNeeded && size > 0 && size < 1)
 
     background: Item {}
 

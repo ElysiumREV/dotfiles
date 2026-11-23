@@ -135,9 +135,17 @@ local function current_mode(monitor)
 	return list[i], i, #list
 end
 
+-- Virtual outputs (`hyprctl output create headless NAME`, e.g. for wayvnc)
+-- are never projectors: always extend them to the right of the panel.
+local function is_virtual(name)
+	return name:match("^HEADLESS%-") or name:match("^VNC%-") or name:match("^VIRTUAL%-")
+end
+
 local function apply(monitor, silent)
 	local name = monitor.name
-	if (layout[name] or "mirror") == "mirror" then
+	if is_virtual(name) then
+		hl.monitor({ output = name, mode = "preferred", position = "auto-right", scale = 1 })
+	elseif (layout[name] or "mirror") == "mirror" then
 		local mode, i, n = current_mode(monitor)
 		hl.monitor({ output = name, mode = mode, position = "auto", scale = 1, mirror = INTERNAL })
 		if not silent then

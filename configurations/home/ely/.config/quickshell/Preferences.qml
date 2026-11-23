@@ -13,6 +13,7 @@ Singleton {
     property alias theme: settingsAdapter.theme
     property alias recorder: settingsAdapter.recorder
     property alias dns: settingsAdapter.dns
+    property alias display: settingsAdapter.display
     // True once settings.json was read (values are the defaults before that).
     property bool loaded: false
 
@@ -73,6 +74,14 @@ Singleton {
                 property string defaultIpv6: ""
                 // Per-network exceptions are kept by DnsControl in the state
                 // directory (dns-overrides.json), out of this backed-up file.
+            }
+
+            property JsonObject display: JsonObject {
+                // hyprsunset: night light and its warmth (K), and gamma (%, also
+                // the way to dim a desktop monitor that has no backlight).
+                property bool nightLight: false
+                property int temperature: 4000
+                property int gamma: 100
             }
 
             property JsonObject theme: JsonObject {

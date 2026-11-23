@@ -125,7 +125,9 @@ Scope {
                 toggleGoogleDrive: "Toggle Google Drive accounts",
                 cancelScreenshot: "Cancel screenshot",
                 toggleProfile: "Toggle a context profile",
-                clearProfile: "Turn off the context profile"
+                clearProfile: "Turn off the context profile",
+                toggleCaffeine: "Keep awake on/off",
+                toggleNightLight: "Night light on/off"
             };
             return labels[ipcAction[1]] ?? `QuickShell action: ${ipcAction[1]}`;
         }

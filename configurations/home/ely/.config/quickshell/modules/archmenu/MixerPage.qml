@@ -86,12 +86,24 @@ ColumnLayout {
         id: appVolumeScroll
         Layout.fillWidth: true
         Layout.fillHeight: false
-        Layout.preferredHeight: menu.outputAppNodes.length > 0 ? 180 : 0
+        // As tall as the rows, up to about a third of the screen; only then scroll.
+        // (A fixed 180 px showed ~3 rows and hid the rest below the fold.)
+        Layout.preferredHeight: menu.outputAppNodes.length > 0
+            ? Math.min(appVolumeRows.implicitHeight, Math.max(160, (menu.targetScreen?.height ?? 720) * 0.32))
+            : 0
         visible: menu.outputAppNodes.length > 0
         clip: true
         contentWidth: availableWidth
         contentHeight: appVolumeRows.implicitHeight
         ScrollBar.vertical: Widgets.ThemeScrollBar { policy: ScrollBar.AsNeeded }
+
+        // Streams with the same name (e.g. several browser tabs) get a number,
+        // so every row can be told apart.
+        function rowLabel(node) {
+            const base = menu.audioAppName(node);
+            const same = menu.outputAppNodes.filter(other => menu.audioAppName(other) === base);
+            return same.length > 1 ? base + " (" + (same.indexOf(node) + 1) + ")" : base;
+        }
 
         ColumnLayout {
             id: appVolumeRows
@@ -117,7 +129,7 @@ ColumnLayout {
                             ? Config.Theme.colMuted : Config.Theme.colHighlight
                         implicitWidth: Config.Theme.controlMinSize
                         implicitHeight: Config.Theme.controlMinSize
-                        Accessible.name: "Mute " + menu.audioAppName(appVolumeRow.modelData)
+                        Accessible.name: "Mute " + appVolumeScroll.rowLabel(appVolumeRow.modelData)
                         onClicked: menu.toggleAppMute(appVolumeRow.modelData)
                     }
 
@@ -127,7 +139,7 @@ ColumnLayout {
 
                         Text {
                             Layout.fillWidth: true
-                            text: menu.audioAppName(appVolumeRow.modelData)
+                            text: appVolumeScroll.rowLabel(appVolumeRow.modelData)
                             color: Config.Theme.colFg
                             font.family: Config.Theme.fontFamily
                             font.pixelSize: Config.Theme.fontSizeSmall
@@ -140,7 +152,7 @@ ColumnLayout {
                             to: 1
                             stepSize: 0.01
                             value: appVolumeRow.modelData.audio?.volume ?? 0
-                            Accessible.name: "Volume for " + menu.audioAppName(appVolumeRow.modelData)
+                            Accessible.name: "Volume for " + appVolumeScroll.rowLabel(appVolumeRow.modelData)
                             onMoved: menu.setAppVolume(appVolumeRow.modelData, value)
                         }
                     }

@@ -28,6 +28,12 @@ Variants {
             PanelWindow {
                 id: root
 
+                // "Keep awake" (Services.Caffeine): a visible window holds the inhibitor.
+                IdleInhibitor {
+                    window: root
+                    enabled: Services.Caffeine.active
+                }
+
                 Component.onCompleted: Services.GlobalFocusGrab.addPersistent(root)
                 Component.onDestruction: Services.GlobalFocusGrab.removePersistent(root)
 
@@ -402,6 +408,26 @@ Variants {
                                             anchors.fill: parent
                                             cursorShape: Qt.PointingHandCursor
                                             onClicked: Services.Notifications.toggleCenter(Hyprland.monitorFor(modelData))
+                                        }
+                                    }
+
+                                    // Keep awake is on (click toggles it off).
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        visible: Services.Caffeine.active
+                                        text: "coffee"
+                                        color: deviceGroup.highlighted ? Config.Theme.colOnHighlightContainer
+                                            : Config.Theme.colYellow
+                                        font.family: "Material Symbols Rounded"
+                                        font.pixelSize: Config.Theme.iconSizeSm
+                                        Accessible.role: Accessible.Button
+                                        Accessible.name: "Keep awake is on; turn it off"
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            anchors.margins: -4
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: Services.Caffeine.toggle()
                                         }
                                     }
                                 }

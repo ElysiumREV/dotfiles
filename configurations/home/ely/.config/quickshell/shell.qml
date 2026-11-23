@@ -11,11 +11,13 @@ import "." as Config
 ShellRoot {
     // Services that must run from startup (singletons are otherwise created on
     // first use): the clipboard watcher (history stays in memory), the DNS sync
-    // that gives newly joined networks the default DNS, and low battery alerts.
+    // that gives newly joined networks the default DNS, low battery alerts and
+    // the hyprsunset night light/gamma.
     Component.onCompleted: {
         Services.ClipboardHistory.entries;
         Services.DnsControl.loaded;
         Services.BatteryAlerts.ready;
+        Services.DisplayFilter.available; // re-applies night light and gamma
     }
 
     IpcHandler {
@@ -61,6 +63,12 @@ ShellRoot {
         }
         function clearProfile(): void {
             Services.ContextProfiles.deactivate();
+        }
+        function toggleCaffeine(): void {
+            Services.Caffeine.toggle();
+        }
+        function toggleNightLight(): void {
+            Services.DisplayFilter.toggleNightLight();
         }
         function toggleDoNotDisturb(): void {
             Services.Notifications.doNotDisturb = !Services.Notifications.doNotDisturb;

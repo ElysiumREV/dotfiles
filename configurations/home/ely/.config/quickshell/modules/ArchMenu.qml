@@ -240,6 +240,33 @@ PanelWindow {
                     font.bold: true
                 }
 
+                // Quick toggles live in the header; the tab row keeps only tabs.
+                Widgets.IconButton {
+                    iconName: "coffee"
+                    implicitWidth: 34
+                    implicitHeight: 34
+                    selected: Services.Caffeine.active
+                    selectedIconColor: Config.Theme.colYellow
+                    Accessible.name: Services.Caffeine.active
+                        ? "Turn off keep awake" : "Keep awake (no dimming, lock or suspend)"
+                    ToolTip.text: Accessible.name
+                    ToolTip.visible: hovered
+                    onClicked: Services.Caffeine.toggle()
+                }
+
+                Widgets.IconButton {
+                    iconName: Services.Notifications.doNotDisturb ? "notifications_off" : "notifications_active"
+                    implicitWidth: 34
+                    implicitHeight: 34
+                    selected: Services.Notifications.doNotDisturb
+                    selectedIconColor: Config.Theme.colYellow
+                    Accessible.name: Services.Notifications.doNotDisturb
+                        ? "Turn off Do Not Disturb" : "Turn on Do Not Disturb"
+                    ToolTip.text: Accessible.name
+                    ToolTip.visible: hovered
+                    onClicked: Services.Notifications.doNotDisturb = !Services.Notifications.doNotDisturb
+                }
+
                 Widgets.IconButton {
                     iconName: "close"
                     implicitWidth: 34
@@ -533,6 +560,83 @@ PanelWindow {
 
                 }
 
+                // Display (hyprsunset): gamma, which is also the brightness control
+                // on a monitor without backlight, and the night light.
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: Config.Theme.spaceXs
+
+                    RowLayout {
+                        Layout.fillWidth: true
+
+                        Text {
+                            text: Services.Brightness.supported ? "contrast" : "brightness_6"
+                            color: Config.Theme.colHighlight
+                            font.family: "Material Symbols Rounded"
+                            font.pixelSize: Config.Theme.iconSizeMd
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            // Without a backlight, gamma is how this screen is dimmed.
+                            text: Services.Brightness.supported ? "Gamma" : "Brightness (gamma)"
+                            color: Config.Theme.colFg
+                            font.family: Config.Theme.fontFamily
+                            font.pixelSize: Config.Theme.fontSize
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: Services.DisplayFilter.gamma + "%"
+                            color: Config.Theme.colMuted
+                            font.family: Config.Theme.fontFamily
+                            font.pixelSize: Config.Theme.fontSizeSmall
+                        }
+                    }
+
+                    Widgets.ThemedSlider {
+                        Layout.fillWidth: true
+                        from: Services.DisplayFilter.minGamma
+                        to: 100
+                        stepSize: 1
+                        value: Services.DisplayFilter.gamma
+                        Accessible.name: "Screen gamma"
+                        onMoved: Services.DisplayFilter.setGamma(value)
+                    }
+
+                    Widgets.PreferenceSwitch {
+                        Layout.fillWidth: true
+                        implicitHeight: 34
+                        text: "Night light" + (Services.DisplayFilter.nightLight
+                            ? " · " + Services.DisplayFilter.temperature + " K" : "")
+                        accessibleLabel: "Night light"
+                        checked: Services.DisplayFilter.nightLight
+                        onToggled: Services.DisplayFilter.setNightLight(checked)
+                    }
+
+                    // Left = neutral, right = warmer.
+                    Widgets.ThemedSlider {
+                        Layout.fillWidth: true
+                        visible: Services.DisplayFilter.nightLight
+                        from: Services.DisplayFilter.neutralTemperature
+                        to: Services.DisplayFilter.minTemperature
+                        stepSize: 100
+                        value: Services.DisplayFilter.temperature
+                        Accessible.name: "Night light warmth"
+                        onMoved: Services.DisplayFilter.setTemperature(value)
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        visible: Services.DisplayFilter.errorText !== ""
+                        text: Services.DisplayFilter.errorText
+                        color: Config.Theme.colRed
+                        wrapMode: Text.Wrap
+                        font.family: Config.Theme.fontFamily
+                        font.pixelSize: Config.Theme.fontSizeCaption
+                    }
+                }
+
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: Config.Theme.spaceSm
@@ -761,16 +865,6 @@ PanelWindow {
                     onClicked: root.activeTab = "settings"
                 }
 
-                Widgets.IconButton {
-                    Accessible.name: Services.Notifications.doNotDisturb
-                        ? "Turn off Do Not Disturb" : "Turn on Do Not Disturb"
-                    iconName: Services.Notifications.doNotDisturb ? "notifications_off" : "notifications_active"
-                    selected: Services.Notifications.doNotDisturb
-                    selectedIconColor: Config.Theme.colYellow
-                    ToolTip.text: Accessible.name
-                    ToolTip.visible: hovered
-                    onClicked: Services.Notifications.doNotDisturb = !Services.Notifications.doNotDisturb
-                }
             }
 
             StackLayout {

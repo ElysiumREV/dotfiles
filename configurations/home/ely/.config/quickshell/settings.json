@@ -7,6 +7,11 @@
         "showSystemStatus": true,
         "showTray": true
     },
+    "display": {
+        "gamma": 100,
+        "nightLight": false,
+        "temperature": 4200
+    },
     "dns": {
         "defaultIpv4": "",
         "defaultIpv6": "",

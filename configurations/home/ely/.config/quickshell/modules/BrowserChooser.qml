@@ -28,7 +28,9 @@ PanelWindow {
     // Non-Firefox browsers, shown only when their desktop entry exists.
     readonly property var extraBrowsers: [
         { desktopId: "google-chrome", label: "Google Chrome", detail: "Work / study",
-          command: ["google-chrome-stable"], newWindowFlag: "--new-window" }
+          command: ["google-chrome-stable"], newWindowFlag: "--new-window" },
+        { desktopId: "org.ladybird.Ladybird", label: "Ladybird", detail: "Flatpak",
+          command: ["flatpak", "run", "org.ladybird.Ladybird"], newWindowFlag: "--new-window" }
     ]
 
     readonly property var options: {

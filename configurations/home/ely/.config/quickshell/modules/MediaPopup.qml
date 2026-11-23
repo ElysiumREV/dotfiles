@@ -23,8 +23,9 @@ PanelWindow {
     screen: targetScreen
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
     implicitWidth: PopupGeometry.widthForScreen(targetScreen, 360, 24)
+    // Height follows the content (a fixed height left empty bands between rows).
     implicitHeight: PopupGeometry.heightForScreen(
-        targetScreen, (compactLayout ? 190 : 210) + (media.hasProgress ? 44 : 0),
+        targetScreen, cardContent.implicitHeight + 2 * cardContent.anchors.margins,
         Config.Theme.barHeight + 8, 16
     )
     exclusionMode: ExclusionMode.Ignore
@@ -121,48 +122,18 @@ PanelWindow {
         border.color: Config.Theme.alpha(Config.Theme.colTextSec, 0.25)
 
         ColumnLayout {
+            id: cardContent
             anchors.fill: parent
             anchors.margins: root.compactLayout ? 10 : 14
-            spacing: root.compactLayout ? 8 : 10
+            spacing: root.compactLayout ? 6 : 8
 
             RowLayout {
                 Layout.fillWidth: true
-
-                Text {
-                    Layout.fillWidth: true
-                    text: root.media.displayName
-                    color: Config.Theme.colTextSec
-                    font.family: Config.Theme.fontFamily
-                    font.pixelSize: Config.Theme.fontSizeSmall
-                    font.bold: true
-                    elide: Text.ElideRight
-                }
-
-                Text {
-                    text: "close"
-                    color: closeMouse.containsMouse ? Config.Theme.colHighlight : Config.Theme.colTextSec
-                    font.family: "Material Symbols Rounded"
-                    font.pixelSize: Config.Theme.iconSizeSm
-
-                    MouseArea {
-                        id: closeMouse
-                        anchors.fill: parent
-                        anchors.margins: -5
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.visible = false
-                    }
-                }
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
                 spacing: root.compactLayout ? 8 : 12
 
                 Rectangle {
-                    Layout.preferredWidth: root.compactLayout ? 60 : 80
-                    Layout.preferredHeight: root.compactLayout ? 60 : 80
+                    Layout.preferredWidth: root.compactLayout ? 56 : 64
+                    Layout.preferredHeight: root.compactLayout ? 56 : 64
                     radius: Config.Theme.radiusControl
                     clip: true
                     color: Config.Theme.alpha(Config.Theme.colTextSec, 0.12)
@@ -190,7 +161,9 @@ PanelWindow {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: Config.Theme.spaceXs
+                    // Centered next to the cover instead of hanging from its top edge.
+                    Layout.alignment: Qt.AlignVCenter
+                    spacing: 2
                     Text {
                         Layout.fillWidth: true
                         text: root.media.title || "Nothing playing"
@@ -210,20 +183,20 @@ PanelWindow {
                         elide: Text.ElideRight
                     }
 
+                    // Album and player in one muted line (no separate header row).
                     Text {
                         Layout.fillWidth: true
-                        text: root.media.album || "Unknown album"
-                        color: Config.Theme.colTextSec
+                        text: [root.media.album, root.media.displayName].filter(Boolean).join(" · ")
+                        color: Config.Theme.colMuted
                         font.family: Config.Theme.fontFamily
-                        font.pixelSize: Config.Theme.fontSizeSmall - 1
+                        font.pixelSize: Config.Theme.fontSizeCaption
                         elide: Text.ElideRight
-                        visible: root.media.album !== ""
                     }
                 }
 
                 // Save to / remove from the library (Spotifast only; L on the keyboard).
                 ControlButton {
-                    Layout.alignment: Qt.AlignTop
+                    Layout.alignment: Qt.AlignVCenter
                     visible: root.media.likeSupported
                     iconName: "favorite"
                     filledIcon: root.media.likedKnown && root.media.liked
@@ -235,15 +208,25 @@ PanelWindow {
                 }
             }
 
-            // Progress: drag or click to seek (when the player allows it).
-            ColumnLayout {
+            // Progress, with the times on the same line: drag or click to seek
+            // (when the player allows it).
+            RowLayout {
                 Layout.fillWidth: true
                 visible: root.media.hasProgress
-                spacing: 0
+                spacing: Config.Theme.spaceSm
+
+                Text {
+                    text: root.media.formatTime(progressSlider.pressed
+                        ? progressSlider.valueAt(progressSlider.position) : root.media.position)
+                    color: Config.Theme.colTextSec
+                    font.family: Config.Theme.fontFamily
+                    font.pixelSize: Config.Theme.fontSizeCaption
+                }
 
                 Widgets.ThemedSlider {
                     id: progressSlider
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 20
                     from: 0
                     to: Math.max(1, root.media.length)
                     value: root.media.position
@@ -259,24 +242,11 @@ PanelWindow {
                     }
                 }
 
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Text {
-                        Layout.fillWidth: true
-                        text: root.media.formatTime(progressSlider.pressed
-                            ? progressSlider.valueAt(progressSlider.position) : root.media.position)
-                        color: Config.Theme.colTextSec
-                        font.family: Config.Theme.fontFamily
-                        font.pixelSize: Config.Theme.fontSizeCaption
-                    }
-
-                    Text {
-                        text: root.media.formatTime(root.media.length)
-                        color: Config.Theme.colTextSec
-                        font.family: Config.Theme.fontFamily
-                        font.pixelSize: Config.Theme.fontSizeCaption
-                    }
+                Text {
+                    text: root.media.formatTime(root.media.length)
+                    color: Config.Theme.colTextSec
+                    font.family: Config.Theme.fontFamily
+                    font.pixelSize: Config.Theme.fontSizeCaption
                 }
             }
 

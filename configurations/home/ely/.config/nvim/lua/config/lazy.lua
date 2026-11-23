@@ -1,5 +1,8 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
+-- Check for lazy.nvim's code, not just the folder: an interrupted first clone
+-- leaves an empty/partial folder that would otherwise skip the bootstrap forever.
+if not (vim.uv or vim.loop).fs_stat(lazypath .. "/lua/lazy/init.lua") then
+  vim.fn.delete(lazypath, "rf")
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
   local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
   if vim.v.shell_error ~= 0 then
@@ -8,7 +11,10 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
       { out, "WarningMsg" },
       { "\nPress any key to exit..." },
     }, true, {})
-    vim.fn.getchar()
+    -- No UI (nvim --headless, e.g. from install.sh): exit instead of waiting forever
+    if #vim.api.nvim_list_uis() > 0 then
+      vim.fn.getchar()
+    end
     os.exit(1)
   end
 end

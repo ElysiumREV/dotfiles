@@ -935,6 +935,56 @@ seed_wallpaper() {
 }
 
 # ============================================================
+# NEOVIM
+# ============================================================
+
+# Baixa os plugins do Neovim durante a instalação, nas versões do
+# lazy-lock.json. Sem isso o download acontece na primeira abertura do nvim;
+# se for interrompido, sobra uma pasta lazy.nvim vazia e a config inteira
+# quebra ("module 'lazy' not found"). O lazy.lua também se recupera disso,
+# mas aqui o erro aparece no resumo da instalação em vez de no editor.
+setup_neovim() {
+  local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
+  local lazy_dir="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy"
+
+  command -v nvim >/dev/null 2>&1 || return 0
+  [[ -f "$config_dir/init.lua" ]] || return 0
+
+  info "Instalando plugins do Neovim (pode levar alguns minutos)..."
+
+  local log lock="$config_dir/lazy-lock.json" lock_backup=""
+  log=$(mktemp)
+
+  # Na primeira abertura o lazy instala os plugins que faltam na versão mais
+  # nova e reescreve o lazy-lock.json; um restore depois disso só confirma as
+  # versões novas. Por isso: guarda o lock, deixa a primeira abertura instalar,
+  # devolve o lock e aí o restore volta tudo para as versões fixadas.
+  if [[ -f "$lock" ]]; then
+    lock_backup=$(mktemp)
+    cp "$lock" "$lock_backup"
+  fi
+
+  timeout 600 nvim --headless +qa >"$log" 2>&1 || true
+
+  if [[ -n "$lock_backup" ]]; then
+    cp "$lock_backup" "$lock"
+    rm -f "$lock_backup"
+    timeout 600 nvim --headless "+Lazy! restore" +qa >>"$log" 2>&1 || true
+  fi
+
+  if [[ -f "$lazy_dir/lazy.nvim/lua/lazy/init.lua" && -d "$lazy_dir/LazyVim/lua/lazyvim" ]]; then
+    success "Plugins do Neovim instalados."
+  else
+    warn "Falha ao instalar os plugins do Neovim. Últimas linhas do log:"
+    tail -n 15 "$log" | sed 's/\x1b\[[0-9;]*m//g'
+    echo
+    WARNINGS+=("Plugins do Neovim não instalados. Abra o nvim com internet e rode :Lazy restore")
+  fi
+
+  rm -f "$log"
+}
+
+# ============================================================
 # FISH
 # ============================================================
 
@@ -1036,6 +1086,7 @@ setup_git_identity() {
 update_configuration() {
   copy_dotfiles
   seed_wallpaper
+  setup_neovim
   setup_git_identity
 
   setup_fish

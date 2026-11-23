@@ -17,6 +17,7 @@ vscode-json = { input_path = './templates/vscode-colors.json', output_path = '~/
 
 vesktop = { input_path = './templates/midnight-discord.css', output_path = '~/.config/Vencord/themes/midnight-discord.css' }
 discord = { input_path = './templates/discord-native.css', output_path = '~/.config/Vencord/themes/matugen-native.css' }
+discord-m3 = { input_path = './templates/discord-m3.css', output_path = '~/.config/Vencord/themes/matugen-m3.css' }
 
 hyprlock = { input_path = './templates/hyprlock-colors.conf', output_path = '~/.config/hypr/hyprlock-colors.conf' }
 hyprland = { input_path = './templates/hyprland-colors.lua', output_path = '~/.config/hypr/modules/colors.lua' }

@@ -9,7 +9,7 @@ import ".." as Config
 // DNS for NetworkManager connections, used by the Wi-Fi panel.
 //
 // A default (Preferences.dns.defaultMode) applies to every saved Wi-Fi/Ethernet
-// profile; per-network exceptions (Preferences.dns.overrides, by connection
+// profile; per-network exceptions (`overrides`, by connection
 // UUID) win over it, e.g. a campus Wi-Fi whose login page needs the network's
 // own DNS. Choices are written into each NetworkManager profile through
 // scripts/dns.sh (nmcli), so they keep working without the shell; networks
@@ -35,6 +35,34 @@ Singleton {
     readonly property string script: Quickshell.shellPath("scripts/dns.sh")
     readonly property var prefs: Config.Preferences.dns
 
+    // Per-network exceptions live in the state directory, not in settings.json:
+    // they hold network names (e.g. a campus Wi-Fi) and settings.json is backed up
+    // to a public dotfiles repository.
+    property alias overrides: overridesAdapter.overrides
+    property bool overridesLoaded: false
+
+    FileView {
+        id: overridesFile
+        path: Quickshell.statePath("dns-overrides.json")
+        onAdapterUpdated: writeAdapter()
+        onLoaded: {
+            root.overridesLoaded = true;
+            root.syncActive();
+        }
+        onLoadFailed: error => {
+            if (error === FileViewError.FileNotFound)
+                writeAdapter();
+            root.overridesLoaded = true;
+            root.syncActive();
+        }
+
+        JsonAdapter {
+            id: overridesAdapter
+            // { "<connection uuid>": { name, mode, ipv4, ipv6 } }
+            property var overrides: ({})
+        }
+    }
+
     // ---- State of the active Wi-Fi connection (from `dns.sh status`)
     property bool loaded: false
     property string activeUuid: ""
@@ -47,7 +75,7 @@ Singleton {
 
     // ---- Choices
     readonly property var defaultSpec: specFromPrefs(prefs.defaultMode, prefs.defaultIpv4, prefs.defaultIpv6)
-    readonly property var activeOverride: activeUuid !== "" ? (prefs.overrides[activeUuid] ?? null) : null
+    readonly property var activeOverride: activeUuid !== "" ? (overrides[activeUuid] ?? null) : null
     // What the active network's combo shows: "default" or the exception's mode.
     readonly property string networkChoice: activeOverride ? activeOverride.mode : "default"
 
@@ -141,7 +169,7 @@ Singleton {
     }
 
     function effectiveFor(uuid) {
-        const override = prefs.overrides[uuid];
+        const override = overrides[uuid];
         return override ? specFromPrefs(override.mode, override.ipv4, override.ipv6) : defaultSpec;
     }
 
@@ -187,7 +215,7 @@ Singleton {
                 return error;
         }
         errorText = "";
-        const next = Object.assign({}, prefs.overrides);
+        const next = Object.assign({}, overrides);
         if (mode === "default") {
             delete next[activeUuid];
         } else {
@@ -198,7 +226,7 @@ Singleton {
                 ipv6: mode === "custom" ? splitList(ipv6Text).join(", ") : ""
             };
         }
-        prefs.overrides = next;
+        overrides = next;
         enqueue([argsFor(effectiveFor(activeUuid), activeUuid)]);
         return "";
     }
@@ -235,20 +263,20 @@ Singleton {
 
     // Brings the active network in line with its choice. Runs after every status read.
     function syncActive() {
-        if (!Config.Preferences.loaded || busy || activeUuid === "")
+        if (!Config.Preferences.loaded || !overridesLoaded || busy || activeUuid === "")
             return;
         // A fixed DNS set before (by an older version of this menu, or by hand)
         // while the default is automatic becomes this network's exception
         // instead of being reset.
         if (!activeOverride && defaultSpec.mode === "auto" && activeSpec.mode !== "auto") {
-            const next = Object.assign({}, prefs.overrides);
+            const next = Object.assign({}, overrides);
             next[activeUuid] = {
                 name: connectionName,
                 mode: activeSpec.mode,
                 ipv4: activeSpec.mode === "custom" ? activeSpec.ipv4.join(", ") : "",
                 ipv6: activeSpec.mode === "custom" ? activeSpec.ipv6.join(", ") : ""
             };
-            prefs.overrides = next;
+            overrides = next;
             return;
         }
         const spec = effectiveFor(activeUuid);
@@ -349,7 +377,7 @@ Singleton {
                 const jobs = [];
                 for (const line of String(text).split("\n")) {
                     const uuid = line.split("\t")[0];
-                    if (uuid && !root.prefs.overrides[uuid])
+                    if (uuid && !root.overrides[uuid])
                         jobs.push(root.argsFor(root.defaultSpec, uuid));
                 }
                 root.busy = false;

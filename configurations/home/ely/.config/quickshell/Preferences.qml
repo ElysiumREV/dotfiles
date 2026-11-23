@@ -71,9 +71,8 @@ Singleton {
                 property string defaultMode: "auto"
                 property string defaultIpv4: ""
                 property string defaultIpv6: ""
-                // Per-network exceptions by connection UUID:
-                // { name, mode, ipv4, ipv6 } (e.g. a campus Wi-Fi that needs its own DNS).
-                property var overrides: ({})
+                // Per-network exceptions are kept by DnsControl in the state
+                // directory (dns-overrides.json), out of this backed-up file.
             }
 
             property JsonObject theme: JsonObject {

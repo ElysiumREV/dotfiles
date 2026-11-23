@@ -16,3 +16,5 @@ singleton WifiControl 1.0 WifiControl.qml
 singleton ScreenRecorder 1.0 ScreenRecorder.qml
 singleton Uptime 1.0 Uptime.qml
 singleton DnsControl 1.0 DnsControl.qml
+singleton BatteryAlerts 1.0 BatteryAlerts.qml
+singleton ChargeLimit 1.0 ChargeLimit.qml

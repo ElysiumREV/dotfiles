@@ -10,9 +10,7 @@
     "dns": {
         "defaultIpv4": "",
         "defaultIpv6": "",
-        "defaultMode": "cloudflare",
-        "overrides": {
-        }
+        "defaultMode": "cloudflare"
     },
     "launcher": {
         "prioritizeUsage": true

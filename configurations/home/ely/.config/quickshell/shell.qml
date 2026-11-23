@@ -10,11 +10,12 @@ import "." as Config
 
 ShellRoot {
     // Services that must run from startup (singletons are otherwise created on
-    // first use): the clipboard watcher (history stays in memory) and the DNS
-    // sync that gives newly joined networks the default DNS.
+    // first use): the clipboard watcher (history stays in memory), the DNS sync
+    // that gives newly joined networks the default DNS, and low battery alerts.
     Component.onCompleted: {
         Services.ClipboardHistory.entries;
         Services.DnsControl.loaded;
+        Services.BatteryAlerts.ready;
     }
 
     IpcHandler {

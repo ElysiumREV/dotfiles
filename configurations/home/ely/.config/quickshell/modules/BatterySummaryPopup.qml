@@ -160,6 +160,11 @@ PopupWindow {
         }
 
         InfoRow {
+            icon: "battery_saver"
+            label: Services.ChargeLimit.enabled ? "Charge limit on" : ""
+        }
+
+        InfoRow {
             icon: Services.PowerProfiles.getProfileIcon(Services.PowerProfiles.activeProfile)
             label: Services.PowerProfiles.getProfileLabel(Services.PowerProfiles.activeProfile) + " profile"
         }

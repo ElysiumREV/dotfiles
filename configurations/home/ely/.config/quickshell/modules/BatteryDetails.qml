@@ -6,6 +6,7 @@ import Quickshell.Io
 import Quickshell.Services.UPower
 import ".." as Config
 import "../services" as Services
+import "../widgets" as Widgets
 import "../services/BatteryRules.js" as BatteryRules
 
 Item {
@@ -71,6 +72,7 @@ Item {
 
     Component.onCompleted: {
         readHardwareStats();
+        Services.ChargeLimit.refresh();
     }
 
     Connections {
@@ -316,6 +318,52 @@ Item {
             color: Config.Theme.colMuted
             font.family: Config.Theme.fontFamily
             font.pixelSize: Config.Theme.fontSizeSmall
+        }
+
+        // Charge limit (UPower EnableChargeThreshold), shown when the laptop supports it.
+        Rectangle {
+            Layout.fillWidth: true
+            visible: Services.ChargeLimit.supported
+            implicitHeight: chargeLimitColumn.implicitHeight + 2 * Config.Theme.spaceSm
+            radius: Config.Theme.radiusCard
+            color: Config.Theme.colSurface
+
+            ColumnLayout {
+                id: chargeLimitColumn
+                anchors.fill: parent
+                anchors.margins: Config.Theme.spaceSm
+                spacing: 2
+
+                Widgets.PreferenceSwitch {
+                    Layout.fillWidth: true
+                    implicitHeight: 34
+                    text: "Limit charging"
+                    accessibleLabel: "Limit battery charging to extend its life"
+                    enabled: !Services.ChargeLimit.busy
+                    checked: Services.ChargeLimit.enabled
+                    onToggled: Services.ChargeLimit.setEnabled(checked)
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: Services.ChargeLimit.description
+                        + " Useful when the laptop stays plugged in most of the time."
+                    color: Config.Theme.colTextSec
+                    wrapMode: Text.Wrap
+                    font.family: Config.Theme.fontFamily
+                    font.pixelSize: Config.Theme.fontSizeCaption
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    visible: Services.ChargeLimit.errorText !== ""
+                    text: Services.ChargeLimit.errorText
+                    color: Config.Theme.colRed
+                    wrapMode: Text.Wrap
+                    font.family: Config.Theme.fontFamily
+                    font.pixelSize: Config.Theme.fontSizeCaption
+                }
+            }
         }
     }
 }

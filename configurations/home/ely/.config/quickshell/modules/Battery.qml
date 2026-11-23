@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
 import ".." as Config
+import "../services" as Services
 import "../services/BatteryRules.js" as BatteryRules
 import "../widgets" as Widgets
 
@@ -41,7 +42,10 @@ Item {
     Timer {
         id: summaryDelay
         interval: 400
-        onTriggered: summaryLoader.active = root.summaryWanted
+        onTriggered: {
+            Services.ChargeLimit.refresh();
+            summaryLoader.active = root.summaryWanted;
+        }
     }
 
     LazyLoader {

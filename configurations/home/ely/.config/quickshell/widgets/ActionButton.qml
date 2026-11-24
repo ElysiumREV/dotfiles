@@ -19,26 +19,33 @@ Button {
     opacity: enabled ? 1 : 0.45
     activeFocusOnTab: true
 
-    contentItem: RowLayout {
-        id: actionRow
-        anchors.centerIn: parent
-        spacing: 6
+    // Button stretches contentItem to its full width, so center the row inside a
+    // wrapper instead of letting the layout spread the icon and label apart.
+    contentItem: Item {
+        implicitWidth: actionRow.implicitWidth
+        implicitHeight: actionRow.implicitHeight
 
-        Text {
-            text: root.iconName
-            color: root.emphasized || root.hovered || root.activeFocus
-                ? Config.Theme.colOnHighlightContainer : Config.Theme.colFg
-            font.family: "Material Symbols Rounded"
-            font.pixelSize: Config.Theme.iconSizeSm
-        }
+        RowLayout {
+            id: actionRow
+            anchors.centerIn: parent
+            spacing: 6
 
-        Text {
-            text: root.label
-            color: root.emphasized || root.hovered || root.activeFocus
-                ? Config.Theme.colOnHighlightContainer : Config.Theme.colFg
-            font.family: Config.Theme.fontFamily
-            font.pixelSize: Config.Theme.fontSizeSmall
-            font.bold: root.emphasized
+            Text {
+                text: root.iconName
+                color: root.emphasized || root.hovered || root.activeFocus
+                    ? Config.Theme.colOnHighlightContainer : Config.Theme.colFg
+                font.family: "Material Symbols Rounded"
+                font.pixelSize: Config.Theme.iconSizeSm
+            }
+
+            Text {
+                text: root.label
+                color: root.emphasized || root.hovered || root.activeFocus
+                    ? Config.Theme.colOnHighlightContainer : Config.Theme.colFg
+                font.family: Config.Theme.fontFamily
+                font.pixelSize: Config.Theme.fontSizeSmall
+                font.bold: root.emphasized
+            }
         }
     }
 

@@ -281,7 +281,7 @@ Rectangle {
                             required property var modelData
 
                             width: bluetoothDeviceRows.width
-                            implicitHeight: 46
+                            implicitHeight: Math.max(46, bluetoothDeviceRow.implicitHeight + 14)
                             height: implicitHeight
                             radius: Config.Theme.radiusControl
                             activeFocusOnTab: Services.BluetoothControl.busyAddress !== modelData.address
@@ -291,7 +291,7 @@ Rectangle {
                                    ? ", connected" : ", Bluetooth device")
                             color: activeFocus
                                 ? Config.Theme.alpha(Config.Theme.colHighlight, Config.Theme.stateSelectedOpacity)
-                                : (bluetoothDeviceMouse.containsMouse
+                                : (bluetoothDeviceMouse.containsMouse || bluetoothForgetMouse.containsMouse
                                     ? Config.Theme.alpha(Config.Theme.colTextSec, Config.Theme.stateHoverOpacity)
                                     : "transparent")
                             border.width: activeFocus ? 1 : 0
@@ -316,6 +316,8 @@ Rectangle {
                             }
 
                             RowLayout {
+                                id: bluetoothDeviceRow
+                                z: 1
                                 anchors.fill: parent
                                 anchors.margins: 7
                                 spacing: Config.Theme.spaceSm
@@ -374,6 +376,37 @@ Rectangle {
                                 }
 
                                 Text {
+                                    id: bluetoothForgetIcon
+                                    text: "delete_outline"
+                                    visible: modelData.paired && (bluetoothDeviceDelegate.activeFocus
+                                        || bluetoothDeviceMouse.containsMouse || bluetoothForgetMouse.containsMouse
+                                        || activeFocus)
+                                    color: activeFocus || bluetoothForgetMouse.containsMouse
+                                        ? Config.Theme.colRed : Config.Theme.colMuted
+                                    font.family: "Material Symbols Rounded"
+                                    font.pixelSize: Config.Theme.iconSizeSm
+                                    activeFocusOnTab: modelData.paired
+                                    Accessible.role: Accessible.Button
+                                    Accessible.name: "Forget Bluetooth device " + Services.BluetoothControl.displayName(modelData)
+                                    Keys.onPressed: event => {
+                                        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                                                || event.key === Qt.Key_Space) {
+                                            Services.BluetoothControl.forgetDevice(modelData.address);
+                                            event.accepted = true;
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        id: bluetoothForgetMouse
+                                        anchors.fill: parent
+                                        anchors.margins: -6
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: Services.BluetoothControl.forgetDevice(modelData.address)
+                                    }
+                                }
+
+                                Text {
                                     text: Services.BluetoothControl.busyAddress === modelData.address ? "sync"
                                         : (Services.BluetoothControl.isConnected(modelData.address) ? "link_off" : "link")
                                     color: Config.Theme.colMuted
@@ -400,41 +433,6 @@ Rectangle {
                                         Services.BluetoothControl.connectDevice(modelData.address);
                                     else
                                         Services.BluetoothControl.pairDevice(modelData.address);
-                                }
-                            }
-
-                            Text {
-                                id: bluetoothForgetIcon
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.rightMargin: 30
-                                text: "delete_outline"
-                                visible: modelData.paired && (bluetoothDeviceDelegate.activeFocus
-                                    || bluetoothDeviceMouse.containsMouse || bluetoothForgetMouse.containsMouse
-                                    || activeFocus)
-                                color: activeFocus || bluetoothForgetMouse.containsMouse
-                                    ? Config.Theme.colRed : Config.Theme.colMuted
-                                font.family: "Material Symbols Rounded"
-                                font.pixelSize: Config.Theme.iconSizeSm
-                                z: 2
-                                activeFocusOnTab: modelData.paired
-                                Accessible.role: Accessible.Button
-                                Accessible.name: "Forget Bluetooth device " + Services.BluetoothControl.displayName(modelData)
-                                Keys.onPressed: event => {
-                                    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
-                                            || event.key === Qt.Key_Space) {
-                                        Services.BluetoothControl.forgetDevice(modelData.address);
-                                        event.accepted = true;
-                                    }
-                                }
-
-                                MouseArea {
-                                    id: bluetoothForgetMouse
-                                    anchors.fill: parent
-                                    anchors.margins: -6
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: Services.BluetoothControl.forgetDevice(modelData.address)
                                 }
                             }
 

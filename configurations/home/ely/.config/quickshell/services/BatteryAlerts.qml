@@ -12,10 +12,11 @@ Singleton {
 
     readonly property var levels: [20, 10, 5]
     readonly property var battery: UPower.displayDevice
-    readonly property bool ready: (battery?.ready ?? false) && (battery?.isPresent ?? false)
-    readonly property int level: Math.round((battery?.percentage ?? 0) * 100)
-    readonly property bool discharging: battery?.state === UPowerDeviceState.Discharging
-        || battery?.state === UPowerDeviceState.PendingDischarge
+    // Copied by hand in sync() on the device's own change signals: bindings on
+    // battery?.state did not re-evaluate when the charger was plugged in or out.
+    property bool ready: false
+    property int level: 0
+    property bool discharging: false
     // Lowest level already announced in this discharge (101 = none yet).
     property int lastWarned: 101
 
@@ -57,7 +58,24 @@ Singleton {
             (critical ? "Battery critical: " : "Battery low: ") + level + "%", body]));
     }
 
-    onLevelChanged: check()
-    onDischargingChanged: check()
-    onReadyChanged: check()
+    function sync() {
+        const b = root.battery;
+        ready = !!b && b.ready && b.isPresent;
+        if (!ready)
+            return;
+        level = Math.round(b.percentage * 100);
+        discharging = b.state === UPowerDeviceState.Discharging
+            || b.state === UPowerDeviceState.PendingDischarge;
+        check();
+    }
+
+    Connections {
+        target: root.battery
+        function onStateChanged() { root.sync(); }
+        function onPercentageChanged() { root.sync(); }
+        function onReadyChanged() { root.sync(); }
+        function onIsPresentChanged() { root.sync(); }
+    }
+
+    Component.onCompleted: sync()
 }

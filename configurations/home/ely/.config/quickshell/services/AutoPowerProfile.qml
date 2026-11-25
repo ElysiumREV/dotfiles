@@ -12,6 +12,10 @@ import Quickshell.Services.UPower as UPowerService
 // shutdown is corrected), charger plugged/unplugged, and the battery falling
 // to 25 %. A profile picked by hand therefore stays until the next event.
 // Started from shell.qml.
+//
+// The battery values are copied by hand in sync() on the device's own change
+// signals: bindings on battery?.state did not re-evaluate when the charger
+// was plugged in or out, which a log of the raw signals showed.
 Singleton {
     id: root
 
@@ -21,51 +25,58 @@ Singleton {
     readonly property int rearmLevel: 30
 
     readonly property var battery: UPowerService.UPower.displayDevice
-    readonly property bool ready: (battery?.ready ?? false) && (battery?.isPresent ?? false)
-    readonly property int level: Math.round((battery?.percentage ?? 0) * 100)
-    readonly property bool onBattery: UPowerService.UPower.onBattery
 
+    property bool ready: false
+    property int level: 0
+    property bool unplugged: false
     property bool started: false
     property bool lowApplied: false
 
     function target() {
-        if (!onBattery)
+        if (!unplugged)
             return PowerProfiles.availableProfiles.includes("performance") ? "performance" : "balanced";
         return level <= lowLevel ? "power-saver" : "balanced";
     }
 
     function apply() {
-        lowApplied = onBattery && level <= lowLevel;
+        lowApplied = unplugged && level <= lowLevel;
         PowerProfiles.setProfile(target());
     }
 
-    function levelChanged_() {
-        if (!started || !onBattery)
+    function sync() {
+        const b = root.battery;
+        ready = !!b && b.ready && b.isPresent;
+        if (!ready)
             return;
-        if (level > rearmLevel) {
-            lowApplied = false;
-        } else if (level <= lowLevel && !lowApplied) {
-            lowApplied = true;
-            PowerProfiles.setProfile("power-saver");
+
+        const wasUnplugged = unplugged;
+        const wasLevel = level;
+        level = Math.round(b.percentage * 100);
+        unplugged = b.state === UPowerService.UPowerDeviceState.Discharging
+            || b.state === UPowerService.UPowerDeviceState.PendingDischarge;
+
+        if (!started) {
+            started = true;
+            apply();
+        } else if (unplugged !== wasUnplugged) {
+            apply();
+        } else if (unplugged && level !== wasLevel) {
+            if (level > rearmLevel) {
+                lowApplied = false;
+            } else if (level <= lowLevel && !lowApplied) {
+                lowApplied = true;
+                PowerProfiles.setProfile("power-saver");
+            }
         }
     }
 
-    onReadyChanged: {
-        if (ready && !started) {
-            started = true;
-            apply();
-        }
+    Connections {
+        target: root.battery
+        function onStateChanged() { root.sync(); }
+        function onPercentageChanged() { root.sync(); }
+        function onReadyChanged() { root.sync(); }
+        function onIsPresentChanged() { root.sync(); }
     }
-    onOnBatteryChanged: {
-        if (started)
-            apply();
-    }
-    onLevelChanged: levelChanged_()
 
-    Component.onCompleted: {
-        if (ready && !started) {
-            started = true;
-            apply();
-        }
-    }
+    Component.onCompleted: sync()
 }

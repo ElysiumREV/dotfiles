@@ -15,6 +15,15 @@ Singleton {
     property string status: ""
     property string promptType: ""
     property string promptText: ""
+    property bool scanWanted: false
+
+    function setScan(on) {
+        scanWanted = on;
+        if (agentProcess.running)
+            agentProcess.write(on ? "scan bredr\n" : "scan off\n");
+        else if (on)
+            ensureStarted();  // onStarted sends the scan once the agent is up
+    }
 
     function answerPrompt(value) {
         if (!agentProcess.running || promptType === "")
@@ -33,6 +42,19 @@ Singleton {
         answerPrompt(promptType === "pin" ? "" : "no");
     }
 
+    // bluetoothctl redraws its prompt with ANSI codes and carriage returns, and prints
+    // agent questions as a readline prompt with no trailing newline, so output is read
+    // in raw chunks and split here instead of waiting for "\n".
+    function observeChunk(chunk) {
+        const clean = chunk.replace(/\x1b\[[0-9;]*[A-Za-z]/g, "");
+        for (const piece of clean.split(/[\r\n]+/)) {
+            const line = piece.replace(/^\s*\[[^\]]*\]>?\s*/, "").trim();
+            if (line !== "")
+                observeOutput(line);
+        }
+    }
+
+    // Matches the agent strings of bluetoothctl (client/agent.c).
     function observeOutput(data) {
         if (data.includes("Agent registered"))
             agentRegistered = true;
@@ -41,17 +63,20 @@ Singleton {
         if (data.includes("Failed to register agent") || data.includes("No default controller available")) {
             registrationFailed = true;
             ready = false;
-            status = data.trim();
+            status = data;
         }
-        if (/Enter PIN code|Request PIN code/i.test(data)) {
+        if (/Request canceled/i.test(data)) {
+            promptType = "";
+            promptText = "";
+        } else if (/Enter PIN code|Enter passkey/i.test(data)) {
             promptType = "pin";
-            promptText = data.trim() || "Enter the PIN requested by the device.";
-        } else if (/Confirm passkey|Authorize service|Request authorization/i.test(data)) {
+            promptText = /passkey/i.test(data) ? "Enter the passkey shown on the device." : "Enter the PIN requested by the device.";
+        } else if (/Confirm passkey|Accept pairing|Authorize service/i.test(data)) {
             promptType = "confirm";
-            promptText = data.trim() || "Confirm the pairing request.";
-        } else if (/Passkey:\s*\d+|PIN code:\s*\d+/i.test(data)) {
+            promptText = data.replace(/\s*\(yes\/no\):?\s*$/i, "?");
+        } else if (/^(Passkey|PIN code):\s*\d+/i.test(data)) {
             promptType = "display";
-            promptText = data.trim();
+            promptText = "Type " + data.replace(/^.*:\s*/, "") + " on the device, then press Enter on it.";
         }
         if (agentRegistered && defaultAgentRequested) {
             ready = true;
@@ -78,6 +103,7 @@ Singleton {
         if (!agentProcess.running)
             return;
         intentionalStop = true;
+        scanWanted = false;  // BlueZ ends a client's discovery when it exits
         readyTimer.stop();
         agentProcess.running = false;
         ready = false;
@@ -93,18 +119,20 @@ Singleton {
         stdinEnabled: true
 
         stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: data => root.observeOutput(data)
+            splitMarker: ""
+            onRead: data => root.observeChunk(data)
         }
 
         stderr: SplitParser {
-            splitMarker: "\n"
-            onRead: data => root.observeOutput(data)
+            splitMarker: ""
+            onRead: data => root.observeChunk(data)
         }
 
         onStarted: {
             agentProcess.write("agent KeyboardDisplay\n");
             agentProcess.write("default-agent\n");
+            if (root.scanWanted)
+                agentProcess.write("scan bredr\n");
             readyTimer.restart();
         }
 

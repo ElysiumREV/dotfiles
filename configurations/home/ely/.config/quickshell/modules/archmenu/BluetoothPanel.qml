@@ -64,6 +64,8 @@ Rectangle {
                     Text {
                         Layout.fillWidth: true
                         text: {
+                            if (Services.BluetoothControl.powerBusy)
+                                return Services.BluetoothControl.powerTarget ? "Turning on…" : "Turning off…";
                             if (!Services.BluetoothControl.enabled)
                                 return Services.BluetoothControl.blocked ? "Blocked by the system" : "Disabled";
 
@@ -127,6 +129,17 @@ Rectangle {
                 cursorShape: Qt.PointingHandCursor
                 onClicked: Services.BluetoothControl.toggleExpanded()
             }
+        }
+
+        // Power and rfkill errors happen while the device list below is hidden.
+        Text {
+            Layout.fillWidth: true
+            visible: !Services.BluetoothControl.enabled && Services.BluetoothControl.actionMessage !== ""
+            text: Services.BluetoothControl.actionMessage
+            color: Config.Theme.colRed
+            wrapMode: Text.Wrap
+            font.family: Config.Theme.fontFamily
+            font.pixelSize: Config.Theme.fontSizeCaption
         }
 
         ColumnLayout {

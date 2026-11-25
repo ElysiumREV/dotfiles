@@ -416,10 +416,14 @@ PanelWindow {
                                 }
                                 Text {
                                     Layout.fillWidth: true
-                                    text: Services.BluetoothControl.enabled
+                                    text: Services.BluetoothControl.powerBusy
+                                        ? (Services.BluetoothControl.powerTarget ? "Turning on…" : "Turning off…")
+                                        : Services.BluetoothControl.powerFailed ? "Failed to turn on"
+                                        : Services.BluetoothControl.enabled
                                         ? (Services.BluetoothControl.connectedCount > 0 ? "Connected" : "On")
                                         : "Disabled"
-                                    color: Config.Theme.colTextSec
+                                    color: Services.BluetoothControl.powerFailed && !Services.BluetoothControl.powerBusy
+                                        ? Config.Theme.colRed : Config.Theme.colTextSec
                                     font.family: Config.Theme.fontFamily
                                     font.pixelSize: Config.Theme.fontSizeCaption
                                     elide: Text.ElideRight

@@ -52,6 +52,12 @@ Singleton {
     // True once BlueZ reported the operation in progress, so a later idle state means failure.
     property bool busyStarted: false
     property string pendingForgetAddress: ""
+    // Power changes go through busctl so a failed write is visible: Quickshell keeps
+    // the value it tried to write even when BlueZ rejects it, which left the panel
+    // showing "on" (and every action failing) while the radio was still off.
+    readonly property bool powerBusy: powerProcess.running
+    readonly property bool powerTarget: powerProcess.target
+    property bool powerFailed: false
 
     // A forgotten device usually disappears from the list instead of changing state.
     onDevicesChanged: {
@@ -60,6 +66,8 @@ Singleton {
     }
 
     onEnabledChanged: {
+        if (enabled)
+            powerFailed = false;
         if (!enabled) {
             expanded = false;
             scanTimer.stop();
@@ -91,13 +99,26 @@ Singleton {
 
     function cleanup() {
         stopScan();
+        pendingForgetAddress = "";
         releaseAgentIfIdle();
+    }
+
+    function setPowered(on) {
+        if (!adapter || powerProcess.running)
+            return;
+        actionMessage = "";
+        powerFailed = false;
+        powerProcess.target = on;
+        powerProcess.lastError = "";
+        powerProcess.command = ["busctl", "set-property", "org.bluez", adapter.dbusPath,
+            "org.bluez.Adapter1", "Powered", "b", on ? "true" : "false"];
+        powerProcess.running = true;
     }
 
     onAdapterChanged: {
         if (adapter && enableWhenReady) {
             enableWhenReady = false;
-            adapter.enabled = true;
+            setPowered(true);
         }
     }
 
@@ -107,7 +128,7 @@ Singleton {
         function onStateChanged() {
             if (root.enableWhenReady && root.adapter.state !== BluetoothAdapterState.Blocked) {
                 root.enableWhenReady = false;
-                root.adapter.enabled = true;
+                root.setPowered(true);
             }
         }
     }
@@ -118,11 +139,11 @@ Singleton {
             stopScan();
         } else if (blocked) {
             actionMessage = "";
+            powerFailed = false;
             unblockProcess.running = true;
             return;
         }
-        if (adapter)
-            adapter.enabled = !enabled;
+        setPowered(!enabled);
     }
 
     function toggleDetails() {
@@ -149,6 +170,7 @@ Singleton {
             startScan();
         } else {
             stopScan();
+            pendingForgetAddress = "";
             releaseAgentIfIdle();
         }
     }
@@ -187,6 +209,11 @@ Singleton {
         if (busyAction !== "" || !device)
             return;
         beginAction("connect", device, 20000);
+        // Untrusted devices that reconnect on their own need an agent to authorize
+        // each audio profile; with none running BlueZ rejects them. Trusting a device
+        // the user chose to connect lets it come back without the panel open.
+        if (device.paired && !device.trusted)
+            device.trusted = true;
         device.connect();
     }
 
@@ -228,18 +255,22 @@ Singleton {
         return device ? displayName(device) : address;
     }
 
+    // Scans Bluetooth Classic only, through the bluetoothctl agent (a discovery
+    // filter only applies to the D-Bus client that sets it). The laptop's Realtek
+    // RTL8852AU times out on the first LE scan command (0x2005) and the kernel then
+    // resets the USB device, so a normal scan killed the adapter before it found
+    // anything. Earbuds and headsets pair over Classic anyway.
     function startScan() {
         if (!enabled || !adapter)
             return;
-        adapter.discovering = true;
+        BluetoothPairingAgent.setScan(true);
         scanTimer.restart();
     }
 
     function stopScan() {
         scanTimer.stop();
-        // Only stop a running discovery (BlueZ warns about stopping none).
-        if (adapter?.discovering)
-            adapter.discovering = false;
+        if (BluetoothPairingAgent.scanWanted)
+            BluetoothPairingAgent.setScan(false);
     }
 
     function isConnected(address) {
@@ -314,7 +345,9 @@ Singleton {
 
     Timer {
         id: scanTimer
-        interval: 8000
+        // Classic inquiry alone takes ~10 s and earbuds in pairing mode often
+        // show up later than that, so 8 s missed them.
+        interval: 30000
         repeat: false
         onTriggered: root.stopScan()
     }
@@ -333,6 +366,31 @@ Singleton {
     }
 
     Process {
+        id: powerProcess
+
+        property bool target: false
+        property string lastError: ""
+
+        stderr: SplitParser {
+            onRead: data => {
+                if (data.trim() !== "")
+                    powerProcess.lastError = data.trim();
+            }
+        }
+
+        onExited: code => {
+            if (code === 0)
+                return;
+            // busctl: "Failed to set property Powered on interface org.bluez.Adapter1: <reason>"
+            const reason = lastError.replace(/^.*:\s*/, "");
+            root.powerFailed = target;
+            root.actionMessage = (target ? "Bluetooth did not turn on" : "Bluetooth did not turn off")
+                + (reason ? " (" + reason + ")" : "")
+                + (target ? ". Try again; if it keeps failing, restart the bluetooth service." : ".");
+        }
+    }
+
+    Process {
         id: unblockProcess
 
         command: ["rfkill", "unblock", "bluetooth"]
@@ -341,7 +399,7 @@ Singleton {
             if (code === 0) {
                 // The adapter may only appear after the unblock; onAdapterChanged finishes it.
                 if (root.adapter && root.adapter.state !== BluetoothAdapterState.Blocked)
-                    Qt.callLater(() => root.adapter.enabled = true);
+                    Qt.callLater(() => root.setPowered(true));
                 else
                     root.enableWhenReady = true;
             } else {

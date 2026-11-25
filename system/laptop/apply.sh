@@ -9,11 +9,14 @@ if ! ls /sys/class/power_supply/BAT* >/dev/null 2>&1; then
   exit 0
 fi
 
-echo "==> Copiando regras udev e sysctl para /etc"
+echo "==> Copiando regras udev, sysctl e modprobe para /etc"
 sudo install -Dm644 etc/udev/rules.d/50-pci-runtime-pm.rules /etc/udev/rules.d/50-pci-runtime-pm.rules
 sudo install -Dm644 etc/sysctl.d/90-laptop-power.conf /etc/sysctl.d/90-laptop-power.conf
+sudo install -Dm644 etc/modprobe.d/btusb-no-autosuspend.conf /etc/modprobe.d/btusb-no-autosuspend.conf
+sudo install -Dm644 etc/udev/rules.d/50-bt-no-autosuspend.rules /etc/udev/rules.d/50-bt-no-autosuspend.rules
 sudo udevadm control --reload
 sudo udevadm trigger --subsystem-match=pci --action=change
+sudo udevadm trigger --subsystem-match=usb --attr-match=idVendor=0bda --attr-match=idProduct=4852 --action=change
 sudo sysctl --quiet --system
 
 echo "==> power-profiles-daemon: ABM do painel e DPM da GPU no power-saver"

@@ -1,0 +1,4 @@
+# Realtek RTL8852AU Bluetooth (0bda:4852) hangs after USB autosuspend (HCI reset
+# times out with -110). The btusb option only stops the driver from turning
+# autosuspend on; a device left on "auto" keeps suspending, so pin it to "on".
+ACTION=="add|change", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="4852", ATTR{power/control}="on"

@@ -926,7 +926,7 @@ PanelWindow {
         active: root.visible
         compact: root.compactLayout
         collapsed: Services.Notifications.centerCalendarCollapsed
-        onCollapseToggled: collapsed => Services.Notifications.centerCalendarCollapsed = collapsed
+        onCollapseToggled: collapsed => Services.Notifications.setCalendarCollapsed(collapsed)
     }
 
 }

@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Io
 import Quickshell.Services.Notifications
 
 Singleton {
@@ -18,7 +19,9 @@ Singleton {
     property bool centerVisible: false
     property var centerMonitor: null
     property string centerRequestedTab: "notifications"
-    property bool centerCalendarCollapsed: false
+    // Live state; the user's own choice in the menu is remembered across
+    // restarts in ui-state.json (see setCalendarCollapsed).
+    property bool centerCalendarCollapsed: true
     property var closingIds: ({})
     readonly property var historyGroups: {
         const groups = [];
@@ -350,6 +353,13 @@ Singleton {
         openCenter(monitor, requestedTab);
     }
 
+    // Collapse/expand from the menu itself: remembered across restarts.
+    // The bar clock expands it without saving (see toggleCalendar).
+    function setCalendarCollapsed(collapsed) {
+        centerCalendarCollapsed = collapsed;
+        uiState.calendarCollapsed = collapsed;
+    }
+
     // Bar clock: toggles the panel with its calendar expanded.
     function toggleCalendar(monitor) {
         if (centerVisible && centerMonitor === monitor) {
@@ -390,5 +400,23 @@ Singleton {
         persistenceSupported: true
         keepOnReload: true
         onNotification: notification => root.receive(notification)
+    }
+
+    // Small UI memory kept in the state directory, out of settings.json.
+    FileView {
+        id: uiStateFile
+        path: Quickshell.statePath("ui-state.json")
+        blockLoading: true
+        onAdapterUpdated: writeAdapter()
+        onLoaded: root.centerCalendarCollapsed = uiState.calendarCollapsed
+        onLoadFailed: error => {
+            if (error === FileViewError.FileNotFound)
+                writeAdapter();
+        }
+
+        JsonAdapter {
+            id: uiState
+            property bool calendarCollapsed: true
+        }
     }
 }

@@ -13,8 +13,7 @@ import "../widgets" as Widgets
 // scripts/browser-chooser.sh, registered as the default browser; the
 // SUPER+B bind opens it without a URL.
 // Options: every Firefox profile from profiles.ini (default profile first),
-// then the extra browsers below that are installed, then every Ladybird
-// profile (main profile first).
+// then the extra browsers below that are installed.
 PanelWindow {
     id: root
 
@@ -22,7 +21,6 @@ PanelWindow {
     property bool keepVisible: false
     property int selectedIndex: 0
     property var firefoxProfiles: []
-    property var ladybirdProfiles: []
     readonly property string url: Services.WindowControl.browserChooserUrl
     readonly property bool requestedVisible: Services.WindowControl.browserChooserVisible
         && Hyprland.monitorFor(targetScreen) === Services.WindowControl.browserChooserMonitor
@@ -30,14 +28,10 @@ PanelWindow {
     // Non-Firefox browsers, shown only when their desktop entry exists.
     readonly property var extraBrowsers: [
         { desktopId: "google-chrome", label: "Google Chrome", detail: "Work / study",
-          command: ["google-chrome-stable"], newWindowFlag: "--new-window" }
+          command: ["google-chrome-stable"], newWindowFlag: "--new-window" },
+        { desktopId: "org.ladybird.Ladybird", label: "Ladybird", detail: "Flatpak",
+          command: ["flatpak", "run", "org.ladybird.Ladybird"], newWindowFlag: "--new-window" }
     ]
-
-    // Ladybird (flatpak) keeps one directory per --profile name. The main
-    // profile is always offered, so its first launch creates it.
-    readonly property string ladybirdMainProfile: "elysium"
-    readonly property string ladybirdProfilesDir: Quickshell.env("HOME")
-        + "/.var/app/org.ladybird.Ladybird/data/Ladybird/Profiles"
 
     readonly property var options: {
         const list = [];
@@ -67,21 +61,6 @@ PanelWindow {
             const entry = DesktopEntries.byId(browser.desktopId);
             if (entry)
                 list.push(Object.assign({ icon: entry.icon }, browser));
-        }
-        const ladybird = DesktopEntries.byId("org.ladybird.Ladybird");
-        if (ladybird) {
-            const names = [root.ladybirdMainProfile].concat(
-                root.ladybirdProfiles.filter(n => n !== root.ladybirdMainProfile).sort());
-            for (const name of names) {
-                list.push({
-                    label: "Ladybird",
-                    detail: name.charAt(0).toUpperCase() + name.slice(1)
-                        + (name === root.ladybirdMainProfile ? " · main profile" : ""),
-                    icon: ladybird.icon,
-                    command: ["flatpak", "run", "org.ladybird.Ladybird", "--profile", name],
-                    newWindowFlag: "--new-window"
-                });
-            }
         }
         return list;
     }
@@ -113,17 +92,6 @@ PanelWindow {
         watchChanges: true
         onFileChanged: reload()
         onLoaded: root.firefoxProfiles = root.parseProfiles(text())
-    }
-
-    // Profile names are restricted to [a-z0-9_-], so one per line is safe.
-    Process {
-        id: ladybirdProfilesProc
-        running: true // lazily loaded with the popup; reopening rescans below
-        command: ["find", root.ladybirdProfilesDir, "-mindepth", "1", "-maxdepth", "1",
-                  "-type", "d", "-printf", "%f\\n"]
-        stdout: StdioCollector {
-            onStreamFinished: root.ladybirdProfiles = text.split("\n").filter(n => /^[a-z0-9_-]+$/.test(n))
-        }
     }
 
     // [ProfileN] sections hold Name/Path; [Install*] sections point Default at
@@ -176,7 +144,6 @@ PanelWindow {
     onRequestedVisibleChanged: {
         if (requestedVisible) {
             selectedIndex = 0;
-            ladybirdProfilesProc.running = true;
             Qt.callLater(() => {
                 if (root.requestedVisible)
                     keyHandler.forceActiveFocus();

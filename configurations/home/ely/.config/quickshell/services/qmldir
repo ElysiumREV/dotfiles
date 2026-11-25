@@ -21,3 +21,4 @@ singleton ChargeLimit 1.0 ChargeLimit.qml
 singleton ContextProfiles 1.0 ContextProfiles.qml
 singleton DisplayFilter 1.0 DisplayFilter.qml
 singleton Caffeine 1.0 Caffeine.qml
+singleton AutoPowerProfile 1.0 AutoPowerProfile.qml

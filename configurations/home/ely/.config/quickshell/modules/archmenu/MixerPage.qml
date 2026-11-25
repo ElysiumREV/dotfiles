@@ -137,13 +137,26 @@ ColumnLayout {
                         Layout.fillWidth: true
                         spacing: 3
 
-                        Text {
+                        RowLayout {
                             Layout.fillWidth: true
-                            text: appVolumeScroll.rowLabel(appVolumeRow.modelData)
-                            color: Config.Theme.colFg
-                            font.family: Config.Theme.fontFamily
-                            font.pixelSize: Config.Theme.fontSizeSmall
-                            elide: Text.ElideRight
+                            spacing: Config.Theme.spaceSm
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: appVolumeScroll.rowLabel(appVolumeRow.modelData)
+                                color: Config.Theme.colFg
+                                font.family: Config.Theme.fontFamily
+                                font.pixelSize: Config.Theme.fontSizeSmall
+                                elide: Text.ElideRight
+                            }
+
+                            // Same percentage as the main volume row.
+                            Text {
+                                text: Math.round((appVolumeRow.modelData.audio?.volume ?? 0) * 100) + "%"
+                                color: Config.Theme.colMuted
+                                font.family: Config.Theme.fontFamily
+                                font.pixelSize: Config.Theme.fontSizeSmall
+                            }
                         }
 
                         Widgets.ThemedSlider {

@@ -17,6 +17,7 @@ ShellRoot {
         Services.ClipboardHistory.entries;
         Services.DnsControl.loaded;
         Services.BatteryAlerts.ready;
+        Services.AutoPowerProfile.ready; // picks the power profile from charger/battery
         Services.DisplayFilter.available; // re-applies night light and gamma
     }
 

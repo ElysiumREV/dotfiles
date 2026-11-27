@@ -21,6 +21,7 @@ discord-m3 = { input_path = './templates/discord-m3.css', output_path = '~/.conf
 
 hyprlock = { input_path = './templates/hyprlock-colors.conf', output_path = '~/.config/hypr/hyprlock-colors.conf' }
 hyprland = { input_path = './templates/hyprland-colors.lua', output_path = '~/.config/hypr/modules/colors.lua' }
+hyprtoolkit = { input_path = './templates/hyprtoolkit.conf', output_path = '~/.config/hypr/hyprtoolkit.conf' }
 
 neovim = { input_path = "./templates/nvim-colors.json", output_path = "~/.config/matugen/themes/nvim-colors.json" }
 

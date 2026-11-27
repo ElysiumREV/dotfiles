@@ -1,7 +1,7 @@
 local colors = require("modules.colors")
 local power = require("modules.power")
 
--- eco = laptop on battery or in power-saver (see modules/power.lua)
+-- eco = laptop in the balanced or power-saver profile (see modules/power.lua)
 local eco = power.eco
 
 --------------------
@@ -53,15 +53,15 @@ hl.config({
 		fullscreen_opacity = 1,
 		blur = {
 			enabled = not eco,
-      size = 5,
-      passes = 3,
-      popups = true,
-      input_methods = true,
+			size = 5,
+			passes = 3,
+			popups = true,
+			input_methods = true,
 		},
 		shadow = {
 			enabled = not eco,
-      range = 25,
-      render_power = 3,
+			range = 25,
+			render_power = 3,
 			color = "rgba(00000020)",
 		},
 		-- Dim
@@ -85,7 +85,6 @@ hl.config({
 		animate_manual_resizes = false,
 		animate_mouse_windowdragging = false,
 		enable_swallow = false,
-		swallow_regex = "(foot|kitty|allacritty|Alacritty)",
 		on_focus_under_fullscreen = 2,
 		allow_session_lock_restore = true,
 		session_lock_xray = true,

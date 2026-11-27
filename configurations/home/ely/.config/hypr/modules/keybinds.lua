@@ -84,6 +84,15 @@ hl.bind(
 hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }), { description = "Windows: Focus window above" })
 hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "down" }), { description = "Windows: Focus window below" })
 
+-- Swap with the neighbor in that direction
+for _, d in ipairs({ { "left", "left" }, { "right", "right" }, { "up", "above" }, { "down", "below" } }) do
+	hl.bind(
+		mainMod .. " + CTRL + " .. d[1],
+		hl.dsp.window.swap({ direction = d[1] }),
+		{ description = "Windows: Swap with window " .. (d[1] == d[2] and "to the " .. d[1] or d[2]) }
+	)
+end
+
 -- Resize
 hl.bind(
 	"SUPER + SHIFT + RIGHT",
@@ -216,7 +225,7 @@ hl.bind(
 )
 
 -- Lockscreen
-hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"), { description = "System: Lock session" })
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("loginctl lock-session"), { description = "System: Lock session" })
 
 -- Wallpaper
 hl.bind(
@@ -229,4 +238,16 @@ hl.bind(
 	mainMod .. " + SHIFT + W",
 	hl.dsp.exec_cmd("qs ipc call shell toggleWallhaven"),
 	{ description = "QuickShell: Search wallpapers online" }
+)
+
+-- Scratchpad — special workspace shown on top of the current one.
+hl.bind(
+	mainMod .. " + TAB",
+	hl.dsp.workspace.toggle_special("scratch"),
+	{ description = "Workspaces: Toggle scratchpad" }
+)
+hl.bind(
+	mainMod .. " + SHIFT + TAB",
+	hl.dsp.window.move({ workspace = "special:scratch" }),
+	{ description = "Workspaces: Move window to scratchpad" }
 )
